@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Da El Punto — Admin</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&display=swap');
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:#0a1a0d;color:#F5F5F0;font-family:'Inter',sans-serif;padding:32px 20px;min-height:100vh}
+    h1{font-family:'Bebas Neue',sans-serif;font-size:40px;color:#E8D44D;letter-spacing:2px;margin-bottom:4px}
+    .sub{font-size:12px;color:rgba(245,245,240,.35);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:28px}
+    .card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:20px;margin-bottom:16px;max-width:560px}
+    .card h2{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px;color:#E8D44D;margin-bottom:14px}
+    .pf{display:flex;flex-direction:column;gap:4px;margin-bottom:12px}
+    .pf label{font-size:10px;color:rgba(245,245,240,.35);letter-spacing:1px;text-transform:uppercase}
+    .pf input,.pf select{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:7px;color:#F5F5F0;font-family:'Inter',sans-serif;font-size:14px;padding:9px 10px;outline:none;width:100%}
+    .pf input:focus{border-color:rgba(232,212,77,.5)}
+    .pf select option{background:#1a2e1c}
+    .btn{background:#3D7A4A;border:none;border-radius:9px;color:#F5F5F0;font-family:'Inter',sans-serif;font-size:14px;font-weight:600;padding:11px 20px;cursor:pointer;margin-top:4px}
+    .btn:active{opacity:.85}
+    .btn-sm{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:7px;color:rgba(245,245,240,.6);font-family:'Inter',sans-serif;font-size:12px;padding:6px 12px;cursor:pointer}
+    .result{background:rgba(61,122,74,.15);border:1px solid rgba(61,122,74,.4);border-radius:8px;padding:12px;margin-top:12px;font-size:13px;font-family:monospace;color:#7BC47F;display:none;word-break:break-all}
+    .error{background:rgba(220,53,69,.1);border:1px solid rgba(220,53,69,.3);border-radius:8px;padding:12px;margin-top:12px;font-size:13px;color:#ff8a8a;display:none}
+    .canchas-list{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+    .cancha-row{display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center}
+    .cancha-row input{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:6px;color:#F5F5F0;font-family:'Inter',sans-serif;font-size:13px;padding:7px 8px;outline:none}
+    .cancha-row input:focus{border-color:rgba(232,212,77,.4)}
+    .tv-toggle{display:flex;align-items:center;gap:5px;font-size:11px;color:rgba(245,245,240,.4);cursor:pointer}
+    .tv-toggle input{width:14px;height:14px;cursor:pointer}
+    .del-btn{background:none;border:none;color:rgba(245,245,240,.25);cursor:pointer;font-size:16px;padding:4px}
+    .del-btn:hover{color:#ff8a8a}
+    .clubes-list{display:flex;flex-direction:column;gap:8px}
+    .club-item{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:9px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between}
+    .club-codigo{font-family:'Bebas Neue',sans-serif;font-size:18px;color:#E8D44D;letter-spacing:1px}
+    .club-nombre{font-size:13px;color:rgba(245,245,240,.7)}
+    .club-plan{font-size:10px;color:rgba(245,245,240,.35);letter-spacing:1px;text-transform:uppercase}
+    .separator{height:1px;background:rgba(255,255,255,.06);margin:8px 0}
+  </style>
+</head>
+<body>
+
+<h1>Da El Punto</h1>
+<div class="sub">Panel de administración</div>
+
+<!-- AUTENTICACIÓN -->
+<div class="card">
+  <h2>Autenticación</h2>
+  <div class="pf">
+    <label>URL del servidor</label>
+    <input id="server-url" value="https://web-production-dbcfb.up.railway.app" placeholder="https://..."/>
+  </div>
+  <div class="pf">
+    <label>Admin Key</label>
+    <input id="admin-key" type="password" placeholder="Tu ADMIN_KEY de Railway"/>
+  </div>
+  <button class="btn" onclick="verificarConexion()">Verificar y cargar clubes</button>
+  <div class="result" id="conn-result"></div>
+  <div class="error" id="conn-error"></div>
+</div>
+
+<!-- CLUBES EXISTENTES -->
+<div class="card" id="card-clubes" style="display:none">
+  <h2>Clubes registrados</h2>
+  <div class="clubes-list" id="clubes-list"></div>
+</div>
+
+<!-- CREAR CLUB -->
+<div class="card" id="card-crear" style="display:none">
+  <h2>Crear nuevo club</h2>
+  <div class="pf">
+    <label>Nombre del club</label>
+    <input id="club-nombre" placeholder="Ej: Club Atlético Zárate"/>
+  </div>
+  <div class="pf">
+    <label>Código (corto, sin espacios)</label>
+    <input id="club-codigo" placeholder="Ej: CAZ" style="text-transform:uppercase" oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9]/g,'')"/>
+  </div>
+  <div class="pf">
+    <label>Plan</label>
+    <select id="club-plan">
+      <option value="starter">Starter — hasta 4 canchas</option>
+      <option value="club" selected>Club — hasta 8 canchas</option>
+      <option value="pro">Pro — ilimitado</option>
+    </select>
+  </div>
+
+  <div class="separator"></div>
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+    <div style="font-size:10px;color:rgba(245,245,240,.35);letter-spacing:1px;text-transform:uppercase">Canchas</div>
+    <button class="btn-sm" onclick="agregarCancha()">+ Agregar cancha</button>
+  </div>
+  <div class="canchas-list" id="canchas-list"></div>
+
+  <button class="btn" onclick="crearClub()">Crear club</button>
+  <div class="result" id="crear-result"></div>
+  <div class="error" id="crear-error"></div>
+</div>
+
+<script>
+let canchaCount = 0;
+
+function getBase() {
+  return {
+    url: document.getElementById('server-url').value.trim().replace(/\/$/, ''),
+    key: document.getElementById('admin-key').value.trim()
+  };
+}
+
+async function verificarConexion() {
+  const { url, key } = getBase();
+  const res = document.getElementById('conn-result');
+  const err = document.getElementById('conn-error');
+  res.style.display = 'none'; err.style.display = 'none';
+
+  try {
+    const r = await fetch(`${url}/api/admin/clubes`, {
+      headers: { 'x-admin-key': key }
+    });
+    if (r.status === 401) {
+      err.textContent = '❌ Admin Key incorrecta';
+      err.style.display = 'block'; return;
+    }
+    if (!r.ok) throw new Error('Error ' + r.status);
+    const clubes = await r.json();
+    res.textContent = `✅ Conectado — ${clubes.length} club(es) registrado(s)`;
+    res.style.display = 'block';
+    renderClubes(clubes);
+    document.getElementById('card-clubes').style.display = 'block';
+    document.getElementById('card-crear').style.display = 'block';
+    // Agregar 8 canchas por defecto
+    if (canchaCount === 0) {
+      for (let i = 1; i <= 8; i++) agregarCancha(`Cancha ${i}`, i <= 5);
+    }
+  } catch(e) {
+    err.textContent = '❌ Error conectando: ' + e.message;
+    err.style.display = 'block';
+  }
+}
+
+function renderClubes(clubes) {
+  const list = document.getElementById('clubes-list');
+  if (!clubes.length) {
+    list.innerHTML = '<div style="color:rgba(245,245,240,.3);font-size:13px">No hay clubes todavía</div>';
+    return;
+  }
+  list.innerHTML = clubes.map(c => `
+    <div class="club-item">
+      <div>
+        <div class="club-codigo">${c.codigo}</div>
+        <div class="club-nombre">${c.nombre}</div>
+      </div>
+      <div class="club-plan">${c.plan}</div>
+    </div>`).join('');
+}
+
+function agregarCancha(nombre = '', tieneTv = false) {
+  canchaCount++;
+  const id = 'cancha-' + canchaCount;
+  const div = document.createElement('div');
+  div.className = 'cancha-row';
+  div.id = id;
+  div.innerHTML = `
+    <input type="text" placeholder="Nombre cancha" value="${nombre}"/>
+    <label class="tv-toggle"><input type="checkbox" ${tieneTv ? 'checked' : ''}/> TV</label>
+    <button class="del-btn" onclick="document.getElementById('${id}').remove()">✕</button>`;
+  document.getElementById('canchas-list').appendChild(div);
+}
+
+async function crearClub() {
+  const { url, key } = getBase();
+  const res = document.getElementById('crear-result');
+  const err = document.getElementById('crear-error');
+  res.style.display = 'none'; err.style.display = 'none';
+
+  const nombre = document.getElementById('club-nombre').value.trim();
+  const codigo = document.getElementById('club-codigo').value.trim();
+  const plan = document.getElementById('club-plan').value;
+
+  if (!nombre || !codigo) {
+    err.textContent = '❌ Completá nombre y código del club';
+    err.style.display = 'block'; return;
+  }
+
+  // Leer canchas
+  const canchaRows = document.querySelectorAll('#canchas-list .cancha-row');
+  const canchas = Array.from(canchaRows).map(row => ({
+    nombre: row.querySelector('input[type=text]').value || '',
+    tiene_tv: row.querySelector('input[type=checkbox]').checked
+  })).filter(c => c.nombre);
+
+  try {
+    const r = await fetch(`${url}/api/admin/club`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-admin-key': key },
+      body: JSON.stringify({ nombre, codigo, plan, canchas })
+    });
+    const data = await r.json();
+    if (!r.ok) {
+      err.textContent = '❌ ' + (data.error || 'Error creando club');
+      err.style.display = 'block'; return;
+    }
+    res.textContent = `✅ Club creado! Código: ${data.codigo} — Ya podés usarlo en el sistema`;
+    res.style.display = 'block';
+    // Recargar lista
+    const r2 = await fetch(`${url}/api/admin/clubes`, { headers: { 'x-admin-key': key } });
+    renderClubes(await r2.json());
+    // Limpiar form
+    document.getElementById('club-nombre').value = '';
+    document.getElementById('club-codigo').value = '';
+  } catch(e) {
+    err.textContent = '❌ Error: ' + e.message;
+    err.style.display = 'block';
+  }
+}
+</script>
+</body>
+</html>
