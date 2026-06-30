@@ -163,6 +163,57 @@ function generarLlaves(torneoId, equipoIds) {
   }
 }
 
+
+// ─── ADMIN API (protegida con ADMIN_KEY) ─────────────────────────────────────
+
+function checkAdmin(req, res) {
+  const key = req.headers['x-admin-key'] || req.query.key;
+  if (!key || key !== process.env.ADMIN_KEY) {
+    res.status(401).json({ error: 'No autorizado' });
+    return false;
+  }
+  return true;
+}
+
+// POST /api/admin/club — crear nuevo club
+app.post('/api/admin/club', (req, res) => {
+  if (!checkAdmin(req, res)) return;
+  const { nombre, codigo, plan, canchas } = req.body;
+  if (!nombre || !codigo) return res.status(400).json({ error: 'nombre y codigo requeridos' });
+
+  const id = 'club-' + codigo.toLowerCase();
+  try {
+    db.prepare(`INSERT INTO clubes (id, nombre, codigo, plan) VALUES (?, ?, ?, ?)`)
+      .run(id, nombre, codigo.toUpperCase(), plan || 'club');
+
+    // Crear canchas si se especifican
+    if (canchas && canchas.length) {
+      canchas.forEach((c, i) => {
+        db.prepare(`INSERT INTO canchas (id, club_id, numero, nombre, tiene_tv) VALUES (?, ?, ?, ?, ?)`)
+          .run(`${id}-c${i+1}`, id, i+1, c.nombre || `Cancha ${i+1}`, c.tiene_tv ? 1 : 0);
+      });
+    }
+
+    res.json({ ok: true, id, codigo: codigo.toUpperCase() });
+  } catch(e) {
+    res.status(400).json({ error: e.message });
+  }
+});
+
+// GET /api/admin/clubes — listar todos los clubes
+app.get('/api/admin/clubes', (req, res) => {
+  if (!checkAdmin(req, res)) return;
+  const clubes = db.prepare('SELECT * FROM clubes ORDER BY created_at DESC').all();
+  res.json(clubes);
+});
+
+// DELETE /api/admin/club/:id — desactivar club
+app.delete('/api/admin/club/:id', (req, res) => {
+  if (!checkAdmin(req, res)) return;
+  db.prepare('UPDATE clubes SET activo = 0 WHERE id = ?').run(req.params.id);
+  res.json({ ok: true });
+});
+
 // ─── WEBSOCKETS ───────────────────────────────────────────────────────────────
 
 wss.on('connection', (ws, req) => {
