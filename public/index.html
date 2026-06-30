@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Da El Punto — Sistema de Gestión</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&display=swap');
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:#0a1a0d;color:#F5F5F0;font-family:'Inter',sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;gap:32px}
+    .court-bg{position:fixed;inset:0;background:repeating-linear-gradient(90deg,rgba(61,122,74,.05) 0,rgba(61,122,74,.05) 1px,transparent 1px,transparent 60px),repeating-linear-gradient(0deg,rgba(61,122,74,.05) 0,rgba(61,122,74,.05) 1px,transparent 1px,transparent 60px);pointer-events:none}
+    .content{position:relative;z-index:1;text-align:center;width:100%;max-width:520px}
+    h1{font-family:'Bebas Neue',sans-serif;font-size:64px;color:#E8D44D;letter-spacing:4px;margin-bottom:4px}
+    .sub{font-size:14px;color:rgba(245,245,240,.35);letter-spacing:2px;text-transform:uppercase;margin-bottom:40px}
+    .cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+    .card{display:flex;flex-direction:column;align-items:center;gap:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:24px 16px;text-decoration:none;color:#F5F5F0;transition:all .2s;cursor:pointer}
+    .card:hover{border-color:rgba(61,122,74,.5);background:rgba(61,122,74,.08)}
+    .card-icon{font-size:36px}
+    .card-title{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px}
+    .card-desc{font-size:11px;color:rgba(245,245,240,.4);text-align:center;line-height:1.4}
+    .card-full{grid-column:1/-1}
+    .card-full.encargado{border-color:rgba(232,212,77,.25);background:rgba(232,212,77,.05)}
+    .card-full.encargado:hover{border-color:rgba(232,212,77,.5);background:rgba(232,212,77,.08)}
+    .version{font-size:11px;color:rgba(245,245,240,.2);letter-spacing:1px}
+  </style>
+</head>
+<body>
+<div class="court-bg"></div>
+<div class="content">
+  <h1>Da El Punto</h1>
+  <div class="sub">Sistema de gestión deportiva</div>
+
+  <div class="cards">
+    <a class="card card-full encargado" href="/encargado">
+      <div class="card-icon">🎯</div>
+      <div class="card-title">Panel Encargado</div>
+      <div class="card-desc">Vista de todas las canchas, crear partidos y gestionar el club</div>
+    </a>
+    <a class="card" href="/cancha">
+      <div class="card-icon">📱</div>
+      <div class="card-title">Control Cancha</div>
+      <div class="card-desc">Tanteador en el celular para el jugador</div>
+    </a>
+    <a class="card" href="/tv">
+      <div class="card-icon">📺</div>
+      <div class="card-title">Pantalla TV</div>
+      <div class="card-desc">Marcador grande para la pared de la cancha</div>
+    </a>
+  </div>
+
+  <div class="version">Da El Punto v1.0 · daelpunto.com.ar</div>
+</div>
+</body>
+</html>
