@@ -322,6 +322,7 @@ async function startGame() {
 function connectWS() {
   ws = new WebSocket(WSU);
   ws.onopen = function() {
+    console.log('WS abierto - JOIN_CANCHA canchaId:', canchaId, 'codigo:', _codigo);
     ws.send(JSON.stringify({type:'JOIN_CANCHA',clubCodigo:_codigo,canchaId:canchaId}));
     setWS(true,'Conectado · TV sincronizada');
   };
@@ -343,7 +344,12 @@ function setWS(ok,txt) {
 // ── ACCIONES ──────────────────────────────────────────────────────────────
 
 function sendPoint(team) {
-  if (!ws||ws.readyState!==1) return;
+  console.log('sendPoint - ws.readyState:', ws ? ws.readyState : 'null', 'canchaId:', canchaId);
+  if (!ws||ws.readyState!==1) { 
+    setWS(false, 'Sin conexión - reintentando...');
+    connectWS();
+    return; 
+  }
   showFlash(team);
   ws.send(JSON.stringify({type:'POINT',canchaId:canchaId,team:team}));
 }
