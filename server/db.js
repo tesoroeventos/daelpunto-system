@@ -211,11 +211,13 @@ const helpers = {
   getLlaves: db.prepare(`
     SELECT l.*, 
            te1.nombre as e1_nombre, te2.nombre as e2_nombre,
-           teg.nombre as ganador_nombre
+           teg.nombre as ganador_nombre,
+           c.nombre as cancha_nombre, c.numero as cancha_numero
     FROM llaves l
     LEFT JOIN torneo_equipos te1 ON l.equipo1_id = te1.id
     LEFT JOIN torneo_equipos te2 ON l.equipo2_id = te2.id
     LEFT JOIN torneo_equipos teg ON l.ganador_id = teg.id
+    LEFT JOIN canchas c ON l.cancha_id = c.id
     WHERE l.torneo_id = ?
     ORDER BY l.ronda DESC, l.posicion
   `),
