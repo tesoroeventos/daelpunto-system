@@ -516,7 +516,7 @@ function renderBracketEncargado() {
   window._llavesRef=_llavesTorneo;
 
   // Opciones de canchas para el select
-  const canchaOpts = canchas.map((c,i)=>'<option value="'+c.id+'">'+(c.nombre||'Cancha '+c.numero)+'</option>').join('');
+  const canchaOpts = canchas.map((c,i)=>'<option value="'+c.id+'" style="background:#1a2e1c;color:#F5F5F0">'+(c.nombre||'Cancha '+c.numero)+'</option>').join('');
 
   const rondas={};
   _llavesTorneo.forEach(l=>{ if(!rondas[l.ronda]) rondas[l.ronda]=[]; rondas[l.ronda].push(l); });
@@ -538,8 +538,8 @@ function renderBracketEncargado() {
       // Selector de cancha arriba del partido
       html+='<div style="padding:4px 8px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;gap:6px">';
       html+='<span style="font-size:9px;color:rgba(245,245,240,.3);letter-spacing:1px;text-transform:uppercase">Cancha:</span>';
-      html+='<select onchange="asignarCancha('+idx+',this.value)" style="flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:4px;color:'+(p.cancha_id?'#E8D44D':'rgba(245,245,240,.4)')+';font-size:11px;padding:2px 4px;outline:none;font-family:Inter,sans-serif">';
-      html+='<option value="">— Sin asignar —</option>'+canchaOpts;
+      html+='<select onchange="asignarCancha('+idx+',this.value)" style="flex:1;background:#1a2e1c;border:1px solid rgba(255,255,255,.12);border-radius:4px;color:#E8D44D;font-size:11px;padding:2px 4px;outline:none;font-family:Inter,sans-serif">';
+      html+='<option value="" style="background:#1a2e1c;color:rgba(245,245,240,.5)">Sin asignar</option>'+canchaOpts;
       html+='</select></div>';
 
       // Equipo 1
