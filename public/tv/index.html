@@ -247,7 +247,7 @@ function cargar() {
   var err = document.getElementById('s-err');
   err.textContent = '';
   if (!cod) { err.textContent = 'Ingresa el codigo del club'; return; }
-  
+
   fetch('/api/club/' + cod)
     .then(function(r) {
       if (!r.ok) { err.textContent = 'Club no encontrado'; return null; }
@@ -255,14 +255,14 @@ function cargar() {
     })
     .then(function(data) {
       if (!data) return;
-      var canchas = data.canchas;
+      // Guardar canchas globalmente para usarlas en botones
+      window._canchas = data.canchas;
       var g = document.getElementById('canchas-grid');
       var html = '';
-      for (var i = 0; i < canchas.length; i++) {
-        var c = canchas[i];
-        var nom = (c.nombre || 'Cancha ' + c.numero).replace(/'/g, '');
-        html += '<button class="c-btn" onclick="conectar('' + c.id + '','' + nom + '')">';
-        html += '<span class="num">' + c.numero + '</span>';
+      for (var i = 0; i < data.canchas.length; i++) {
+        var nom = data.canchas[i].nombre || ('Cancha ' + data.canchas[i].numero);
+        html += '<button class="c-btn" onclick="selCancha(' + i + ')">';
+        html += '<span class="num">' + data.canchas[i].numero + '</span>';
         html += '<span class="nom">' + nom + '</span>';
         html += '</button>';
       }
@@ -275,6 +275,11 @@ function cargar() {
     .catch(function() {
       err.textContent = 'Error conectando al servidor';
     });
+}
+
+function selCancha(i) {
+  var c = window._canchas[i];
+  conectar(c.id, c.nombre || ('Cancha ' + c.numero));
 }
 
 function volver() {
