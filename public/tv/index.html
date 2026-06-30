@@ -297,23 +297,37 @@ function conectar(id, nombre) {
 function connectWS() {
   ws = new WebSocket(WSU);
   ws.onopen = function() {
-    ws.send(JSON.stringify({type:'JOIN_TV',canchaId:canchaId}));
+    var msg = {type:'JOIN_TV',canchaId:canchaId};
+    ws.send(JSON.stringify(msg));
     dot(true,'En vivo');
   };
   ws.onmessage = function(e) {
     var m = JSON.parse(e.data);
-    if (m.type==='INIT') render(m.state);
-    else if (m.type==='STATE_UPDATE') { doFlash(m.state); render(m.state); }
+    if (m.type==='INIT') {
+      dot(true,'En vivo - INIT OK');
+      render(m.state);
+    }
+    else if (m.type==='STATE_UPDATE') { 
+      dot(true,'En vivo');
+      doFlash(m.state); 
+      render(m.state); 
+    }
     else if (m.type==='PARTIDO_INICIADO') render(m.state);
     else if (m.type==='PARTIDO_FINALIZADO') empty();
   };
-  ws.onclose = function() { dot(false,'Reconectando...'); setTimeout(connectWS,3000); };
-  ws.onerror = function() { ws.close(); };
+  ws.onclose = function(e) { 
+    dot(false,'Desconectado ('+e.code+') - reconectando...');
+    setTimeout(connectWS,2000); 
+  };
+  ws.onerror = function(e) { 
+    dot(false,'Error WS');
+    ws.close(); 
+  };
 }
 
 function dot(ok,txt) {
   document.getElementById('hdr-dot').className='hdr-dot'+(ok?'':' off');
-  document.getElementById('hdr-txt').textContent=txt;
+  document.getElementById('hdr-txt').textContent=txt+' ['+canchaId+']';
 }
 
 function empty() {
