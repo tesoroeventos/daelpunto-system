@@ -55,8 +55,8 @@ app.post('/api/partido', (req, res) => {
     if (existingState) {
       existingState.serving = serving !== undefined ? Number(serving) : 0;
       const fullState = state.getFullState(existingState);
-      state.broadcast(\`cancha:\${canchaId}\`, { type: 'STATE_UPDATE', state: fullState });
-      state.broadcast(\`tv:\${canchaId}\`, { type: 'STATE_UPDATE', state: fullState });
+      state.broadcast(`cancha:${canchaId}`, { type: 'STATE_UPDATE', state: fullState });
+      state.broadcast(`tv:${canchaId}`, { type: 'STATE_UPDATE', state: fullState });
       return res.json({ ok: true, state: fullState });
     }
   }
