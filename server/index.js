@@ -42,7 +42,7 @@ app.get('/api/club/:codigo/estado', (req, res) => {
 
 // POST /api/partido — crear nuevo partido
 app.post('/api/partido', (req, res) => {
-  const { clubCodigo, canchaId, equipo1Nombre, equipo2Nombre, puntoDeOro, equipo1Id, equipo2Id, torneoId } = req.body;
+  const { clubCodigo, canchaId, equipo1Nombre, equipo2Nombre, puntoDeOro, equipo1Id, equipo2Id, torneoId, serving } = req.body;
   const club = helpers.getClub.get(clubCodigo?.toUpperCase());
   if (!club) return res.status(404).json({ error: 'Club no encontrado' });
 
@@ -60,7 +60,7 @@ app.post('/api/partido', (req, res) => {
 
   const partido = { id, club_id: club.id, cancha_id: canchaId, punto_de_oro: puntoDeOro ? 1 : 0,
     equipo1_nombre: equipo1Nombre || 'Pareja 1', equipo2_nombre: equipo2Nombre || 'Pareja 2' };
-  const matchState = state.createMatchState(partido);
+  const matchState = state.createMatchState(partido, { serving: serving !== undefined ? Number(serving) : 0 });
   state.setState(canchaId, matchState);
 
   // Notificar a todos los conectados a esta cancha y al panel del encargado
@@ -281,8 +281,8 @@ wss.on('connection', (ws, req) => {
         const fullState = state.getFullState(matchState);
 
         // Broadcast a cancha y TV
-        state.broadcast(`cancha:${canchaId}`, { type: 'STATE_UPDATE', state: fullState });
-        state.broadcast(`tv:${canchaId}`, { type: 'STATE_UPDATE', state: fullState });
+        state.broadcast(`cancha:${canchaId}`, { type: 'STATE_UPDATE', state: fullState, team: msg.team });
+        state.broadcast(`tv:${canchaId}`, { type: 'STATE_UPDATE', state: fullState, team: msg.team });
         state.broadcastToClub(matchState.clubId, { type: 'CANCHA_UPDATE', canchaId, state: fullState });
 
         // Si terminó el partido, guardar en DB
