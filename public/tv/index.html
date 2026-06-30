@@ -9,93 +9,85 @@
     *{box-sizing:border-box;margin:0;padding:0}
     html,body{width:100%;height:100%;overflow:hidden;background:#0a1a0d;color:#F5F5F0;font-family:'Inter',sans-serif}
 
-    /* SETUP */
-    #setup{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;gap:20px;padding:40px}
-    #setup h1{font-family:'Bebas Neue',sans-serif;font-size:64px;color:#E8D44D;letter-spacing:4px}
-    #setup .form-group{display:flex;flex-direction:column;gap:8px;width:100%;max-width:480px}
-    #setup label{font-size:14px;color:rgba(245,245,240,.5);letter-spacing:1px;text-transform:uppercase}
-    #setup input{background:rgba(255,255,255,.06);border:2px solid rgba(255,255,255,.12);border-radius:10px;color:#F5F5F0;font-size:16px;padding:12px 14px;outline:none;font-family:'Inter',sans-serif;width:100%}
-    #setup input:focus{border-color:rgba(232,212,77,.7)}
-    #setup .btn{background:#3D7A4A;border:none;border-radius:12px;color:#F5F5F0;font-size:16px;font-weight:600;padding:14px;width:100%;max-width:480px;cursor:pointer;font-family:'Inter',sans-serif}
-    #setup .btn:focus{outline:3px solid #E8D44D}
-    #setup .btn:active{opacity:.85}
-    #setup .error{color:#ff6b6b;font-size:14px;text-align:center}
+    /* ── SETUP ── */
+    #setup{
+      display:flex;flex-direction:column;align-items:center;justify-content:center;
+      height:100vh;gap:24px;padding:40px;
+    }
+    #setup h1{
+      font-family:'Bebas Neue',sans-serif;font-size:72px;color:#E8D44D;letter-spacing:4px;
+    }
+    .setup-sub{font-size:16px;color:rgba(245,245,240,.4);letter-spacing:2px;text-transform:uppercase}
+    .setup-label{font-size:13px;color:rgba(245,245,240,.4);letter-spacing:1px;text-transform:uppercase;align-self:flex-start;width:100%;max-width:500px}
+    .setup-input{
+      background:rgba(255,255,255,.07);border:2px solid rgba(255,255,255,.15);
+      border-radius:12px;color:#F5F5F0;font-size:32px;font-weight:600;
+      padding:16px 24px;outline:none;width:100%;max-width:500px;
+      text-align:center;letter-spacing:6px;font-family:'Inter',sans-serif;
+    }
+    .setup-input:focus{border-color:rgba(232,212,77,.7)}
+    .setup-btn{
+      background:#3D7A4A;border:none;border-radius:12px;color:#F5F5F0;
+      font-size:22px;font-weight:600;padding:18px 0;width:100%;max-width:500px;
+      cursor:pointer;font-family:'Inter',sans-serif;
+    }
+    .setup-btn:hover,.setup-btn:focus{background:#4a9058;outline:3px solid #E8D44D}
+    .setup-error{color:#ff6b6b;font-size:15px;text-align:center;min-height:20px}
 
-    /* Botones de cancha navegables */
+    /* Botones de cancha */
+    #canchas-grid{
+      display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
+      gap:16px;width:100%;max-width:900px;
+    }
     .cancha-btn{
-      background:rgba(255,255,255,.05);
-      border:2px solid rgba(255,255,255,.12);
-      border-radius:14px;
-      color:#F5F5F0;
-      font-family:'Bebas Neue',sans-serif;
-      font-size:28px;
-      letter-spacing:1px;
-      padding:24px 12px;
-      cursor:pointer;
-      text-align:center;
-      transition:all .15s;
+      background:rgba(255,255,255,.05);border:2px solid rgba(255,255,255,.12);
+      border-radius:16px;color:#F5F5F0;font-family:'Bebas Neue',sans-serif;
+      padding:28px 16px;cursor:pointer;text-align:center;transition:all .15s;
     }
-    .cancha-btn:hover, .cancha-btn:focus{
-      background:rgba(61,122,74,.3);
-      border-color:#3D7A4A;
-      outline:3px solid #E8D44D;
-      transform:scale(1.04);
+    .cancha-btn:hover,.cancha-btn:focus{
+      background:rgba(61,122,74,.35);border-color:#E8D44D;
+      outline:none;transform:scale(1.04);
     }
-    .cancha-btn .cancha-num{font-size:42px;display:block;color:#E8D44D}
-    .cancha-btn .cancha-name{font-size:14px;font-family:'Inter',sans-serif;color:rgba(245,245,240,.5);margin-top:4px;display:block}
+    .cancha-btn .num{font-size:52px;color:#E8D44D;display:block;line-height:1}
+    .cancha-btn .nom{font-size:15px;font-family:'Inter',sans-serif;color:rgba(245,245,240,.5);margin-top:6px;display:block}
+    .btn-volver{
+      background:transparent;border:1px solid rgba(255,255,255,.2);border-radius:8px;
+      color:rgba(245,245,240,.4);font-size:15px;padding:10px 24px;cursor:pointer;
+    }
+    .btn-volver:hover,.btn-volver:focus{border-color:rgba(255,255,255,.4);color:#F5F5F0;outline:none}
 
-    /* TV SCOREBOARD */
+    /* ── SCOREBOARD ── */
     #scoreboard{display:none;width:100vw;height:100vh;flex-direction:column}
-
-    /* Header */
     .tv-header{background:rgba(0,0,0,.4);padding:16px 40px;display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid #3D7A4A;flex-shrink:0}
     .tv-logo{font-family:'Bebas Neue',sans-serif;font-size:32px;color:#E8D44D;letter-spacing:2px}
     .tv-cancha{font-size:20px;color:rgba(245,245,240,.6);letter-spacing:1px}
     .tv-status{display:flex;align-items:center;gap:8px;font-size:14px;color:rgba(245,245,240,.5)}
     .tv-status-dot{width:10px;height:10px;border-radius:50%;background:#3D7A4A}
     .tv-status-dot.inactive{background:rgba(255,255,255,.2)}
-
-    /* Main score area */
     .tv-main{flex:1;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:20px 40px;gap:20px}
-
-    /* Team panels */
     .tv-team{display:flex;flex-direction:column;align-items:center;gap:12px;padding:30px;border-radius:20px;background:rgba(255,255,255,.03);border:2px solid rgba(255,255,255,.06);transition:all .3s}
     .tv-team.serving{border-color:rgba(232,212,77,.5);background:rgba(232,212,77,.04)}
-    .tv-team.flash{background:rgba(61,122,74,.2);border-color:#3D7A4A}
     .tv-team-name{font-family:'Bebas Neue',sans-serif;font-size:clamp(28px,4vw,52px);letter-spacing:2px;color:#F5F5F0;text-align:center}
     .tv-score{font-family:'Bebas Neue',sans-serif;font-size:clamp(120px,18vw,200px);line-height:1;color:#F5F5F0;letter-spacing:4px}
     .tv-score.adv{color:#E8D44D}
     .tv-score.oro{color:#E8D44D;font-size:clamp(60px,10vw,120px);line-height:1.2}
     .tv-score-label{font-size:clamp(14px,2vw,22px);color:rgba(245,245,240,.4);letter-spacing:2px;text-transform:uppercase;min-height:26px}
-
-    /* Sets badges */
     .tv-sets{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
     .tv-set-badge{width:clamp(36px,5vw,52px);height:clamp(36px,5vw,52px);border-radius:50%;background:rgba(255,255,255,.06);border:2px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:clamp(14px,2vw,22px);color:rgba(245,245,240,.3);transition:.3s}
     .tv-set-badge.won{background:#E8D44D;border-color:#E8D44D;color:#0a1a0d}
-
-    /* Center — games + saque */
     .tv-center{display:flex;flex-direction:column;align-items:center;gap:16px}
     .tv-games{font-family:'Bebas Neue',sans-serif;font-size:clamp(28px,5vw,64px);color:rgba(245,245,240,.5);letter-spacing:2px;text-align:center;line-height:1.1}
     .tv-set-label{font-size:clamp(12px,1.5vw,16px);color:rgba(245,245,240,.3);letter-spacing:2px;text-transform:uppercase;text-align:center}
     .tv-serve-indicator{font-size:clamp(24px,3vw,36px);color:#E8D44D}
-
-    /* Footer */
     .tv-footer{background:rgba(0,0,0,.3);padding:10px 40px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid rgba(255,255,255,.06);flex-shrink:0}
     .tv-sets-history{display:flex;gap:20px;font-size:clamp(12px,1.5vw,16px);color:rgba(245,245,240,.4)}
-    .tv-sets-history span{font-weight:600;color:rgba(245,245,240,.6)}
     .tv-time{font-size:clamp(12px,1.5vw,16px);color:rgba(245,245,240,.3)}
-
-    /* Estado vacío */
     .tv-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:20px;opacity:.4}
     .tv-empty .big{font-family:'Bebas Neue',sans-serif;font-size:80px;color:#E8D44D;letter-spacing:4px}
     .tv-empty .sub{font-size:18px;color:rgba(245,245,240,.5);letter-spacing:2px}
-
-    /* ORO banner */
     .tv-oro{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(232,212,77,.95);border-radius:20px;padding:20px 48px;font-family:'Bebas Neue',sans-serif;font-size:48px;color:#0a1a0d;letter-spacing:3px;z-index:100;pointer-events:none}
     .tv-oro.show{display:block}
-
-    /* Flash punto */
-    .tv-flash{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);border-radius:20px;padding:16px 48px;font-family:'Bebas Neue',sans-serif;font-size:56px;letter-spacing:3px;z-index:99;pointer-events:none;opacity:0;transition:opacity .15s}
+    .tv-flash{display:none;position:fixed;top:44%;left:50%;transform:translate(-50%,-50%);border-radius:20px;padding:16px 48px;font-family:'Bebas Neue',sans-serif;font-size:56px;letter-spacing:3px;z-index:99;pointer-events:none;opacity:0;transition:opacity .15s}
     .tv-flash.show{display:block;opacity:1}
     .tv-flash.f0{background:rgba(61,122,74,.95);color:#F5F5F0}
     .tv-flash.f1{background:rgba(232,212,77,.95);color:#0a1a0d}
@@ -106,32 +98,23 @@
 <!-- SETUP -->
 <div id="setup">
   <h1>Da El Punto</h1>
-  <p style="color:rgba(245,245,240,.4);font-size:14px;letter-spacing:1px">PANTALLA TV — CANCHA</p>
+  <div class="setup-sub">Pantalla TV</div>
 
-  <!-- PASO 1: código del club -->
-  <div id="step-codigo">
-    <div class="form-group">
-      <label>Código del club</label>
-      <input id="inp-codigo" type="text" placeholder="Ej: DEMO" value="DEMO"
-        style="text-transform:uppercase;font-size:28px;padding:16px 20px;text-align:center;letter-spacing:4px"
-        oninput="this.value=this.value.toUpperCase()"
-        onkeydown="if(event.key==='Enter') cargarCanchas()"/>
-    </div>
-    <div class="error" id="setup-error"></div>
-    <button class="btn" onclick="cargarCanchas()" style="font-size:20px;padding:18px">
-      Cargar canchas →
-    </button>
+  <!-- Paso 1: código -->
+  <div id="step-1" style="display:flex;flex-direction:column;align-items:center;gap:16px;width:100%">
+    <div class="setup-label">Código del club</div>
+    <input class="setup-input" id="inp-codigo" type="text" placeholder="DEMO"
+      oninput="this.value=this.value.toUpperCase()"
+      onkeydown="if(event.key==='Enter') cargarCanchas()"/>
+    <div class="setup-error" id="setup-error"></div>
+    <button class="setup-btn" onclick="cargarCanchas()">Cargar canchas →</button>
   </div>
 
-  <!-- PASO 2: selección de cancha con botones grandes -->
-  <div id="step-canchas" style="display:none;width:100%;max-width:700px">
-    <p style="color:rgba(245,245,240,.5);font-size:14px;letter-spacing:1px;margin-bottom:20px">
-      SELECCIONÁ TU CANCHA
-    </p>
-    <div id="canchas-btns" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;width:100%"></div>
-    <button onclick="volverCodigo()" style="margin-top:24px;background:transparent;border:1px solid rgba(255,255,255,.2);border-radius:8px;color:rgba(245,245,240,.4);font-size:14px;padding:10px 20px;cursor:pointer">
-      ← Volver
-    </button>
+  <!-- Paso 2: selección cancha -->
+  <div id="step-2" style="display:none;flex-direction:column;align-items:center;gap:20px;width:100%">
+    <div class="setup-sub">Seleccioná tu cancha</div>
+    <div id="canchas-grid"></div>
+    <button class="btn-volver" onclick="volverPaso1()">← Volver</button>
   </div>
 </div>
 
@@ -145,7 +128,6 @@
       <span id="tv-status-txt">Conectando…</span>
     </div>
   </div>
-
   <div id="tv-content">
     <div class="tv-empty">
       <div class="big">READY</div>
@@ -158,80 +140,85 @@
 <div class="tv-flash" id="tv-flash"></div>
 
 <script>
-const WS_URL = `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}`;
-let ws, canchaId, canchaNombre, codigoCLub;
+let ws, canchaId, canchaNombre, codigoClub;
 let flashTimer;
+const WS_URL = `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}`;
 
-// Cargar canchas al escribir código
-document.getElementById('inp-codigo').addEventListener('change', loadCanchas);
-document.getElementById('inp-codigo').addEventListener('blur', loadCanchas);
+// ── SETUP ──────────────────────────────────────────────────────────────────
 
-async function loadCanchas() {
-  const codigo = document.getElementById('inp-codigo').value.trim().toUpperCase().toUpperCase();
-  if (!codigo) return;
-  try {
-    const r = await fetch(`/api/club/${codigo}`);
-    if (!r.ok) return;
-    const { canchas } = await r.json();
-    const sel = document.getElementById('inp-cancha');
-    sel.innerHTML = canchas.map(c => `<option value="${c.id}">${c.nombre || 'Cancha ' + c.numero}</option>`).join('');
-  } catch {}
-}
+async function cargarCanchas() {
+  const codigo = document.getElementById('inp-codigo').value.trim().toUpperCase();
+  const err = document.getElementById('setup-error');
+  err.textContent = '';
 
-// Cargar canchas iniciales
-loadCanchas();
-
-function connectTV() {
-  const codigo = document.getElementById('inp-codigo').value.trim().toUpperCase().toUpperCase();
-  canchaId = document.getElementById('inp-cancha').value;
-  const sel = document.getElementById('inp-cancha');
-  canchaNombre = sel.options[sel.selectedIndex]?.text || 'Cancha';
-
-  if (!codigo || !canchaId) {
-    document.getElementById('setup-error').textContent = 'Completá todos los campos';
+  if (!codigo) {
+    err.textContent = 'Ingresá el código del club';
     return;
   }
 
-  codigoCLub = codigo;
+  try {
+    const r = await fetch(`/api/club/${codigo}`);
+    if (!r.ok) {
+      err.textContent = 'Club no encontrado. Verificá el código.';
+      return;
+    }
+    const data = await r.json();
+    codigoClub = codigo;
+
+    const grid = document.getElementById('canchas-grid');
+    grid.innerHTML = data.canchas.map(c => `
+      <button class="cancha-btn" onclick="conectarCancha('${c.id}', '${(c.nombre || 'Cancha ' + c.numero).replace(/'/g, '')}')">
+        <span class="num">${c.numero}</span>
+        <span class="nom">${c.nombre || 'Cancha ' + c.numero}</span>
+      </button>`).join('');
+
+    document.getElementById('step-1').style.display = 'none';
+    document.getElementById('step-2').style.display = 'flex';
+
+    // Focus al primer botón para control remoto
+    setTimeout(() => {
+      const first = grid.querySelector('.cancha-btn');
+      if (first) first.focus();
+    }, 150);
+
+  } catch(e) {
+    err.textContent = 'Error conectando al servidor. Revisá la URL.';
+  }
+}
+
+function volverPaso1() {
+  document.getElementById('step-1').style.display = 'flex';
+  document.getElementById('step-2').style.display = 'none';
+}
+
+function conectarCancha(id, nombre) {
+  canchaId = id;
+  canchaNombre = nombre;
   document.getElementById('setup').style.display = 'none';
   document.getElementById('scoreboard').style.display = 'flex';
   document.getElementById('tv-cancha-nombre').textContent = canchaNombre;
-
-  connect();
+  connectWS();
 }
 
-function connect() {
-  ws = new WebSocket(WS_URL);
+// ── WEBSOCKET ──────────────────────────────────────────────────────────────
 
+function connectWS() {
+  ws = new WebSocket(WS_URL);
   ws.onopen = () => {
     ws.send(JSON.stringify({ type: 'JOIN_TV', canchaId }));
     setStatus(true, 'En vivo');
   };
-
   ws.onmessage = (e) => {
     const msg = JSON.parse(e.data);
-    switch (msg.type) {
-      case 'INIT':
-        renderState(msg.state);
-        break;
-      case 'STATE_UPDATE':
-        flashPoint(msg.state);
-        renderState(msg.state);
-        break;
-      case 'PARTIDO_INICIADO':
-        renderState(msg.state);
-        break;
-      case 'PARTIDO_FINALIZADO':
-        renderEmpty();
-        break;
-    }
+    if (msg.type === 'INIT') renderState(msg.state);
+    else if (msg.type === 'STATE_UPDATE') { flashPoint(msg.state); renderState(msg.state); }
+    else if (msg.type === 'PARTIDO_INICIADO') renderState(msg.state);
+    else if (msg.type === 'PARTIDO_FINALIZADO') renderEmpty();
   };
-
   ws.onclose = () => {
     setStatus(false, 'Reconectando…');
-    setTimeout(connect, 3000);
+    setTimeout(connectWS, 3000);
   };
-
   ws.onerror = () => ws.close();
 }
 
@@ -239,6 +226,8 @@ function setStatus(connected, txt) {
   document.getElementById('tv-dot').className = 'tv-status-dot' + (connected ? '' : ' inactive');
   document.getElementById('tv-status-txt').textContent = txt;
 }
+
+// ── RENDER ─────────────────────────────────────────────────────────────────
 
 function renderEmpty() {
   document.getElementById('tv-content').innerHTML = `
@@ -250,76 +239,45 @@ function renderEmpty() {
 
 function renderState(s) {
   if (!s) { renderEmpty(); return; }
-
-  const sets0 = [0,1,2].map(i => {
-    const h = s.setHistory[i];
-    const won = h && h.e1 > h.e2;
-    return `<div class="tv-set-badge${h ? (won ? ' won' : '') : ''}">${h ? h.e1 : '—'}</div>`;
-  }).join('');
-  const sets1 = [0,1,2].map(i => {
-    const h = s.setHistory[i];
-    const won = h && h.e2 > h.e1;
-    return `<div class="tv-set-badge${h ? (won ? ' won' : '') : ''}">${h ? h.e2 : '—'}</div>`;
-  }).join('');
-
-  const sc0 = s.displayScore[0];
-  const sc1 = s.displayScore[1];
-
-  const isDeuce = !s.puntosOro && s.pts[0] >= 3 && s.pts[1] >= 3 && s.pts[0] === s.pts[1];
-  const isOro = s.isOro;
-
-  // ORO banner
-  document.getElementById('tv-oro').className = 'tv-oro' + (isOro ? ' show' : '');
-
-  const lbl0 = (!s.puntosOro && s.pts[0] >= 3 && s.pts[1] >= 3)
-    ? (s.pts[0] === s.pts[1] ? 'DEUCE' : s.pts[0] > s.pts[1] ? 'VENTAJA' : '')
-    : '';
-  const lbl1 = (!s.puntosOro && s.pts[0] >= 3 && s.pts[1] >= 3)
-    ? (s.pts[0] === s.pts[1] ? 'DEUCE' : s.pts[1] > s.pts[0] ? 'VENTAJA' : '')
-    : '';
-
-  const historial = s.setHistory.map((h, i) =>
-    `<span>Set ${i+1}: ${h.e1}–${h.e2}</span>`).join('');
-
+  const sets0 = [0,1,2].map(i => { const h=s.setHistory[i]; return `<div class="tv-set-badge${h&&h.e1>h.e2?' won':''}">${h?h.e1:'—'}</div>`; }).join('');
+  const sets1 = [0,1,2].map(i => { const h=s.setHistory[i]; return `<div class="tv-set-badge${h&&h.e2>h.e1?' won':''}">${h?h.e2:'—'}</div>`; }).join('');
+  const sc0 = s.displayScore[0], sc1 = s.displayScore[1];
+  document.getElementById('tv-oro').className = 'tv-oro' + (s.isOro ? ' show' : '');
+  const lbl0 = (!s.puntosOro&&s.pts[0]>=3&&s.pts[1]>=3) ? (s.pts[0]===s.pts[1]?'DEUCE':s.pts[0]>s.pts[1]?'VENTAJA':'') : '';
+  const lbl1 = (!s.puntosOro&&s.pts[0]>=3&&s.pts[1]>=3) ? (s.pts[0]===s.pts[1]?'DEUCE':s.pts[1]>s.pts[0]?'VENTAJA':'') : '';
+  const historial = s.setHistory.map((h,i) => `<span>Set ${i+1}: ${h.e1}–${h.e2}</span>`).join('');
   document.getElementById('tv-content').innerHTML = `
     <div class="tv-main">
-      <div class="tv-team ${s.serving===0?'serving':''}" id="team-0">
+      <div class="tv-team ${s.serving===0?'serving':''}">
         <div class="tv-team-name">${s.equipo1}</div>
         <div class="tv-score ${sc0==='AD'?'adv':''} ${sc0==='ORO'?'oro':''}">${sc0==='ORO'?'🥇':sc0}</div>
         <div class="tv-score-label">${lbl0}</div>
         <div class="tv-sets">${sets0}</div>
       </div>
-
       <div class="tv-center">
         <div class="tv-set-label">Set ${s.currentSet}</div>
         <div class="tv-games">${s.games[0]}<br><span style="font-size:.6em;color:rgba(245,245,240,.3)">—</span><br>${s.games[1]}</div>
         <div class="tv-serve-indicator">${s.serving===0?'▲':'▼'}</div>
         <div class="tv-set-label">Saque</div>
       </div>
-
-      <div class="tv-team ${s.serving===1?'serving':''}" id="team-1">
+      <div class="tv-team ${s.serving===1?'serving':''}">
         <div class="tv-team-name">${s.equipo2}</div>
         <div class="tv-score ${sc1==='AD'?'adv':''} ${sc1==='ORO'?'oro':''}">${sc1==='ORO'?'🥇':sc1}</div>
         <div class="tv-score-label">${lbl1}</div>
         <div class="tv-sets">${sets1}</div>
       </div>
     </div>
-
     <div class="tv-footer">
       <div class="tv-sets-history">${historial}</div>
       <div class="tv-time" id="tv-time"></div>
     </div>`;
-
   updateTime();
 }
 
-function flashPoint(newState) {
-  // Detectar qué equipo sumó
-  // (comparar con estado previo — simplificado: flash al que tiene más puntos)
+function flashPoint(s) {
   const el = document.getElementById('tv-flash');
-  const t = newState.pts[0] > newState.pts[1] ? 0 : 1;
-  const name = t === 0 ? newState.equipo1 : newState.equipo2;
-  el.textContent = `+1  ${name}`;
+  const t = s.pts[0] > s.pts[1] ? 0 : 1;
+  el.textContent = '+1  ' + (t===0 ? s.equipo1 : s.equipo2);
   el.className = `tv-flash f${t} show`;
   if (flashTimer) clearTimeout(flashTimer);
   flashTimer = setTimeout(() => el.className = 'tv-flash', 700);
@@ -327,7 +285,7 @@ function flashPoint(newState) {
 
 function updateTime() {
   const el = document.getElementById('tv-time');
-  if (el) el.textContent = new Date().toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+  if (el) el.textContent = new Date().toLocaleTimeString('es-AR', {hour:'2-digit',minute:'2-digit'});
 }
 setInterval(updateTime, 30000);
 </script>
