@@ -84,8 +84,9 @@ db.exec(`
     id          TEXT PRIMARY KEY,
     club_id     TEXT NOT NULL REFERENCES clubes(id),
     nombre      TEXT NOT NULL,
-    formato     TEXT DEFAULT 'eliminacion', -- eliminacion | grupos | round_robin
-    estado      TEXT DEFAULT 'pendiente',   -- pendiente | en_curso | finalizado
+    formato     TEXT DEFAULT 'eliminacion',
+    estado      TEXT DEFAULT 'pendiente',
+    ganador_id  TEXT REFERENCES torneo_equipos(id),
     created_at  TEXT DEFAULT (datetime('now'))
   );
 
@@ -103,12 +104,13 @@ db.exec(`
   CREATE TABLE IF NOT EXISTS llaves (
     id            TEXT PRIMARY KEY,
     torneo_id     TEXT NOT NULL REFERENCES torneos(id),
-    ronda         INTEGER NOT NULL,   -- 1=final, 2=semis, 4=cuartos, etc
-    posicion      INTEGER NOT NULL,   -- posición dentro de la ronda
+    ronda         INTEGER NOT NULL,
+    posicion      INTEGER NOT NULL,
     equipo1_id    TEXT REFERENCES torneo_equipos(id),
     equipo2_id    TEXT REFERENCES torneo_equipos(id),
     partido_id    TEXT REFERENCES partidos(id),
     ganador_id    TEXT REFERENCES torneo_equipos(id),
+    cancha_id     TEXT REFERENCES canchas(id),
     created_at    TEXT DEFAULT (datetime('now'))
   );
 
