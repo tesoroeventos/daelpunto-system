@@ -4,7 +4,6 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
   <meta name="theme-color" content="#0a1a0d"/>
-  <meta name="apple-mobile-web-app-capable" content="yes"/>
   <title>Da El Punto — Cancha</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&display=swap');
@@ -12,18 +11,15 @@
     html,body{height:100%;background:#0a1a0d;color:#F5F5F0;font-family:'Inter',sans-serif;overflow-x:hidden}
     .court-bg{position:fixed;inset:0;background:repeating-linear-gradient(90deg,rgba(61,122,74,.05) 0,rgba(61,122,74,.05) 1px,transparent 1px,transparent 60px),repeating-linear-gradient(0deg,rgba(61,122,74,.05) 0,rgba(61,122,74,.05) 1px,transparent 1px,transparent 60px);pointer-events:none;z-index:0}
     .wrap{position:relative;z-index:1;padding:12px 12px 28px;max-width:480px;margin:0 auto}
-
-    /* SETUP */
-    #setup-screen{}
     .header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;padding-top:6px}
     .logo{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:2px;color:#E8D44D}
+    .hbtn{background:rgba(232,212,77,.1);border:1px solid rgba(232,212,77,.25);color:#E8D44D;border-radius:7px;padding:5px 10px;font-size:11px;font-weight:500;cursor:pointer;letter-spacing:.5px;text-transform:uppercase}
     .sct{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:14px;margin-bottom:10px}
     .sct-title{font-size:10px;color:rgba(245,245,240,.35);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px}
     .pf{display:flex;flex-direction:column;gap:4px;margin-bottom:10px}
     .pf label{font-size:10px;color:rgba(245,245,240,.35);letter-spacing:1px;text-transform:uppercase}
-    .pf input,.pf select{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:7px;color:#F5F5F0;font-family:'Inter',sans-serif;font-size:14px;padding:9px 10px;outline:none;width:100%}
-    .pf input:focus,.pf select:focus{border-color:rgba(232,212,77,.5)}
-    .pf select option{background:#1a2e1c}
+    .pf input{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:7px;color:#F5F5F0;font-family:'Inter',sans-serif;font-size:14px;padding:9px 10px;outline:none;width:100%}
+    .pf input:focus{border-color:rgba(232,212,77,.5)}
     .pg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
     .opt-row{display:flex;align-items:center;justify-content:space-between;padding:6px 0}
     .opt-lbl{font-size:13px;color:rgba(245,245,240,.7)}
@@ -38,11 +34,19 @@
     .srv-setup{display:flex;gap:6px}
     .srv-opt{flex:1;padding:8px 4px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:8px;color:rgba(245,245,240,.5);font-size:11px;text-align:center;cursor:pointer;font-family:'Inter',sans-serif;line-height:1.4;transition:.15s}
     .srv-opt.sel{background:rgba(232,212,77,.12);border-color:rgba(232,212,77,.4);color:#E8D44D}
+    .err-msg{color:#ff6b6b;font-size:12px;min-height:16px;margin-bottom:4px}
+    .info-box{background:rgba(61,122,74,.15);border:1px solid rgba(61,122,74,.4);border-radius:8px;padding:10px 12px;font-size:12px;color:#7BC47F;text-align:center}
+
+    /* Botones cancha */
+    #canchas-grid-cel{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+    .cancha-btn-cel{padding:14px 8px;background:rgba(61,122,74,.2);border:1px solid rgba(61,122,74,.4);border-radius:10px;color:#F5F5F0;cursor:pointer;text-align:center}
+    .cancha-btn-cel .cn{font-family:'Bebas Neue',sans-serif;font-size:28px;color:#E8D44D;display:block}
+    .cancha-btn-cel .nom{font-size:10px;font-family:'Inter',sans-serif;color:rgba(245,245,240,.5);margin-top:2px;display:block}
 
     /* GAME */
     #game-screen{display:none}
     .ws-bar{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:8px 12px;margin-bottom:8px}
-    .ws-dot{width:8px;height:8px;border-radius:50%;background:#3D7A4A;flex-shrink:0;transition:.3s}
+    .ws-dot{width:8px;height:8px;border-radius:50%;background:#3D7A4A;flex-shrink:0}
     .ws-dot.off{background:rgba(255,255,255,.2)}
     .ws-txt{flex:1;font-size:11px;color:rgba(245,245,240,.5)}
     .match-bar{display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:8px 12px;margin-bottom:8px}
@@ -82,9 +86,8 @@
     .btn-new{background:#3D7A4A;border:none;border-radius:12px;padding:13px 32px;color:#F5F5F0;font-family:'Inter',sans-serif;font-size:14px;font-weight:600;cursor:pointer}
     .flash{position:fixed;top:44%;left:50%;transform:translate(-50%,-50%);border-radius:16px;padding:12px 28px;font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:2px;pointer-events:none;opacity:0;z-index:300;transition:opacity .1s}
     .flash.show{opacity:1}
-    .flash.f0{background:rgba(61,122,74,.93);color:#F5F5F0}
+    .flash.f0{background:rgba(61,122,94,.93);color:#F5F5F0}
     .flash.f1{background:rgba(232,212,77,.93);color:#0a1a0d}
-    .hbtn{background:rgba(232,212,77,.1);border:1px solid rgba(232,212,77,.25);color:#E8D44D;border-radius:7px;padding:5px 10px;font-size:11px;font-weight:500;cursor:pointer;letter-spacing:.5px;text-transform:uppercase}
   </style>
 </head>
 <body>
@@ -100,37 +103,45 @@
 
   <!-- SETUP -->
   <div id="setup-screen">
+
+    <!-- PASO 1: Club y cancha -->
     <div class="sct" id="sct-club">
       <div class="sct-title">Conectar al club</div>
       <div class="pf">
         <label>Código del club</label>
-        <input id="inp-codigo" type="text" placeholder="Ej: WPC" style="text-transform:uppercase;font-size:18px;text-align:center;letter-spacing:4px;font-weight:600" oninput="this.value=this.value.toUpperCase()" onkeydown="if(event.key==='Enter') loadClub()"/>
+        <input id="inp-codigo" type="text" placeholder="Ej: WPC"
+          style="text-transform:uppercase;font-size:18px;text-align:center;letter-spacing:4px;font-weight:600"
+          oninput="this.value=this.value.toUpperCase()"
+          onkeydown="if(event.key==='Enter') loadClub()"/>
       </div>
-      <div id="canchas-btns" style="display:none;margin-top:6px">
-        <div style="font-size:10px;color:rgba(245,245,240,.35);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">Seleccioná tu cancha</div>
-        <div id="canchas-grid-cel" style="display:grid;grid-template-columns:1fr 1fr;gap:8px"></div>
+      <div class="err-msg" id="err-club"></div>
+      <div id="canchas-btns" style="display:none">
+        <div style="font-size:10px;color:rgba(245,245,240,.35);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px">Seleccioná tu cancha</div>
+        <div id="canchas-grid-cel"></div>
         <button onclick="volverCodigo()" style="margin-top:8px;width:100%;padding:7px;background:transparent;border:1px solid rgba(255,255,255,.1);border-radius:7px;color:rgba(245,245,240,.35);font-family:'Inter',sans-serif;font-size:11px;cursor:pointer">← Cambiar club</button>
       </div>
-      <div id="err-club" style="color:#ff6b6b;font-size:12px;min-height:16px;margin-bottom:4px"></div>
       <div id="btn-cargar-wrap">
-        <button class="btn-start" style="margin-top:8px;background:rgba(61,122,74,.3);border:1px solid rgba(61,122,74,.5);font-size:13px;padding:10px" onclick="loadClub()">Cargar canchas →</button>
+        <button class="btn-start" style="background:rgba(61,122,74,.3);border:1px solid rgba(61,122,74,.5);font-size:13px;padding:10px;margin-top:0" onclick="loadClub()">Cargar canchas →</button>
       </div>
+      <div id="cancha-seleccionada" style="display:none"></div>
     </div>
 
+    <!-- PASO 2: Configurar partido -->
     <div class="sct" id="match-setup" style="display:none">
       <div class="sct-title">Configurar partido</div>
+      <div id="partido-existente" style="display:none" class="info-box" style="margin-bottom:10px"></div>
       <div class="pg">
         <div class="pf"><label>Pareja 1</label><input id="p1n" value="Pareja 1" maxlength="14"/></div>
         <div class="pf"><label>Pareja 2</label><input id="p2n" value="Pareja 2" maxlength="14"/></div>
       </div>
-      <div style="margin-top:8px">
-        <div class="sct-title" style="margin-bottom:8px">¿Quién saca?</div>
+      <div style="margin-top:4px">
+        <div class="sct-title" style="margin-bottom:6px">¿Quién saca?</div>
         <div class="srv-setup">
           <div class="srv-opt sel" id="ss0" onclick="selSrv(0)">Pareja 1</div>
           <div class="srv-opt" id="ss1" onclick="selSrv(1)">Pareja 2</div>
         </div>
       </div>
-      <div class="opt-row" style="margin-top:10px">
+      <div class="opt-row" style="margin-top:8px">
         <div><div class="opt-lbl">Punto de oro</div><div class="opt-sub">Un punto decide en 40-40</div></div>
         <label class="tw"><input type="checkbox" id="tog-oro"/><span class="tsl"></span></label>
       </div>
@@ -145,19 +156,16 @@
       <div class="ws-dot off" id="ws-dot"></div>
       <div class="ws-txt" id="ws-txt">Conectando…</div>
     </div>
-
     <div class="match-bar">
       <div class="mbi"><div class="mbilbl">Set</div><div class="mbival" id="mb-set">1</div></div>
       <div class="mbi"><div class="mbilbl">Games</div><div class="mbival" id="mb-games">0 — 0</div></div>
       <div class="mbi" id="mb-oro-w" style="display:none"><div class="mbbadge">P. ORO</div></div>
       <div class="mbi"><div class="mbilbl">Partido</div><div class="mbival" id="mb-match">0 — 0</div></div>
     </div>
-
     <div class="oro-banner" id="oro-banner">
       <div style="font-size:18px">🥇</div>
       <div style="font-size:12px;color:#E8D44D;font-weight:500">¡Punto de oro!</div>
     </div>
-
     <div class="team-panels">
       <div class="tp" id="panel-0">
         <div class="pname" id="pn0">Pareja 1</div>
@@ -176,7 +184,6 @@
         <button class="bundo" onclick="sendUndo()">↩ Deshacer</button>
       </div>
     </div>
-
     <div class="hist-panel" id="hist-panel">
       <div class="hist-ttl">Historial de sets</div>
       <div id="hist-list"></div>
@@ -191,283 +198,238 @@
   <div class="w-sub" id="w-sub"></div>
   <button class="btn-new" onclick="resetAll()">Nuevo partido</button>
 </div>
-
 <div class="flash" id="flash"></div>
 
 <script>
-let ws, canchaId, clubCodigo, serving = 0, flashT;
-let currentState = null;
+var ws, canchaId, serving=0, flashT;
+var _codigo='', _partidoExiste=false;
+var WSU = (location.protocol==='https:'?'wss':'ws')+'://'+location.host;
 
-// ─── SETUP ───────────────────────────────────────────────────────────────────
+// ── SETUP ──────────────────────────────────────────────────────────────────
 
-async function loadClub() {
-  const codigo = document.getElementById('inp-codigo').value.trim().toUpperCase();
-  window._lastCodigo = codigo;
-  if (!codigo) { document.getElementById('err-club').textContent = 'Ingresá el código del club'; return; return; }
-  try {
-    const r = await fetch(`/api/club/${codigo}`);
-    if (!r.ok) { document.getElementById('err-club').textContent = 'Club no encontrado'; return; return; }
-    const data = await r.json();
+function loadClub() {
+  var cod = document.getElementById('inp-codigo').value.trim().toUpperCase();
+  var err = document.getElementById('err-club');
+  err.textContent = '';
+  if (!cod) { err.textContent = 'Ingresá el código del club'; return; }
+  _codigo = cod;
 
-    // Mostrar botones de cancha
-    const grid = document.getElementById('canchas-grid-cel');
-    grid.innerHTML = data.canchas.map(c => `
-      <button onclick="selCancha('${c.id}','${(c.nombre||'Cancha '+c.numero).replace(/'/g,'')}')"
-        style="padding:14px 8px;background:rgba(61,122,74,.2);border:1px solid rgba(61,122,74,.4);border-radius:10px;color:#F5F5F0;font-family:'Bebas Neue',sans-serif;font-size:22px;cursor:pointer;text-align:center;letter-spacing:1px">
-        <div style="font-size:28px;color:#E8D44D">${c.numero}</div>
-        <div style="font-size:10px;font-family:'Inter',sans-serif;color:rgba(245,245,240,.5);margin-top:2px">${c.nombre||'Cancha '+c.numero}</div>
-      </button>`).join('');
-
-    document.getElementById('canchas-btns').style.display = 'block';
-    document.getElementById('btn-cargar-wrap').style.display = 'none';
-    document.getElementById('inp-codigo').style.display = 'none';
-  } catch(e) { document.getElementById('err-club').textContent = 'Error conectando al servidor'; }
+  fetch('/api/club/'+cod)
+    .then(function(r){ return r.ok ? r.json() : null; })
+    .then(function(data){
+      if (!data) { document.getElementById('err-club').textContent='Club no encontrado'; return; }
+      var grid = document.getElementById('canchas-grid-cel');
+      var html = '';
+      for (var i=0; i<data.canchas.length; i++) {
+        var nom = data.canchas[i].nombre || ('Cancha '+data.canchas[i].numero);
+        html += '<button class="cancha-btn-cel" onclick="selCancha('+i+')">';
+        html += '<span class="cn">'+data.canchas[i].numero+'</span>';
+        html += '<span class="nom">'+nom+'</span></button>';
+      }
+      grid.innerHTML = html;
+      window._canchas = data.canchas;
+      document.getElementById('canchas-btns').style.display='block';
+      document.getElementById('btn-cargar-wrap').style.display='none';
+      document.getElementById('inp-codigo').style.display='none';
+    })
+    .catch(function(){ document.getElementById('err-club').textContent='Error conectando'; });
 }
 
-function volverCodigo() {
-  document.getElementById('canchas-btns').style.display = 'none';
-  document.getElementById('btn-cargar-wrap').style.display = 'block';
-  document.getElementById('inp-codigo').style.display = 'block';
-}
+function selCancha(i) {
+  var c = window._canchas[i];
+  canchaId = c.id;
+  var nom = c.nombre || ('Cancha '+c.numero);
 
-function selCancha(id, nombre) {
-  canchaId = id;
-  document.getElementById('sct-club').style.background = 'rgba(61,122,74,.1)';
-  document.getElementById('sct-club').style.borderColor = 'rgba(61,122,74,.4)';
-  document.getElementById('canchas-btns').style.display = 'none';
-  document.getElementById('btn-cargar-wrap').style.display = 'none';
-  document.getElementById('inp-codigo').style.display = 'none';
-  const div = document.createElement('div');
-  div.style.cssText = 'text-align:center;padding:8px;color:#7BC47F;font-size:13px;font-weight:600';
-  div.innerHTML = '✓ ' + nombre + ' <button onclick="volverCodigo()" style="background:none;border:none;color:rgba(245,245,240,.3);font-size:11px;cursor:pointer;margin-left:8px">cambiar</button>';
-  document.getElementById('sct-club').appendChild(div);
+  // Mostrar cancha seleccionada
+  document.getElementById('canchas-btns').style.display='none';
+  var div = document.getElementById('cancha-seleccionada');
+  div.style.display='block';
+  div.innerHTML='<div style="text-align:center;color:#7BC47F;font-size:13px;font-weight:600">✓ '+nom+
+    ' <button onclick="volverCodigo()" style="background:none;border:none;color:rgba(245,245,240,.3);font-size:11px;cursor:pointer;margin-left:8px">cambiar</button></div>';
 
-  // Verificar si hay partido activo en esta cancha y precargar nombres
-  var codigo = document.getElementById('inp-codigo').value || window._lastCodigo || '';
-  if (!codigo) codigo = window._lastCodigo || '';
-  fetch('/api/club/' + (window._lastCodigo || ''))
-    .then(function(r){ return r.ok ? r.json() : null; })
-    .catch(function(){ return null; });
-
-  // Precargar desde el estado del servidor
-  fetch('/api/club/' + (window._lastCodigo || '') + '/estado')
-    .then(function(r){ return r.ok ? r.json() : null; })
-    .then(function(data) {
-      if (!data) return;
-      // Buscar la cancha seleccionada
-      for (var i = 0; i < data.length; i++) {
-        if (data[i].cancha.id === id && data[i].partido) {
-          var p = data[i].partido;
-          // Precargar nombres si vienen del encargado
-          if (p.equipo1 && p.equipo1 !== 'Pareja 1') {
-            document.getElementById('p1n').value = p.equipo1;
-          }
-          if (p.equipo2 && p.equipo2 !== 'Pareja 2') {
-            document.getElementById('p2n').value = p.equipo2;
-          }
-          // Si ya hay partido activo, conectar directo
-          if (p.estado === 'en_curso') {
-            document.getElementById('match-setup').style.display = 'none';
-            document.getElementById('btn-empezar').style.display = 'none';
-            var info = document.createElement('div');
-            info.style.cssText = 'text-align:center;padding:10px;background:rgba(61,122,74,.2);border-radius:8px;margin-top:8px';
-            info.innerHTML = '<div style="color:#7BC47F;font-size:13px;font-weight:600">Partido en curso</div>' +
-              '<div style="color:rgba(245,245,240,.5);font-size:11px;margin-top:2px">' + p.equipo1 + ' vs ' + p.equipo2 + '</div>';
-            document.getElementById('sct-club').appendChild(info);
-            // Conectar WS directo
-            var cfg2 = { ctrlEnabled: false };
-            document.getElementById('setup-screen').style.display = 'none';
-            document.getElementById('game-screen').style.display = 'block';
-            document.getElementById('btn-cfg').style.display = 'block';
-            connectWS();
-            return;
-          }
+  // Consultar si hay partido activo en esta cancha
+  fetch('/api/club/'+_codigo+'/estado')
+    .then(function(r){ return r.ok ? r.json() : []; })
+    .then(function(data){
+      _partidoExiste = false;
+      for (var j=0; j<data.length; j++) {
+        if (data[j].cancha.id===canchaId && data[j].partido) {
+          var p = data[j].partido;
+          // Precargar nombres del encargado
+          document.getElementById('p1n').value = p.equipo1 || 'Pareja 1';
+          document.getElementById('p2n').value = p.equipo2 || 'Pareja 2';
+          document.getElementById('ss0').textContent = p.equipo1 || 'Pareja 1';
+          document.getElementById('ss1').textContent = p.equipo2 || 'Pareja 2';
+          _partidoExiste = true;
+          // Mostrar aviso
+          var pe = document.getElementById('partido-existente');
+          pe.style.display='block';
+          pe.textContent='Partido creado por el encargado: '+p.equipo1+' vs '+p.equipo2;
           break;
         }
       }
+      document.getElementById('match-setup').style.display='block';
+      document.getElementById('btn-empezar').style.display='block';
     })
-    .catch(function(){});
+    .catch(function(){
+      document.getElementById('match-setup').style.display='block';
+      document.getElementById('btn-empezar').style.display='block';
+    });
+}
 
-  document.getElementById('match-setup').style.display = 'block';
-  document.getElementById('btn-empezar').style.display = 'block';
+function volverCodigo() {
+  canchaId=null; _partidoExiste=false;
+  document.getElementById('canchas-btns').style.display='none';
+  document.getElementById('btn-cargar-wrap').style.display='block';
+  document.getElementById('inp-codigo').style.display='block';
+  document.getElementById('cancha-seleccionada').style.display='none';
+  document.getElementById('match-setup').style.display='none';
+  document.getElementById('btn-empezar').style.display='none';
+  document.getElementById('partido-existente').style.display='none';
 }
 
 function selSrv(t) {
-  serving = t;
-  document.getElementById('ss0').className = 'srv-opt' + (t===0?' sel':'');
-  document.getElementById('ss1').className = 'srv-opt' + (t===1?' sel':'');
+  serving=t;
+  document.getElementById('ss0').className='srv-opt'+(t===0?' sel':'');
+  document.getElementById('ss1').className='srv-opt'+(t===1?' sel':'');
 }
 
 async function startGame() {
-  const codigo = document.getElementById('inp-codigo').value.trim().toUpperCase().toUpperCase();
-  // canchaId ya está seteado por selCancha()
-  if (!canchaId) { document.getElementById('err-club').textContent = 'Seleccioná una cancha'; return; return; }
-  const p1 = document.getElementById('p1n').value || 'Pareja 1';
-  const p2 = document.getElementById('p2n').value || 'Pareja 2';
-  const oro = document.getElementById('tog-oro').checked;
+  if (!canchaId) { document.getElementById('err-club').textContent='Seleccioná una cancha'; return; }
+  var p1 = document.getElementById('p1n').value||'Pareja 1';
+  var p2 = document.getElementById('p2n').value||'Pareja 2';
+  var oro = document.getElementById('tog-oro').checked;
 
-  const r = await fetch('/api/partido', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      clubCodigo: codigo, canchaId,
-      equipo1Nombre: p1, equipo2Nombre: p2,
-      puntoDeOro: oro, serving
-    })
-  });
+  // Solo crear partido si no existe uno del encargado
+  if (!_partidoExiste) {
+    var r = await fetch('/api/partido',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({clubCodigo:_codigo,canchaId:canchaId,equipo1Nombre:p1,equipo2Nombre:p2,puntoDeOro:oro,serving:serving})
+    });
+    if (!r.ok) { document.getElementById('err-club').textContent='Error iniciando partido'; return; }
+  }
 
-  if (!r.ok) { document.getElementById('err-club').textContent = 'Error iniciando partido'; return; }
-  const { state } = await r.json();
-  clubCodigo = codigo;
-
-  document.getElementById('setup-screen').style.display = 'none';
-  document.getElementById('game-screen').style.display = 'block';
-  document.getElementById('btn-cfg').style.display = 'block';
-  document.getElementById('mb-oro-w').style.display = oro ? 'block' : 'none';
-
+  document.getElementById('setup-screen').style.display='none';
+  document.getElementById('game-screen').style.display='block';
+  document.getElementById('btn-cfg').style.display='block';
+  document.getElementById('mb-oro-w').style.display=oro?'block':'none';
   connectWS();
-  if (state) renderState(state);
 }
 
-// ─── WEBSOCKET ────────────────────────────────────────────────────────────────
+// ── WEBSOCKET ──────────────────────────────────────────────────────────────
 
 function connectWS() {
-  ws = new WebSocket(`${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}`);
-  ws.onopen = () => {
-    ws.send(JSON.stringify({ type: 'JOIN_CANCHA', clubCodigo, canchaId }));
-    setWS(true, 'Conectado · TV sincronizada');
+  ws = new WebSocket(WSU);
+  ws.onopen = function() {
+    ws.send(JSON.stringify({type:'JOIN_CANCHA',clubCodigo:_codigo,canchaId:canchaId}));
+    setWS(true,'Conectado · TV sincronizada');
   };
-  ws.onmessage = (e) => {
-    const msg = JSON.parse(e.data);
-    if (msg.type === 'STATE_UPDATE' || msg.type === 'INIT') {
-      currentState = msg.state;
+  ws.onmessage = function(e) {
+    var msg = JSON.parse(e.data);
+    if (msg.type==='STATE_UPDATE'||msg.type==='INIT') {
       if (msg.state) renderState(msg.state);
     }
   };
-  ws.onclose = () => {
-    setWS(false, 'Reconectando…');
-    setTimeout(connectWS, 3000);
-  };
-  ws.onerror = () => ws.close();
+  ws.onclose = function() { setWS(false,'Reconectando…'); setTimeout(connectWS,3000); };
+  ws.onerror = function() { ws.close(); };
 }
 
-function setWS(ok, txt) {
-  document.getElementById('ws-dot').className = 'ws-dot' + (ok ? '' : ' off');
-  document.getElementById('ws-txt').textContent = txt;
+function setWS(ok,txt) {
+  document.getElementById('ws-dot').className='ws-dot'+(ok?'':' off');
+  document.getElementById('ws-txt').textContent=txt;
 }
 
-// ─── ACCIONES ────────────────────────────────────────────────────────────────
+// ── ACCIONES ──────────────────────────────────────────────────────────────
 
 function sendPoint(team) {
-  if (!ws || ws.readyState !== 1) return;
+  if (!ws||ws.readyState!==1) return;
   showFlash(team);
-  ws.send(JSON.stringify({ type: 'POINT', canchaId, team }));
+  ws.send(JSON.stringify({type:'POINT',canchaId:canchaId,team:team}));
 }
 
 function sendUndo() {
-  if (!ws || ws.readyState !== 1) return;
-  ws.send(JSON.stringify({ type: 'UNDO', canchaId }));
+  if (!ws||ws.readyState!==1) return;
+  ws.send(JSON.stringify({type:'UNDO',canchaId:canchaId}));
 }
 
 function showFlash(t) {
-  const el = document.getElementById('flash');
-  const name = t === 0
-    ? (document.getElementById('pn0').textContent)
-    : (document.getElementById('pn1').textContent);
-  el.textContent = '+1  ' + name;
-  el.className = `flash f${t} show`;
-  const p = document.getElementById('panel-' + t);
-  p.classList.add('flash' + t);
-  if (flashT) clearTimeout(flashT);
-  flashT = setTimeout(() => {
-    el.className = 'flash';
-    p.classList.remove('flash0', 'flash1');
-  }, 500);
+  var el=document.getElementById('flash');
+  var name=t===0?document.getElementById('pn0').textContent:document.getElementById('pn1').textContent;
+  el.textContent='+1  '+name;
+  el.className='flash f'+t+' show';
+  var p=document.getElementById('panel-'+t);
+  p.classList.add('flash'+t);
+  if(flashT) clearTimeout(flashT);
+  flashT=setTimeout(function(){el.className='flash';p.classList.remove('flash0','flash1');},500);
 }
 
-// ─── RENDER ───────────────────────────────────────────────────────────────────
+// ── RENDER ────────────────────────────────────────────────────────────────
 
 function renderState(s) {
-  if (!s) return;
-  currentState = s;
-
-  document.getElementById('pn0').textContent = s.equipo1;
-  document.getElementById('pn1').textContent = s.equipo2;
-
-  for (let t = 0; t < 2; t++) {
-    const sc = s.displayScore[t];
-    const el = document.getElementById('sc' + t);
-    el.textContent = sc === 'ORO' ? '🥇' : sc;
-    el.className = 'sbig' + (sc==='AD'?' adv':'') + (sc==='ORO'?' oro':'');
-
-    const p = s.pts[t], o = s.pts[1-t];
-    let lbl = '';
-    if (!s.puntosOro && p >= 3 && o >= 3) {
-      if (p === o) lbl = 'DEUCE';
-      else if (p > o) lbl = 'VENTAJA';
-    }
-    document.getElementById('sl' + t).textContent = lbl;
-    document.getElementById('panel-' + t).className = 'tp' + (s.serving === t ? ' is-serving' : '');
-
-    for (let i = 0; i < 3; i++) {
-      const sd = document.getElementById('sd' + t + i);
-      if (i < s.setHistory.length) {
-        const h = s.setHistory[i];
-        const v = t === 0 ? h.e1 : h.e2;
-        const won = t === 0 ? h.e1 > h.e2 : h.e2 > h.e1;
-        sd.textContent = v;
-        sd.className = 'sdot' + (won ? ' won' : '');
-      } else {
-        sd.textContent = '—';
-        sd.className = 'sdot';
-      }
+  document.getElementById('pn0').textContent=s.equipo1;
+  document.getElementById('pn1').textContent=s.equipo2;
+  var PT=['0','15','30','40'];
+  for (var t=0;t<2;t++) {
+    var sc=s.displayScore[t];
+    var el=document.getElementById('sc'+t);
+    el.textContent=sc==='ORO'?'🥇':sc;
+    el.className='sbig'+(sc==='AD'?' adv':'')+(sc==='ORO'?' oro':'');
+    var p=s.pts[t],o=s.pts[1-t],lbl='';
+    if(!s.puntosOro&&p>=3&&o>=3){if(p===o)lbl='DEUCE';else if(p>o)lbl='VENTAJA';}
+    document.getElementById('sl'+t).textContent=lbl;
+    document.getElementById('panel-'+t).className='tp'+(s.serving===t?' is-serving':'');
+    for(var i=0;i<3;i++){
+      var sd=document.getElementById('sd'+t+i);
+      if(i<s.setHistory.length){var h=s.setHistory[i];var v=t===0?h.e1:h.e2;var won=t===0?h.e1>h.e2:h.e2>h.e1;sd.textContent=v;sd.className='sdot'+(won?' won':'');}
+      else{sd.textContent='—';sd.className='sdot';}
     }
   }
-
-  document.getElementById('mb-set').textContent = s.currentSet;
-  document.getElementById('mb-games').textContent = s.games[0] + ' — ' + s.games[1];
-  document.getElementById('mb-match').textContent = s.sets[0] + ' — ' + s.sets[1];
-  document.getElementById('oro-banner').className = 'oro-banner' + (s.isOro ? ' show' : '');
-
-  const hp = document.getElementById('hist-panel');
-  if (s.setHistory.length > 0) {
-    hp.className = 'hist-panel show';
-    document.getElementById('hist-list').innerHTML = s.setHistory.map((h, i) =>
-      `<div class="hist-row">
-        <span style="color:rgba(245,245,240,.4);font-size:11px">Set ${i+1}</span>
-        <span style="font-weight:600;color:#E8D44D">${h.e1} — ${h.e2}</span>
-        <span style="color:rgba(245,245,240,.35);font-size:11px">${h.e1>h.e2?s.equipo1:s.equipo2}</span>
-      </div>`).join('');
-  } else {
-    hp.className = 'hist-panel';
-  }
-
-  if (s.estado === 'finalizado' && s.ganador !== undefined) {
-    const wn = s.ganador === 0 ? s.equipo1 : s.equipo2;
-    document.getElementById('w-name').textContent = wn;
-    document.getElementById('w-sub').textContent = 'Ganaron el partido · ' +
-      s.setHistory.map(h => h.e1 + '-' + h.e2).join(', ');
-    document.getElementById('winner-overlay').className = 'winner-overlay show';
+  document.getElementById('mb-set').textContent=s.currentSet;
+  document.getElementById('mb-games').textContent=s.games[0]+' — '+s.games[1];
+  document.getElementById('mb-match').textContent=s.sets[0]+' — '+s.sets[1];
+  document.getElementById('oro-banner').className='oro-banner'+(s.isOro?' show':'');
+  var hp=document.getElementById('hist-panel');
+  if(s.setHistory.length>0){
+    hp.className='hist-panel show';
+    var html='';
+    for(var j=0;j<s.setHistory.length;j++){
+      var h2=s.setHistory[j];
+      html+='<div class="hist-row"><span style="color:rgba(245,245,240,.4);font-size:11px">Set '+(j+1)+'</span><span style="font-weight:600;color:#E8D44D">'+h2.e1+' — '+h2.e2+'</span><span style="color:rgba(245,245,240,.35);font-size:11px">'+(h2.e1>h2.e2?s.equipo1:s.equipo2)+'</span></div>';
+    }
+    document.getElementById('hist-list').innerHTML=html;
+  } else {hp.className='hist-panel';}
+  if(s.estado==='finalizado'&&s.ganador!==undefined){
+    var wn=s.ganador===0?s.equipo1:s.equipo2;
+    document.getElementById('w-name').textContent=wn;
+    document.getElementById('w-sub').textContent='Ganaron el partido';
+    document.getElementById('winner-overlay').className='winner-overlay show';
   }
 }
 
-function goSetup() {
-  if (ws) ws.close();
-  document.getElementById('setup-screen').style.display = 'block';
-  document.getElementById('game-screen').style.display = 'none';
-  document.getElementById('btn-cfg').style.display = 'none';
+function goSetup(){
+  if(ws) ws.close();
+  document.getElementById('setup-screen').style.display='block';
+  document.getElementById('game-screen').style.display='none';
+  document.getElementById('btn-cfg').style.display='none';
 }
 
-function resetAll() {
-  if (ws) ws.close();
-  document.getElementById('winner-overlay').className = 'winner-overlay';
-  document.getElementById('setup-screen').style.display = 'block';
-  document.getElementById('game-screen').style.display = 'none';
-  document.getElementById('btn-cfg').style.display = 'none';
+function resetAll(){
+  if(ws) ws.close();
+  canchaId=null; _partidoExiste=false; _codigo='';
+  document.getElementById('winner-overlay').className='winner-overlay';
+  document.getElementById('setup-screen').style.display='block';
+  document.getElementById('game-screen').style.display='none';
+  document.getElementById('btn-cfg').style.display='none';
+  document.getElementById('match-setup').style.display='none';
+  document.getElementById('btn-empezar').style.display='none';
+  document.getElementById('canchas-btns').style.display='none';
+  document.getElementById('btn-cargar-wrap').style.display='block';
+  document.getElementById('inp-codigo').style.display='block';
+  document.getElementById('cancha-seleccionada').style.display='none';
+  document.getElementById('partido-existente').style.display='none';
+  document.getElementById('err-club').textContent='';
 }
-
-// Cargar club al inicio
-loadClub();
 </script>
 </body>
 </html>
