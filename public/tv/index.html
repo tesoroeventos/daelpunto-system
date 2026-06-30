@@ -239,28 +239,42 @@
 <div class="flash" id="flash"></div>
 
 <script>
-const WSU = `${location.protocol==='https:'?'wss':'ws'}://${location.host}`;
-let ws, canchaId, canchaNombre, flashT;
+var WSU = (location.protocol==='https:' ? 'wss' : 'ws') + '://' + location.host;
+var ws, canchaId, canchaNombre, flashT;
 
-async function cargar() {
-  const cod = document.getElementById('inp-cod').value.trim().toUpperCase();
-  const err = document.getElementById('s-err');
+function cargar() {
+  var cod = document.getElementById('inp-cod').value.trim().toUpperCase();
+  var err = document.getElementById('s-err');
   err.textContent = '';
-  if (!cod) { err.textContent = 'Ingresá el código del club'; return; }
-  try {
-    const r = await fetch(`/api/club/${cod}`);
-    if (!r.ok) { err.textContent = 'Club no encontrado'; return; }
-    const { canchas } = await r.json();
-    const g = document.getElementById('canchas-grid');
-    g.innerHTML = canchas.map(c =>
-      `<button class="c-btn" onclick="conectar('${c.id}','${(c.nombre||'Cancha '+c.numero).replace(/'/g,'')}')">
-        <span class="num">${c.numero}</span>
-        <span class="nom">${c.nombre||'Cancha '+c.numero}</span>
-      </button>`).join('');
-    document.getElementById('step-1').style.display = 'none';
-    document.getElementById('step-2').style.display = 'flex';
-    setTimeout(()=>{ const f=g.querySelector('.c-btn'); if(f) f.focus(); }, 150);
-  } catch { err.textContent = 'Error conectando'; }
+  if (!cod) { err.textContent = 'Ingresa el codigo del club'; return; }
+  
+  fetch('/api/club/' + cod)
+    .then(function(r) {
+      if (!r.ok) { err.textContent = 'Club no encontrado'; return null; }
+      return r.json();
+    })
+    .then(function(data) {
+      if (!data) return;
+      var canchas = data.canchas;
+      var g = document.getElementById('canchas-grid');
+      var html = '';
+      for (var i = 0; i < canchas.length; i++) {
+        var c = canchas[i];
+        var nom = (c.nombre || 'Cancha ' + c.numero).replace(/'/g, '');
+        html += '<button class="c-btn" onclick="conectar('' + c.id + '','' + nom + '')">';
+        html += '<span class="num">' + c.numero + '</span>';
+        html += '<span class="nom">' + nom + '</span>';
+        html += '</button>';
+      }
+      g.innerHTML = html;
+      document.getElementById('step-1').style.display = 'none';
+      document.getElementById('step-2').style.display = 'flex';
+      var f = g.querySelector('.c-btn');
+      if (f) f.focus();
+    })
+    .catch(function() {
+      err.textContent = 'Error conectando al servidor';
+    });
 }
 
 function volver() {
@@ -278,19 +292,19 @@ function conectar(id, nombre) {
 
 function connectWS() {
   ws = new WebSocket(WSU);
-  ws.onopen = () => {
-    ws.send(JSON.stringify({type:'JOIN_TV',canchaId}));
+  ws.onopen = function() {
+    ws.send(JSON.stringify({type:'JOIN_TV',canchaId:canchaId}));
     dot(true,'En vivo');
   };
-  ws.onmessage = (e) => {
-    const m = JSON.parse(e.data);
+  ws.onmessage = function(e) {
+    var m = JSON.parse(e.data);
     if (m.type==='INIT') render(m.state);
-    else if (m.type==='STATE_UPDATE') { flash(m.state); render(m.state); }
+    else if (m.type==='STATE_UPDATE') { doFlash(m.state); render(m.state); }
     else if (m.type==='PARTIDO_INICIADO') render(m.state);
     else if (m.type==='PARTIDO_FINALIZADO') empty();
   };
-  ws.onclose = () => { dot(false,'Reconectando…'); setTimeout(connectWS,3000); };
-  ws.onerror = () => ws.close();
+  ws.onclose = function() { dot(false,'Reconectando...'); setTimeout(connectWS,3000); };
+  ws.onerror = function() { ws.close(); };
 }
 
 function dot(ok,txt) {
