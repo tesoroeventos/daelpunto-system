@@ -297,115 +297,85 @@ function conectar(id, nombre) {
 function connectWS() {
   ws = new WebSocket(WSU);
   ws.onopen = function() {
-    var msg = {type:'JOIN_TV',canchaId:canchaId};
-    ws.send(JSON.stringify(msg));
+    ws.send(JSON.stringify({type:'JOIN_TV',canchaId:canchaId}));
     dot(true,'En vivo');
   };
-  var _msgCount = 0;
   ws.onmessage = function(e) {
-    _msgCount++;
     var m = JSON.parse(e.data);
-    dot(true, 'En vivo ['+canchaId+'] msg#'+_msgCount+' type:'+m.type);
-    if (m.type==='INIT') {
-      render(m.state);
-    }
-    else if (m.type==='STATE_UPDATE') { 
-      doFlash(m.state); 
-      render(m.state); 
-    }
+    if (m.type==='INIT') render(m.state);
+    else if (m.type==='STATE_UPDATE') { doFlash(m.state); render(m.state); }
     else if (m.type==='PARTIDO_INICIADO') render(m.state);
     else if (m.type==='PARTIDO_FINALIZADO') empty();
   };
-  ws.onclose = function(e) { 
-    dot(false,'Desconectado ('+e.code+') - reconectando...');
-    setTimeout(connectWS,2000); 
-  };
-  ws.onerror = function(e) { 
-    dot(false,'Error WS');
-    ws.close(); 
-  };
+  ws.onclose = function() { dot(false,'Reconectando...'); setTimeout(connectWS,3000); };
+  ws.onerror = function() { ws.close(); };
 }
 
 function dot(ok,txt) {
   document.getElementById('hdr-dot').className='hdr-dot'+(ok?'':' off');
-  document.getElementById('hdr-txt').textContent=txt+' ['+canchaId+']';
+  document.getElementById('hdr-txt').textContent=txt;
 }
 
 function empty() {
-  document.getElementById('score-area').innerHTML=`
-    <div class="empty">
-      <div class="empty-big">READY</div>
-      <div class="empty-sub">Esperando partido…</div>
-    </div>`;
+  document.getElementById('score-area').innerHTML = '<div class="empty"><div class="empty-big">READY</div><div class="empty-sub">Esperando partido...</div></div>';
+}
+
+function makeDots(s, t) {
+  var html = '';
+  for (var i=0; i<3; i++) {
+    var h = s.setHistory[i];
+    var won = h && (t===0 ? h.e1>h.e2 : h.e2>h.e1);
+    var val = h ? (t===0 ? h.e1 : h.e2) : '\u2014';
+    html += '<div class="t-dot' + (h ? (won?' won':'') : '') + '">' + val + '</div>';
+  }
+  return html;
+}
+
+function makeLbl(s, t) {
+  if (s.puntosOro || s.pts[0]<3 || s.pts[1]<3) return '';
+  if (s.pts[0]===s.pts[1]) return 'DEUCE';
+  return s.pts[t]>s.pts[1-t] ? 'VENTAJA' : '';
 }
 
 function render(s) {
   if (!s) { empty(); return; }
-  const sc0=s.displayScore[0], sc1=s.displayScore[1];
+  var sc0 = s.displayScore[0];
+  var sc1 = s.displayScore[1];
 
-  const dots = t => [0,1,2].map(i => {
-    const h=s.setHistory[i];
-    const w=h&&(t===0?h.e1>h.e2:h.e2>h.e1);
-    return `<div class="t-dot${h?(w?' won':''):''}">${h?(t===0?h.e1:h.e2):'—'}</div>`;
-  }).join('');
+  document.getElementById('oro-banner').className = 'oro-banner' + (s.isOro ? ' show' : '');
 
-  const lbl = t => {
-    if (s.puntosOro||s.pts[0]<3||s.pts[1]<3) return '';
-    if (s.pts[0]===s.pts[1]) return 'DEUCE';
-    return s.pts[t]>s.pts[1-t]?'VENTAJA':'';
-  };
+  var hist = '';
+  for (var i=0; i<s.setHistory.length; i++) {
+    var h = s.setHistory[i];
+    hist += '<span>Set '+(i+1)+': '+h.e1+'-'+h.e2+'</span>';
+  }
 
-  const hist = s.setHistory.map((h,i)=>`<span>Set ${i+1}: ${h.e1}–${h.e2}</span>`).join('');
-  document.getElementById('oro-banner').className='oro-banner'+(s.isOro?' show':'');
+  var html = '<div class="match-row">';
 
-  document.getElementById('score-area').innerHTML = `
-    <div class="match-row">
-      <div class="team ${s.serving===0?'srv':''}">
-        <div class="t-name">${s.equipo1}</div>
-        <div class="t-score ${sc0==='AD'?'adv':''} ${sc0==='ORO'?'oro':''}">${sc0==='ORO'?'🥇':sc0}</div>
-        <div class="t-lbl">${lbl(0)}</div>
-        <div class="t-sets">${dots(0)}</div>
-      </div>
+  html += '<div class="team ' + (s.serving===0 ? 'srv' : '') + '">';
+  html += '<div class="t-name">' + s.equipo1 + '</div>';
+  html += '<div class="t-score' + (sc0==='AD'?' adv':'') + (sc0==='ORO'?' oro':'') + '">' + (sc0==='ORO'?'&#127919;':sc0) + '</div>';
+  html += '<div class="t-lbl">' + makeLbl(s,0) + '</div>';
+  html += '<div class="t-sets">' + makeDots(s,0) + '</div>';
+  html += '</div>';
 
-      <div class="center">
-        <div class="c-lbl">Set ${s.currentSet}</div>
-        <div class="c-games">
-          ${s.games[0]}<span class="c-sep">—</span>${s.games[1]}
-        </div>
-        <div class="c-serve">${s.serving===0?'◀':'▶'}</div>
-        <div class="c-lbl">Saque</div>
-      </div>
+  html += '<div class="center">';
+  html += '<div class="c-lbl">Set ' + s.currentSet + '</div>';
+  html += '<div class="c-games">' + s.games[0] + '<span class="c-sep">-</span>' + s.games[1] + '</div>';
+  html += '<div class="c-serve">' + (s.serving===0 ? '&#9664;' : '&#9654;') + '</div>';
+  html += '<div class="c-lbl">Saque</div>';
+  html += '</div>';
 
-      <div class="team ${s.serving===1?'srv':''}">
-        <div class="t-name">${s.equipo2}</div>
-        <div class="t-score ${sc1==='AD'?'adv':''} ${sc1==='ORO'?'oro':''}">${sc1==='ORO'?'🥇':sc1}</div>
-        <div class="t-lbl">${lbl(1)}</div>
-        <div class="t-sets">${dots(1)}</div>
-      </div>
-    </div>
+  html += '<div class="team ' + (s.serving===1 ? 'srv' : '') + '">';
+  html += '<div class="t-name">' + s.equipo2 + '</div>';
+  html += '<div class="t-score' + (sc1==='AD'?' adv':'') + (sc1==='ORO'?' oro':'') + '">' + (sc1==='ORO'?'&#127919;':sc1) + '</div>';
+  html += '<div class="t-lbl">' + makeLbl(s,1) + '</div>';
+  html += '<div class="t-sets">' + makeDots(s,1) + '</div>';
+  html += '</div>';
 
-    <div class="ftr">
-      <div class="ftr-hist">${hist}</div>
-      <div class="ftr-time" id="ftr-time"></div>
-    </div>`;
+  html += '</div>';
+  html += '<div class="ftr"><div class="ftr-hist">' + hist + '</div><div class="ftr-time" id="ftr-time"></div></div>';
 
+  document.getElementById('score-area').innerHTML = html;
   tick();
 }
-
-function flash(s) {
-  const el=document.getElementById('flash');
-  const t=s.pts[0]>=s.pts[1]?0:1;
-  el.textContent='+1  '+(t===0?s.equipo1:s.equipo2);
-  el.className=`flash f${t} show`;
-  if(flashT) clearTimeout(flashT);
-  flashT=setTimeout(()=>el.className='flash',800);
-}
-
-function tick() {
-  const el=document.getElementById('ftr-time');
-  if(el) el.textContent=new Date().toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'});
-}
-setInterval(tick,30000);
-</script>
-</body>
-</html>
