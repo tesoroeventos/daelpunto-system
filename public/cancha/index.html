@@ -300,15 +300,14 @@ async function startGame() {
   var p2 = document.getElementById('p2n').value||'Pareja 2';
   var oro = document.getElementById('tog-oro').checked;
 
-  // Solo crear partido si no existe uno del encargado
-  if (!_partidoExiste) {
-    var r = await fetch('/api/partido',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({clubCodigo:_codigo,canchaId:canchaId,equipo1Nombre:p1,equipo2Nombre:p2,puntoDeOro:oro,serving:serving})
-    });
-    if (!r.ok) { document.getElementById('err-club').textContent='Error iniciando partido'; return; }
-  }
+  // Si ya existe partido del encargado, solo actualizar el serving
+  // Si no existe, crearlo
+  var r = await fetch('/api/partido',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({clubCodigo:_codigo,canchaId:canchaId,equipo1Nombre:p1,equipo2Nombre:p2,puntoDeOro:oro,serving:serving,soloServing:_partidoExiste})
+  });
+  if (!r.ok && !_partidoExiste) { document.getElementById('err-club').textContent='Error iniciando partido'; return; }
 
   document.getElementById('setup-screen').style.display='none';
   document.getElementById('game-screen').style.display='block';
