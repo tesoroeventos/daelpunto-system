@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Da El Punto — Torneo</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&display=swap');
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{width:100%;height:100%;overflow:hidden;background:#0a1a0d;color:#F5F5F0;font-family:'Inter',sans-serif}
+
+    /* SETUP */
+    #setup{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;gap:20px;padding:40px}
+    #setup h1{font-family:'Bebas Neue',sans-serif;font-size:64px;color:#E8D44D;letter-spacing:4px}
+    .s-sub{font-size:16px;color:rgba(245,245,240,.4);letter-spacing:2px;text-transform:uppercase}
+    .s-lbl{font-size:12px;color:rgba(245,245,240,.4);letter-spacing:1px;text-transform:uppercase;width:100%;max-width:480px}
+    .s-inp{background:rgba(255,255,255,.07);border:2px solid rgba(255,255,255,.15);border-radius:12px;color:#F5F5F0;font-size:28px;font-weight:700;padding:14px 20px;outline:none;width:100%;max-width:480px;text-align:center;letter-spacing:4px;font-family:'Inter',sans-serif}
+    .s-inp:focus{border-color:rgba(232,212,77,.7)}
+    .s-btn{background:#3D7A4A;border:none;border-radius:12px;color:#F5F5F0;font-size:20px;font-weight:600;padding:16px 0;width:100%;max-width:480px;cursor:pointer;font-family:'Inter',sans-serif}
+    .s-btn:hover{background:#4a9058}
+    .s-err{color:#ff6b6b;font-size:14px;text-align:center;min-height:20px}
+    .torneos-lista{width:100%;max-width:600px;display:flex;flex-direction:column;gap:8px}
+    .torneo-item{background:rgba(255,255,255,.04);border:2px solid rgba(255,255,255,.1);border-radius:12px;padding:16px 20px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:.15s}
+    .torneo-item:hover,.torneo-item:focus{border-color:#E8D44D;background:rgba(232,212,77,.06);outline:none}
+    .torneo-nombre{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:1px}
+    .torneo-info{font-size:12px;color:rgba(245,245,240,.4);margin-top:2px}
+    .torneo-estado{font-size:11px;font-weight:600;padding:3px 8px;border-radius:4px;letter-spacing:1px;text-transform:uppercase}
+    .torneo-estado.en_curso{background:rgba(61,122,74,.2);color:#7BC47F;border:1px solid rgba(61,122,74,.4)}
+    .torneo-estado.pendiente{background:rgba(255,255,255,.06);color:rgba(245,245,240,.4);border:1px solid rgba(255,255,255,.1)}
+    .torneo-estado.finalizado{background:rgba(232,212,77,.1);color:#E8D44D;border:1px solid rgba(232,212,77,.3)}
+    .btn-back{background:transparent;border:1px solid rgba(255,255,255,.2);border-radius:8px;color:rgba(245,245,240,.4);font-size:14px;padding:10px 24px;cursor:pointer;font-family:'Inter',sans-serif}
+
+    /* BRACKET */
+    #bracket-screen{display:none;width:100%;height:100%;flex-direction:column}
+    .bkt-header{background:#0d2211;border-bottom:3px solid #3D7A4A;padding:10px 40px;display:flex;align-items:center;justify-content:space-between;height:56px;flex-shrink:0}
+    .bkt-logo{font-family:'Bebas Neue',sans-serif;font-size:28px;color:#E8D44D;letter-spacing:2px}
+    .bkt-nombre{font-family:'Bebas Neue',sans-serif;font-size:26px;color:rgba(245,245,240,.8);letter-spacing:2px}
+    .bkt-status{display:flex;align-items:center;gap:8px;font-size:13px;color:rgba(245,245,240,.4)}
+    .bkt-dot{width:10px;height:10px;border-radius:50%;background:#3D7A4A}
+    .bkt-dot.off{background:rgba(255,255,255,.2)}
+
+    .bkt-body{flex:1;overflow:auto;padding:24px 32px;display:flex;align-items:flex-start;justify-content:center;gap:0}
+
+    /* Rondas */
+    .ronda{display:flex;flex-direction:column;justify-content:space-around;min-width:200px;position:relative}
+    .ronda-titulo{font-size:11px;color:rgba(245,245,240,.3);letter-spacing:2px;text-transform:uppercase;text-align:center;margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.06)}
+
+    /* Partido en bracket */
+    .partido-bracket{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;overflow:hidden;margin:8px 12px;transition:.2s;position:relative}
+    .partido-bracket.con-ganador{border-color:rgba(61,122,74,.4)}
+    .equipo-bracket{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;min-height:44px;gap:8px}
+    .equipo-bracket:first-child{border-bottom:1px solid rgba(255,255,255,.06)}
+    .equipo-bracket.ganador{background:rgba(61,122,74,.15)}
+    .equipo-bracket.ganador .eq-nombre{color:#E8D44D;font-weight:600}
+    .eq-seed{font-size:10px;color:rgba(245,245,240,.25);width:16px;text-align:center;flex-shrink:0}
+    .eq-nombre{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;color:rgba(245,245,240,.7);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .eq-nombre.vacio{color:rgba(245,245,240,.2);font-size:14px;font-family:'Inter',sans-serif}
+    .eq-cancha{font-size:10px;color:var(--green,#3D7A4A);position:absolute;top:4px;right:8px;letter-spacing:1px}
+
+    /* Conector entre rondas */
+    .conector{width:24px;display:flex;align-items:center;justify-content:center;align-self:stretch}
+
+    /* Campeón */
+    .campeon-box{display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:32px;text-align:center}
+    .campeon-box.show{display:flex}
+    .campeon-trophy{font-size:64px}
+    .campeon-titulo{font-family:'Bebas Neue',sans-serif;font-size:20px;color:rgba(245,245,240,.4);letter-spacing:3px}
+    .campeon-nombre{font-family:'Bebas Neue',sans-serif;font-size:56px;color:#E8D44D;letter-spacing:4px;line-height:1}
+
+    /* Próximos partidos bar */
+    .proximos{background:rgba(0,0,0,.3);border-top:1px solid rgba(255,255,255,.06);padding:8px 32px;display:flex;align-items:center;gap:24px;flex-shrink:0;overflow-x:auto;height:48px}
+    .proximos-lbl{font-size:11px;color:rgba(245,245,240,.3);letter-spacing:2px;text-transform:uppercase;flex-shrink:0}
+    .proximo-item{display:flex;align-items:center;gap:8px;font-size:13px;color:rgba(245,245,240,.6);flex-shrink:0;padding:4px 12px;background:rgba(255,255,255,.04);border-radius:6px;border:1px solid rgba(255,255,255,.08)}
+    .proximo-cancha{color:#E8D44D;font-weight:600;font-size:11px}
+  </style>
+</head>
+<body>
+
+<!-- SETUP -->
+<div id="setup">
+  <h1>Da El Punto</h1>
+  <div class="s-sub">Bracket de torneo</div>
+
+  <div id="step-cod" style="display:flex;flex-direction:column;align-items:center;gap:16px;width:100%">
+    <div class="s-lbl">Código del club</div>
+    <input class="s-inp" id="inp-cod" type="text" placeholder="WPC"
+      oninput="this.value=this.value.toUpperCase()"
+      onkeydown="if(event.key==='Enter') cargarTorneos()"/>
+    <div class="s-err" id="s-err"></div>
+    <button class="s-btn" onclick="cargarTorneos()">Ver torneos →</button>
+  </div>
+
+  <div id="step-torneos" style="display:none;flex-direction:column;align-items:center;gap:16px;width:100%">
+    <div class="s-sub">Seleccioná el torneo</div>
+    <div class="torneos-lista" id="torneos-lista"></div>
+    <button class="btn-back" onclick="volverCod()">← Volver</button>
+  </div>
+</div>
+
+<!-- BRACKET -->
+<div id="bracket-screen">
+  <div class="bkt-header">
+    <div class="bkt-logo">Da El Punto</div>
+    <div class="bkt-nombre" id="bkt-nombre">—</div>
+    <div class="bkt-status">
+      <div class="bkt-dot off" id="bkt-dot"></div>
+      <span id="bkt-txt">Conectando…</span>
+    </div>
+  </div>
+
+  <div class="bkt-body" id="bkt-body"></div>
+
+  <div class="proximos" id="proximos" style="display:none">
+    <div class="proximos-lbl">Próximos</div>
+    <div id="proximos-items"></div>
+  </div>
+</div>
+
+<script>
+var WSU = (location.protocol==='https:'?'wss':'ws')+'://'+location.host;
+var ws, torneoId, _torneo, _llaves, _equipos;
+
+function cargarTorneos() {
+  var cod = document.getElementById('inp-cod').value.trim().toUpperCase();
+  var err = document.getElementById('s-err');
+  err.textContent = '';
+  if (!cod) { err.textContent = 'Ingresá el código del club'; return; }
+
+  fetch('/api/club/'+cod+'/torneos')
+    .then(function(r){ return r.ok ? r.json() : null; })
+    .then(function(data){
+      if (!data) { err.textContent = 'Club no encontrado'; return; }
+      if (!data.length) { err.textContent = 'No hay torneos en este club'; return; }
+      var lista = document.getElementById('torneos-lista');
+      lista.innerHTML = '';
+      data.forEach(function(t, i) {
+        var div = document.createElement('div');
+        div.className = 'torneo-item';
+        div.tabIndex = 0;
+        div.innerHTML =
+          '<div><div class="torneo-nombre">'+t.nombre+'</div>'+
+          '<div class="torneo-info">'+t.formato+'</div></div>'+
+          '<span class="torneo-estado '+t.estado+'">'+estadoLabel(t.estado)+'</span>';
+        div.onclick = function(){ conectarTorneo(t.id, t.nombre); };
+        div.onkeydown = function(e){ if(e.key==='Enter') conectarTorneo(t.id, t.nombre); };
+        lista.appendChild(div);
+      });
+      document.getElementById('step-cod').style.display = 'none';
+      document.getElementById('step-torneos').style.display = 'flex';
+      setTimeout(function(){ var f=lista.querySelector('.torneo-item'); if(f) f.focus(); }, 100);
+    })
+    .catch(function(){ err.textContent = 'Error conectando'; });
+}
+
+function estadoLabel(e) {
+  return e==='en_curso'?'En curso':e==='finalizado'?'Finalizado':'Pendiente';
+}
+
+function volverCod() {
+  document.getElementById('step-cod').style.display = 'flex';
+  document.getElementById('step-torneos').style.display = 'none';
+}
+
+function conectarTorneo(id, nombre) {
+  torneoId = id;
+  document.getElementById('setup').style.display = 'none';
+  document.getElementById('bracket-screen').style.display = 'flex';
+  document.getElementById('bkt-nombre').textContent = nombre;
+  connectWS();
+}
+
+function connectWS() {
+  ws = new WebSocket(WSU);
+  ws.onopen = function() {
+    ws.send(JSON.stringify({type:'JOIN_TORNEO',torneoId:torneoId}));
+    setStatus(true,'En vivo');
+  };
+  ws.onmessage = function(e) {
+    var m = JSON.parse(e.data);
+    if (m.type==='TORNEO_INIT'||m.type==='TORNEO_UPDATE') {
+      _torneo = m.torneo; _llaves = m.llaves; _equipos = m.equipos;
+      renderBracket();
+    }
+  };
+  ws.onclose = function(){ setStatus(false,'Reconectando...'); setTimeout(connectWS,3000); };
+  ws.onerror = function(){ ws.close(); };
+}
+
+function setStatus(ok,txt){
+  document.getElementById('bkt-dot').className='bkt-dot'+(ok?'':' off');
+  document.getElementById('bkt-txt').textContent=txt;
+}
+
+function getEquipo(id) {
+  if (!_equipos) return null;
+  for (var i=0;i<_equipos.length;i++) if(_equipos[i].id===id) return _equipos[i];
+  return null;
+}
+
+function renderBracket() {
+  var body = document.getElementById('bkt-body');
+  if (!_llaves || !_llaves.length) {
+    body.innerHTML = '<div style="text-align:center;color:rgba(245,245,240,.3);font-size:18px;margin:auto">Bracket no generado todavía</div>';
+    return;
+  }
+
+  // Agrupar por ronda
+  var rondas = {};
+  _llaves.forEach(function(l){
+    if (!rondas[l.ronda]) rondas[l.ronda] = [];
+    rondas[l.ronda].push(l);
+  });
+
+  // Ordenar rondas de mayor a menor (cuartos → semis → final)
+  var rondasKeys = Object.keys(rondas).map(Number).sort(function(a,b){return b-a;});
+
+  var html = '';
+  rondasKeys.forEach(function(ronda, ri) {
+    var partidos = rondas[ronda].sort(function(a,b){return a.posicion-b.posicion;});
+    var label = ronda===1?'FINAL':ronda===2?'SEMIFINAL':ronda===4?'CUARTOS':'RONDA '+ronda;
+
+    html += '<div class="ronda">';
+    html += '<div class="ronda-titulo">'+label+'</div>';
+
+    partidos.forEach(function(p) {
+      var e1 = p.equipo1_id ? getEquipo(p.equipo1_id) : null;
+      var e2 = p.equipo2_id ? getEquipo(p.equipo2_id) : null;
+      var g = p.ganador_id;
+
+      html += '<div class="partido-bracket'+(g?' con-ganador':'')+'">';
+      if (p.cancha_id) html += '<div class="eq-cancha">CANCHA '+p.cancha_num+'</div>';
+
+      // Equipo 1
+      html += '<div class="equipo-bracket'+(g&&g===p.equipo1_id?' ganador':'')+'">';
+      html += '<span class="eq-seed">'+(e1&&e1.seed?e1.seed:'')+' </span>';
+      html += '<span class="eq-nombre'+(e1?'':' vacio')+'">'+(e1?e1.nombre:'Por definir')+'</span>';
+      if (g&&g===p.equipo1_id) html += '<span style="color:#E8D44D;font-size:14px">✓</span>';
+      html += '</div>';
+
+      // Equipo 2
+      html += '<div class="equipo-bracket'+(g&&g===p.equipo2_id?' ganador':'')+'">';
+      html += '<span class="eq-seed">'+(e2&&e2.seed?e2.seed:'')+' </span>';
+      html += '<span class="eq-nombre'+(e2?'':' vacio')+'">'+(e2?e2.nombre:'Por definir')+'</span>';
+      if (g&&g===p.equipo2_id) html += '<span style="color:#E8D44D;font-size:14px">✓</span>';
+      html += '</div>';
+
+      html += '</div>';
+    });
+
+    html += '</div>';
+
+    // Conector entre rondas
+    if (ri < rondasKeys.length - 1) {
+      html += '<div class="conector"><div style="width:2px;height:60%;background:rgba(61,122,74,.3)"></div></div>';
+    }
+  });
+
+  // Campeón si el torneo finalizó
+  if (_torneo && _torneo.estado==='finalizado' && _torneo.ganador_id) {
+    var camp = getEquipo(_torneo.ganador_id);
+    html += '<div class="campeon-box show">';
+    html += '<div class="campeon-trophy">🏆</div>';
+    html += '<div class="campeon-titulo">Campeón</div>';
+    html += '<div class="campeon-nombre">'+(camp?camp.nombre:'—')+'</div>';
+    html += '</div>';
+  }
+
+  body.innerHTML = html;
+
+  // Próximos partidos sin ganador pero con ambos equipos
+  var proximos = _llaves.filter(function(l){ return !l.ganador_id && l.equipo1_id && l.equipo2_id; });
+  var proxBar = document.getElementById('proximos');
+  if (proximos.length) {
+    proxBar.style.display = 'flex';
+    var items = '';
+    proximos.forEach(function(p){
+      var e1 = getEquipo(p.equipo1_id);
+      var e2 = getEquipo(p.equipo2_id);
+      items += '<div class="proximo-item">';
+      if (p.cancha_id) items += '<span class="proximo-cancha">C'+p.cancha_num+'</span>';
+      items += (e1?e1.nombre:'?')+' vs '+(e2?e2.nombre:'?');
+      items += '</div>';
+    });
+    document.getElementById('proximos-items').innerHTML = items;
+  } else {
+    proxBar.style.display = 'none';
+  }
+}
+</script>
+</body>
+</html>
