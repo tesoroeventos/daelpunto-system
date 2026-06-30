@@ -100,17 +100,20 @@
 
   <!-- SETUP -->
   <div id="setup-screen">
-    <div class="sct">
+    <div class="sct" id="sct-club">
       <div class="sct-title">Conectar al club</div>
       <div class="pf">
         <label>Código del club</label>
-        <input id="inp-codigo" type="text" placeholder="Ej: DEMO" value="DEMO" style="text-transform:uppercase" oninput="this.value=this.value.toUpperCase()"/>
+        <input id="inp-codigo" type="text" placeholder="Ej: WPC" style="text-transform:uppercase;font-size:18px;text-align:center;letter-spacing:4px;font-weight:600" oninput="this.value=this.value.toUpperCase()" onkeydown="if(event.key==='Enter') loadClub()"/>
       </div>
-      <div class="pf">
-        <label>Cancha</label>
-        <select id="inp-cancha"><option value="">— cargando —</option></select>
+      <div id="canchas-btns" style="display:none;margin-top:6px">
+        <div style="font-size:10px;color:rgba(245,245,240,.35);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">Seleccioná tu cancha</div>
+        <div id="canchas-grid-cel" style="display:grid;grid-template-columns:1fr 1fr;gap:8px"></div>
+        <button onclick="volverCodigo()" style="margin-top:8px;width:100%;padding:7px;background:transparent;border:1px solid rgba(255,255,255,.1);border-radius:7px;color:rgba(245,245,240,.35);font-family:'Inter',sans-serif;font-size:11px;cursor:pointer">← Cambiar club</button>
       </div>
-      <button class="btn-start" style="margin-top:0;background:rgba(61,122,74,.3);border:1px solid rgba(61,122,74,.5);font-size:13px;padding:10px" onclick="loadClub()">Cargar club</button>
+      <div id="btn-cargar-wrap">
+        <button class="btn-start" style="margin-top:8px;background:rgba(61,122,74,.3);border:1px solid rgba(61,122,74,.5);font-size:13px;padding:10px" onclick="loadClub()">Cargar canchas →</button>
+      </div>
     </div>
 
     <div class="sct" id="match-setup" style="display:none">
@@ -197,18 +200,48 @@ let currentState = null;
 // ─── SETUP ───────────────────────────────────────────────────────────────────
 
 async function loadClub() {
-  const codigo = document.getElementById('inp-codigo').value.trim().toUpperCase().toUpperCase();
-  if (!codigo) return;
+  const codigo = document.getElementById('inp-codigo').value.trim().toUpperCase();
+  if (!codigo) { alert('Ingresá el código del club'); return; }
   try {
     const r = await fetch(`/api/club/${codigo}`);
-    if (!r.ok) { alert('Club no encontrado'); return; }
-    const { canchas } = await r.json();
-    const sel = document.getElementById('inp-cancha');
-    sel.innerHTML = canchas.map(c =>
-      `<option value="${c.id}">${c.nombre || 'Cancha ' + c.numero}</option>`).join('');
-    document.getElementById('match-setup').style.display = 'block';
-    document.getElementById('btn-empezar').style.display = 'block';
+    if (!r.ok) { alert('Club no encontrado. Verificá el código.'); return; }
+    const data = await r.json();
+
+    // Mostrar botones de cancha
+    const grid = document.getElementById('canchas-grid-cel');
+    grid.innerHTML = data.canchas.map(c => `
+      <button onclick="selCancha('${c.id}','${(c.nombre||'Cancha '+c.numero).replace(/'/g,'')}')"
+        style="padding:14px 8px;background:rgba(61,122,74,.2);border:1px solid rgba(61,122,74,.4);border-radius:10px;color:#F5F5F0;font-family:'Bebas Neue',sans-serif;font-size:22px;cursor:pointer;text-align:center;letter-spacing:1px">
+        <div style="font-size:28px;color:#E8D44D">${c.numero}</div>
+        <div style="font-size:10px;font-family:'Inter',sans-serif;color:rgba(245,245,240,.5);margin-top:2px">${c.nombre||'Cancha '+c.numero}</div>
+      </button>`).join('');
+
+    document.getElementById('canchas-btns').style.display = 'block';
+    document.getElementById('btn-cargar-wrap').style.display = 'none';
+    document.getElementById('inp-codigo').style.display = 'none';
   } catch(e) { alert('Error conectando al servidor'); }
+}
+
+function volverCodigo() {
+  document.getElementById('canchas-btns').style.display = 'none';
+  document.getElementById('btn-cargar-wrap').style.display = 'block';
+  document.getElementById('inp-codigo').style.display = 'block';
+}
+
+function selCancha(id, nombre) {
+  canchaId = id;
+  document.getElementById('sct-club').style.background = 'rgba(61,122,74,.1)';
+  document.getElementById('sct-club').style.borderColor = 'rgba(61,122,74,.4)';
+  // Mostrar cancha seleccionada
+  document.getElementById('canchas-btns').style.display = 'none';
+  document.getElementById('btn-cargar-wrap').style.display = 'none';
+  document.getElementById('inp-codigo').style.display = 'none';
+  const div = document.createElement('div');
+  div.style.cssText = 'text-align:center;padding:8px;color:#7BC47F;font-size:13px;font-weight:600';
+  div.innerHTML = '✓ ' + nombre + ' <button onclick="volverCodigo()" style="background:none;border:none;color:rgba(245,245,240,.3);font-size:11px;cursor:pointer;margin-left:8px">cambiar</button>';
+  document.getElementById('sct-club').appendChild(div);
+  document.getElementById('match-setup').style.display = 'block';
+  document.getElementById('btn-empezar').style.display = 'block';
 }
 
 function selSrv(t) {
@@ -219,7 +252,8 @@ function selSrv(t) {
 
 async function startGame() {
   const codigo = document.getElementById('inp-codigo').value.trim().toUpperCase().toUpperCase();
-  canchaId = document.getElementById('inp-cancha').value;
+  // canchaId ya está seteado por selCancha()
+  if (!canchaId) { alert('Seleccioná una cancha primero'); return; }
   const p1 = document.getElementById('p1n').value || 'Pareja 1';
   const p2 = document.getElementById('p2n').value || 'Pareja 2';
   const oro = document.getElementById('tog-oro').checked;
