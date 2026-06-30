@@ -381,3 +381,21 @@ function render(s) {
 }
 
 
+
+function doFlash(s) {
+  var el = document.getElementById('flash');
+  var t = s.pts[0] >= s.pts[1] ? 0 : 1;
+  el.textContent = '+1  ' + (t===0 ? s.equipo1 : s.equipo2);
+  el.className = 'flash f' + t + ' show';
+  if (flashT) clearTimeout(flashT);
+  flashT = setTimeout(function(){ el.className = 'flash'; }, 800);
+}
+
+function tick() {
+  var el = document.getElementById('ftr-time');
+  if (el) el.textContent = new Date().toLocaleTimeString('es-AR', {hour:'2-digit', minute:'2-digit'});
+}
+setInterval(tick, 30000);
+</script>
+</body>
+</html>
