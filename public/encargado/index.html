@@ -183,12 +183,12 @@
 
 <script>
 let ws, club, canchas = [], equipos = [], estadoCanchas = {};
-const WS_URL = `ws://${location.host}`;
+const WS_URL = `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}`;
 
 // ─── LOGIN ────────────────────────────────────────────────────────────────────
 
 async function conectar() {
-  const codigo = document.getElementById('inp-codigo').value.trim().toUpperCase();
+  const codigo = document.getElementById('inp-codigo').value.trim().toUpperCase().toUpperCase();
   if (!codigo) return;
   try {
     const r = await fetch(`/api/club/${codigo}`);
@@ -370,7 +370,7 @@ function showNuevoEquipo() {
 }
 
 async function guardarEquipo() {
-  const nombre = document.getElementById('eq-nombre').value.trim();
+  const nombre = document.getElementById('eq-nombre').value.trim().toUpperCase();
   if (!nombre) return;
   const r = await fetch('/api/equipo', {
     method: 'POST',
