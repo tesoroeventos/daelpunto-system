@@ -301,14 +301,15 @@ function connectWS() {
     ws.send(JSON.stringify(msg));
     dot(true,'En vivo');
   };
+  var _msgCount = 0;
   ws.onmessage = function(e) {
+    _msgCount++;
     var m = JSON.parse(e.data);
+    dot(true, 'En vivo ['+canchaId+'] msg#'+_msgCount+' type:'+m.type);
     if (m.type==='INIT') {
-      dot(true,'En vivo - INIT OK');
       render(m.state);
     }
     else if (m.type==='STATE_UPDATE') { 
-      dot(true,'En vivo');
       doFlash(m.state); 
       render(m.state); 
     }
