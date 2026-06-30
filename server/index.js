@@ -226,6 +226,105 @@ app.delete('/api/admin/club/:id', (req, res) => {
   res.json({ ok: true });
 });
 
+
+// ── TORNEOS ADICIONALES ──────────────────────────────────────────────────────
+
+// GET /api/club/:codigo/torneos — torneos del club
+app.get('/api/club/:codigo/torneos', (req, res) => {
+  const club = helpers.getClub.get(req.params.codigo.toUpperCase());
+  if (!club) return res.status(404).json({ error: 'Club no encontrado' });
+  const torneos = helpers.getTorneos.all(club.id);
+  res.json(torneos);
+});
+
+// POST /api/torneo/:id/equipo — agregar equipo a torneo existente
+app.post('/api/torneo/:id/equipo', (req, res) => {
+  const { nombre, seed } = req.body;
+  const torneo = helpers.getTorneo.get(req.params.id);
+  if (!torneo) return res.status(404).json({ error: 'Torneo no encontrado' });
+  const teId = uuidv4();
+  helpers.insertTorneoEquipo.run(teId, torneo.id, null, nombre, seed || null);
+  res.json({ id: teId, nombre });
+});
+
+// POST /api/torneo/:id/generar — generar llaves con equipos ya cargados
+app.post('/api/torneo/:id/generar', (req, res) => {
+  const torneo = helpers.getTorneo.get(req.params.id);
+  if (!torneo) return res.status(404).json({ error: 'Torneo no encontrado' });
+  const equipos = helpers.getTorneoEquipos.all(torneo.id);
+  if (equipos.length < 2) return res.status(400).json({ error: 'Necesitás al menos 2 equipos' });
+
+  // Limpiar llaves anteriores si las hay
+  db.prepare('DELETE FROM llaves WHERE torneo_id = ?').run(torneo.id);
+
+  const teIds = equipos.map(e => e.id);
+  generarLlaves(torneo.id, teIds);
+  helpers.updateTorneoEstado.run('en_curso', torneo.id);
+
+  const llaves = helpers.getLlaves.all(torneo.id);
+  res.json({ ok: true, llaves });
+});
+
+// POST /api/llave/:id/ganador — registrar ganador de una llave
+app.post('/api/llave/:id/ganador', (req, res) => {
+  const { ganadorId, torneoId, canchaId } = req.body;
+
+  // Registrar ganador en la llave actual
+  db.prepare('UPDATE llaves SET ganador_id = ? WHERE id = ?').run(ganadorId, req.params.id);
+
+  // Buscar la llave actual para saber ronda y posición
+  const llave = db.prepare('SELECT * FROM llaves WHERE id = ?').get(req.params.id);
+  if (!llave) return res.status(404).json({ error: 'Llave no encontrada' });
+
+  // Avanzar ganador a la siguiente ronda
+  const sigRonda = Math.floor(llave.ronda / 2);
+  if (sigRonda >= 1) {
+    const sigPos = Math.ceil(llave.posicion / 2);
+    const sigLlave = db.prepare(
+      'SELECT * FROM llaves WHERE torneo_id = ? AND ronda = ? AND posicion = ?'
+    ).get(llave.torneo_id, sigRonda, sigPos);
+
+    if (sigLlave) {
+      // Determinar si va como equipo1 o equipo2
+      if (llave.posicion % 2 === 1) {
+        db.prepare('UPDATE llaves SET equipo1_id = ? WHERE id = ?').run(ganadorId, sigLlave.id);
+      } else {
+        db.prepare('UPDATE llaves SET equipo2_id = ? WHERE id = ?').run(ganadorId, sigLlave.id);
+      }
+    } else if (sigRonda === 0) {
+      // Es el campeón
+      helpers.updateTorneoEstado.run('finalizado', llave.torneo_id);
+      db.prepare('UPDATE torneos SET ganador_id = ? WHERE id = ?').run(ganadorId, llave.torneo_id);
+    }
+  } else {
+    // Ronda 1 ya es la final — campeón
+    helpers.updateTorneoEstado.run('finalizado', llave.torneo_id);
+    db.prepare('UPDATE torneos SET ganador_id = ? WHERE id = ?').run(ganadorId, llave.torneo_id);
+  }
+
+  // Asignar cancha si se especificó
+  if (canchaId) {
+    db.prepare('UPDATE llaves SET cancha_id = ? WHERE id = ?').run(canchaId, req.params.id);
+  }
+
+  // Broadcast a todos los conectados al torneo
+  const llaves = helpers.getLlaves.all(llave.torneo_id);
+  const equipos = helpers.getTorneoEquipos.all(llave.torneo_id);
+  state.broadcast(`torneo:${llave.torneo_id}`, { type: 'TORNEO_UPDATE', llaves, equipos });
+
+  res.json({ ok: true });
+});
+
+// POST /api/llave/:id/cancha — asignar cancha a un partido
+app.post('/api/llave/:id/cancha', (req, res) => {
+  const { canchaId } = req.body;
+  db.prepare('UPDATE llaves SET cancha_id = ? WHERE id = ?').run(canchaId, req.params.id);
+  const llave = db.prepare('SELECT * FROM llaves WHERE id = ?').get(req.params.id);
+  state.broadcast(`torneo:${llave.torneo_id}`, { type: 'TORNEO_UPDATE_CANCHA', llaveId: req.params.id, canchaId });
+  res.json({ ok: true });
+});
+
+// JOIN torneo en WebSocket — agregar al onmessage
 // ─── WEBSOCKETS ───────────────────────────────────────────────────────────────
 
 wss.on('connection', (ws, req) => {
@@ -268,6 +367,17 @@ wss.on('connection', (ws, req) => {
       }
 
       // Unirse como TV de una cancha
+      case 'JOIN_TORNEO': {
+        state.joinRoom(`torneo:${msg.torneoId}`, ws);
+        ws.torneoId = msg.torneoId;
+        ws.role = 'torneo';
+        const torneoData = helpers.getTorneo.get(msg.torneoId);
+        const llaves = torneoData ? helpers.getLlaves.all(msg.torneoId) : [];
+        const equipos = torneoData ? helpers.getTorneoEquipos.all(msg.torneoId) : [];
+        ws.send(JSON.stringify({ type: 'TORNEO_INIT', torneo: torneoData, llaves, equipos }));
+        break;
+      }
+
       case 'JOIN_TV': {
         console.log('JOIN_TV canchaId:', msg.canchaId);
         state.joinRoom(`tv:${msg.canchaId}`, ws);
