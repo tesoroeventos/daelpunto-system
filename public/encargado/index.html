@@ -89,6 +89,15 @@
     .torneo-nombre{font-weight:600;font-size:14px}
     .torneo-info{font-size:11px;color:rgba(245,245,240,.4);margin-top:2px}
     .btn-nuevo{background:rgba(232,212,77,.1);border:1px solid rgba(232,212,77,.25);color:#E8D44D;border-radius:8px;padding:8px 16px;font-size:12px;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;letter-spacing:.5px;text-transform:uppercase}
+    .bracket-ronda{display:inline-flex;flex-direction:column;vertical-align:top;min-width:180px;margin-right:16px}
+    .bracket-ronda-titulo{font-size:9px;color:rgba(245,245,240,.3);letter-spacing:2px;text-transform:uppercase;text-align:center;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,.06)}
+    .bracket-partido{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;overflow:hidden;margin:4px 0}
+    .bracket-eq{display:flex;align-items:center;gap:6px;padding:7px 10px;font-size:12px;min-height:34px;cursor:pointer;transition:.15s}
+    .bracket-eq:first-child{border-bottom:1px solid rgba(255,255,255,.06)}
+    .bracket-eq:hover{background:rgba(61,122,74,.15)}
+    .bracket-eq.ganador{background:rgba(61,122,74,.2);color:#E8D44D;font-weight:600}
+    .bracket-eq.pendiente{color:rgba(245,245,240,.3)}
+    .club-item{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:14px}
   </style>
 </head>
 <body>
@@ -137,11 +146,47 @@
 
     <!-- TORNEOS -->
     <div id="tab-torneos" style="display:none">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-        <div style="font-size:13px;color:rgba(245,245,240,.5)">Torneos</div>
-        <button class="btn-nuevo" onclick="showNuevoTorneo()">+ Nuevo torneo</button>
+      <!-- Lista de torneos -->
+      <div id="torneos-panel">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+          <div style="font-size:13px;color:rgba(245,245,240,.5)">Torneos del club</div>
+          <button class="btn-nuevo" onclick="showNuevoTorneoForm()">+ Nuevo torneo</button>
+        </div>
+        <div id="torneos-list"><div style="color:rgba(245,245,240,.3);font-size:13px">Sin torneos todavía</div></div>
       </div>
-      <div id="torneos-list"><div style="color:rgba(245,245,240,.3);font-size:13px">Próximamente</div></div>
+
+      <!-- Detalle torneo -->
+      <div id="torneo-detalle" style="display:none">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+          <button onclick="volverTorneos()" style="background:transparent;border:1px solid rgba(255,255,255,.1);border-radius:7px;color:rgba(245,245,240,.5);font-size:12px;padding:6px 12px;cursor:pointer">← Volver</button>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:#E8D44D;letter-spacing:1px" id="td-nombre">—</div>
+          <span id="td-estado-badge" style="font-size:10px;font-weight:600;padding:3px 8px;border-radius:4px;letter-spacing:1px;text-transform:uppercase"></span>
+        </div>
+
+        <!-- Equipos -->
+        <div class="club-item" style="margin-bottom:10px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+            <div style="font-size:10px;color:rgba(245,245,240,.35);letter-spacing:1.5px;text-transform:uppercase">Equipos inscriptos</div>
+            <div style="display:flex;gap:6px">
+              <button class="btn-nuevo" onclick="showAgregarEquipo()">+ Equipo</button>
+              <button class="btn-nuevo" style="background:rgba(61,122,74,.2);border-color:rgba(61,122,74,.4)" onclick="generarBracket()">⚡ Generar bracket</button>
+            </div>
+          </div>
+          <div id="td-equipos" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+          <div id="form-equipo" style="display:none;margin-top:10px;display:flex;gap:6px;align-items:center">
+            <input id="eq-inp-nombre" placeholder="Nombre de la pareja" style="flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:7px;color:#F5F5F0;font-size:13px;padding:7px 10px;outline:none;font-family:'Inter',sans-serif"/>
+            <input id="eq-inp-seed" placeholder="Seed" style="width:60px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:7px;color:#F5F5F0;font-size:13px;padding:7px 10px;outline:none;font-family:'Inter',sans-serif;text-align:center" type="number"/>
+            <button onclick="agregarEquipo()" style="background:#3D7A4A;border:none;border-radius:7px;color:#F5F5F0;font-size:12px;padding:7px 12px;cursor:pointer;font-family:'Inter',sans-serif">Agregar</button>
+            <button onclick="document.getElementById('form-equipo').style.display='none'" style="background:transparent;border:1px solid rgba(255,255,255,.1);border-radius:7px;color:rgba(245,245,240,.4);font-size:12px;padding:7px 10px;cursor:pointer">✕</button>
+          </div>
+        </div>
+
+        <!-- Bracket -->
+        <div class="club-item">
+          <div style="font-size:10px;color:rgba(245,245,240,.35);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px">Bracket</div>
+          <div id="td-bracket" style="overflow-x:auto"></div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -188,10 +233,10 @@ const WS_URL = `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.ho
 // ─── LOGIN ────────────────────────────────────────────────────────────────────
 
 async function conectar() {
-  const codigo = document.getElementById('inp-codigo').value.trim().toUpperCase().toUpperCase();
+  const codigo = document.getElementById('inp-codigo').value.trim().toUpperCase();
   if (!codigo) return;
   try {
-    const r = await fetch(`/api/club/${codigo}`);
+    const r = await fetch('/api/club/'+codigo);
     if (!r.ok) { alert('Club no encontrado'); return; }
     const data = await r.json();
     club = data.club; canchas = data.canchas; equipos = data.equipos;
@@ -201,6 +246,7 @@ async function conectar() {
     connectWS(codigo);
     renderCanchas();
     renderEquipos();
+    cargarTorneos();
   } catch(e) { alert('Error conectando'); }
 }
 
@@ -216,21 +262,14 @@ function connectWS(codigo) {
     const msg = JSON.parse(e.data);
     switch (msg.type) {
       case 'INIT':
-        msg.estadoCanchas.forEach(({ cancha, partido }) => {
-          estadoCanchas[cancha.id] = partido;
-        });
-        renderCanchas();
-        break;
+        msg.estadoCanchas.forEach(({ cancha, partido }) => { estadoCanchas[cancha.id] = partido; });
+        renderCanchas(); break;
       case 'CANCHA_UPDATE':
         estadoCanchas[msg.canchaId] = msg.state;
-        renderCanchaCard(msg.canchaId);
-        break;
+        renderCanchaCard(msg.canchaId); break;
     }
   };
-  ws.onclose = () => {
-    setWS(false, 'Reconectando…');
-    setTimeout(() => connectWS(club.codigo), 3000);
-  };
+  ws.onclose = () => { setWS(false, 'Reconectando…'); setTimeout(() => connectWS(club.codigo), 3000); };
   ws.onerror = () => ws.close();
 }
 
@@ -239,7 +278,7 @@ function setWS(ok, txt) {
   document.getElementById('panel-ws-txt').textContent = txt;
 }
 
-// ─── RENDER CANCHAS ───────────────────────────────────────────────────────────
+// ─── CANCHAS ─────────────────────────────────────────────────────────────────
 
 function renderCanchas() {
   const grid = document.getElementById('canchas-grid');
@@ -257,60 +296,44 @@ function renderCanchaCard(canchaId) {
 function canchaCardHTML(c) {
   const s = estadoCanchas[c.id];
   const playing = s && s.estado === 'en_curso';
+  const nombre = c.nombre || 'Cancha ' + c.numero;
 
   if (!playing) {
-    return `<div class="cancha-card empty" id="card-${c.id}">
-      <div class="cancha-hdr">
-        <div class="cancha-nombre">${c.nombre || 'Cancha ' + c.numero}</div>
-        <div class="cancha-badge free">Libre</div>
-      </div>
-      <div class="cancha-empty-msg">Sin partido en curso</div>
-      <div class="cancha-actions">
-        <button class="btn-sm btn-verde" onclick="showNuevoPartido('${c.id}')">+ Nuevo partido</button>
-      </div>
-    </div>`;
+    return '<div class="cancha-card empty" id="card-'+c.id+'" data-cid="'+c.id+'">' +
+      '<div class="cancha-hdr"><div class="cancha-nombre">'+nombre+'</div><div class="cancha-badge free">Libre</div></div>' +
+      '<div class="cancha-empty-msg">Sin partido en curso</div>' +
+      '<div class="cancha-actions"><button class="btn-sm btn-verde" onclick="showNuevoPartidoEl(this)">+ Nuevo partido</button></div>' +
+      '</div>';
   }
 
-  const sc0 = s.displayScore[0];
-  const sc1 = s.displayScore[1];
+  const sc0 = s.displayScore[0], sc1 = s.displayScore[1];
   const sets0 = [0,1,2].map(i => {
     const h = s.setHistory[i];
-    return `<div class="mini-set-dot${h && h.e1 > h.e2 ? ' won' : ''}">${h ? h.e1 : '—'}</div>`;
+    return '<div class="mini-set-dot'+(h && h.e1>h.e2?' won':'')+'">'+( h ? h.e1 : '—')+'</div>';
   }).join('');
   const sets1 = [0,1,2].map(i => {
     const h = s.setHistory[i];
-    return `<div class="mini-set-dot${h && h.e2 > h.e1 ? ' won' : ''}">${h ? h.e2 : '—'}</div>`;
+    return '<div class="mini-set-dot'+(h && h.e2>h.e1?' won':'')+'">'+( h ? h.e2 : '—')+'</div>';
   }).join('');
 
-  return `<div class="cancha-card active" id="card-${c.id}">
-    <div class="cancha-hdr">
-      <div class="cancha-nombre">${c.nombre || 'Cancha ' + c.numero}</div>
-      <div class="cancha-badge playing">● En juego</div>
-    </div>
-    <div class="mini-score">
-      <div class="mini-team">
-        <div class="mini-team-name">${s.equipo1}</div>
-        <div class="mini-pts${sc0==='AD'?' adv':''}">${sc0==='ORO'?'🥇':sc0}</div>
-        <div class="mini-sets">${sets0}</div>
-      </div>
-      <div class="mini-center">
-        <div class="mini-set-lbl">Set ${s.currentSet}</div>
-        <div class="mini-games">${s.games[0]}<br>${s.games[1]}</div>
-      </div>
-      <div class="mini-team">
-        <div class="mini-team-name">${s.equipo2}</div>
-        <div class="mini-pts${sc1==='AD'?' adv':''}">${sc1==='ORO'?'🥇':sc1}</div>
-        <div class="mini-sets">${sets1}</div>
-      </div>
-    </div>
-    <div class="cancha-actions">
-      <button class="btn-sm btn-rojo" onclick="finalizarPartido('${c.id}', '${s.partidoId}')">Finalizar</button>
-    </div>
-  </div>`;
+  return '<div class="cancha-card active" id="card-'+c.id+'">' +
+    '<div class="cancha-hdr"><div class="cancha-nombre">'+nombre+'</div><div class="cancha-badge playing">● En juego</div></div>' +
+    '<div class="mini-score">' +
+      '<div class="mini-team"><div class="mini-team-name">'+s.equipo1+'</div><div class="mini-pts'+(sc0==='AD'?' adv':'')+'">'+sc0+'</div><div class="mini-sets">'+sets0+'</div></div>' +
+      '<div class="mini-center"><div class="mini-set-lbl">Set '+s.currentSet+'</div><div class="mini-games">'+s.games[0]+'<br>'+s.games[1]+'</div></div>' +
+      '<div class="mini-team"><div class="mini-team-name">'+s.equipo2+'</div><div class="mini-pts'+(sc1==='AD'?' adv':'')+'">'+sc1+'</div><div class="mini-sets">'+sets1+'</div></div>' +
+    '</div>' +
+    '<div class="cancha-actions"><button class="btn-sm btn-rojo" data-cid="'+c.id+'" data-pid="'+s.partidoId+'" onclick="finalizarPartidoEl(this)">Finalizar</button></div>' +
+    '</div>';
 }
 
-// ─── ACCIONES ────────────────────────────────────────────────────────────────
-
+function showNuevoPartidoEl(btn) {
+  const cid = btn.closest('[data-cid]').dataset.cid;
+  showNuevoPartido(cid);
+}
+function finalizarPartidoEl(btn) {
+  finalizarPartido(btn.dataset.cid, btn.dataset.pid);
+}
 function showNuevoPartido(canchaId) {
   document.getElementById('modal-cancha-id').value = canchaId;
   document.getElementById('modal-p1').value = '';
@@ -323,24 +346,18 @@ async function crearPartido() {
   const p1 = document.getElementById('modal-p1').value || 'Pareja 1';
   const p2 = document.getElementById('modal-p2').value || 'Pareja 2';
   const oro = document.getElementById('modal-oro').value === '1';
-
   const r = await fetch('/api/partido', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      clubCodigo: club.codigo, canchaId,
-      equipo1Nombre: p1, equipo2Nombre: p2, puntoDeOro: oro
-    })
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ clubCodigo: club.codigo, canchaId, equipo1Nombre: p1, equipo2Nombre: p2, puntoDeOro: oro })
   });
   if (!r.ok) { alert('Error creando partido'); return; }
   closeModal('modal-partido');
 }
 
 async function finalizarPartido(canchaId, partidoId) {
-  if (!confirm('¿Finalizar este partido?')) return;
-  await fetch(`/api/partido/${partidoId}/finalizar`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+  if (!confirm('Finalizar este partido?')) return;
+  await fetch('/api/partido/'+partidoId+'/finalizar', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ canchaId })
   });
 }
@@ -353,60 +370,215 @@ function renderEquipos() {
     list.innerHTML = '<div style="color:rgba(245,245,240,.3);font-size:13px">No hay equipos registrados</div>';
     return;
   }
-  list.innerHTML = equipos.map(e => `
-    <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between">
-      <div>
-        <div style="font-weight:600;font-size:14px">${e.nombre}</div>
-        <div style="font-size:11px;color:rgba(245,245,240,.4);margin-top:2px">${[e.jugador1, e.jugador2].filter(Boolean).join(' · ') || 'Sin jugadores cargados'}</div>
-      </div>
-    </div>`).join('');
+  list.innerHTML = equipos.map(e =>
+    '<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between">' +
+    '<div><div style="font-weight:600;font-size:14px">'+e.nombre+'</div>' +
+    '<div style="font-size:11px;color:rgba(245,245,240,.4);margin-top:2px">'+ ([e.jugador1,e.jugador2].filter(Boolean).join(' · ')||'Sin jugadores') +'</div></div>' +
+    '</div>'
+  ).join('');
 }
 
 function showNuevoEquipo() {
-  document.getElementById('eq-nombre').value = '';
-  document.getElementById('eq-j1').value = '';
-  document.getElementById('eq-j2').value = '';
-  document.getElementById('modal-equipo').className = 'modal-overlay show';
+  document.getElementById('eq-nombre').value='';
+  document.getElementById('eq-j1').value='';
+  document.getElementById('eq-j2').value='';
+  document.getElementById('modal-equipo').className='modal-overlay show';
 }
 
 async function guardarEquipo() {
-  const nombre = document.getElementById('eq-nombre').value.trim().toUpperCase();
+  const nombre = document.getElementById('eq-nombre').value.trim();
   if (!nombre) return;
-  const r = await fetch('/api/equipo', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      clubCodigo: club.codigo,
-      nombre,
-      jugador1: document.getElementById('eq-j1').value,
-      jugador2: document.getElementById('eq-j2').value,
-    })
-  });
-  if (!r.ok) { alert('Error guardando equipo'); return; }
-  const eq = await r.json();
-  equipos.push({ ...eq });
+  const r = await fetch('/api/equipo',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({clubCodigo:club.codigo,nombre,jugador1:document.getElementById('eq-j1').value,jugador2:document.getElementById('eq-j2').value})});
+  if(!r.ok){alert('Error');return;}
+  const eq=await r.json();
+  equipos.push({...eq});
   renderEquipos();
   closeModal('modal-equipo');
+}
+
+// ─── TORNEOS ─────────────────────────────────────────────────────────────────
+
+var _torneoActual = null;
+var _equiposTorneo = [];
+var _llavesTorneo = [];
+
+async function cargarTorneos() {
+  if (!club) return;
+  const r = await fetch('/api/club/'+club.codigo+'/torneos');
+  const data = await r.json();
+  const list = document.getElementById('torneos-list');
+  if (!data.length) { list.innerHTML='<div style="color:rgba(245,245,240,.3);font-size:13px">Sin torneos todavía</div>'; return; }
+  window._torneosList = data;
+  list.innerHTML = data.map(function(t, i){
+    var color = t.estado==='en_curso'?'#7BC47F':t.estado==='finalizado'?'#E8D44D':'rgba(245,245,240,.4)';
+    var estado = t.estado==='en_curso'?'En curso':t.estado==='finalizado'?'Finalizado':'Pendiente';
+    return '<div onclick="abrirTorneoIdx('+i+')" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:12px 14px;margin-bottom:8px;cursor:pointer;display:flex;align-items:center;justify-content:space-between">' +
+      '<div><div style="font-weight:600;font-size:14px">'+t.nombre+'</div><div style="font-size:11px;color:rgba(245,245,240,.4);margin-top:2px">'+t.formato+'</div></div>' +
+      '<span style="font-size:10px;font-weight:600;color:'+color+';letter-spacing:1px;text-transform:uppercase">'+estado+'</span>' +
+      '</div>';
+  }).join('');
+}
+
+function abrirTorneoIdx(i) { abrirTorneo(window._torneosList[i].id); }
+
+async function abrirTorneo(id) {
+  const r = await fetch('/api/torneo/'+id);
+  const data = await r.json();
+  _torneoActual = data.torneo;
+  _equiposTorneo = data.equipos;
+  _llavesTorneo = data.llaves;
+  document.getElementById('torneos-panel').style.display='none';
+  document.getElementById('torneo-detalle').style.display='block';
+  document.getElementById('td-nombre').textContent = data.torneo.nombre;
+  const badge = document.getElementById('td-estado-badge');
+  badge.textContent = data.torneo.estado==='en_curso'?'En curso':data.torneo.estado==='finalizado'?'Finalizado':'Pendiente';
+  badge.style.cssText = data.torneo.estado==='en_curso'
+    ? 'background:rgba(61,122,74,.2);color:#7BC47F;border:1px solid rgba(61,122,74,.4);font-size:10px;font-weight:600;padding:3px 8px;border-radius:4px;letter-spacing:1px;text-transform:uppercase'
+    : 'background:rgba(255,255,255,.06);color:rgba(245,245,240,.4);border:1px solid rgba(255,255,255,.08);font-size:10px;font-weight:600;padding:3px 8px;border-radius:4px;letter-spacing:1px;text-transform:uppercase';
+  renderEquiposTorneo();
+  renderBracketEncargado();
+}
+
+function volverTorneos() {
+  _torneoActual=null;
+  document.getElementById('torneos-panel').style.display='block';
+  document.getElementById('torneo-detalle').style.display='none';
+}
+
+function renderEquiposTorneo() {
+  const div = document.getElementById('td-equipos');
+  if (!_equiposTorneo.length) {
+    div.innerHTML='<div style="color:rgba(245,245,240,.3);font-size:12px">Sin equipos. Agregá parejas para comenzar.</div>';
+    return;
+  }
+  div.innerHTML = _equiposTorneo.map(e =>
+    '<div style="background:rgba(61,122,74,.1);border:1px solid rgba(61,122,74,.3);border-radius:6px;padding:4px 10px;font-size:12px;display:flex;align-items:center;gap:6px">' +
+    (e.seed?'<span style="color:#E8D44D;font-size:10px">#'+e.seed+'</span>':'')+
+    '<span>'+e.nombre+'</span></div>'
+  ).join('');
+}
+
+function showAgregarEquipo() {
+  const f=document.getElementById('form-equipo');
+  f.style.display=(f.style.display==='flex'?'none':'flex');
+  if(f.style.display==='flex') document.getElementById('eq-inp-nombre').focus();
+}
+
+async function agregarEquipo() {
+  const nombre=document.getElementById('eq-inp-nombre').value.trim();
+  const seed=document.getElementById('eq-inp-seed').value;
+  if(!nombre||!_torneoActual) return;
+  const r=await fetch('/api/torneo/'+_torneoActual.id+'/equipo',{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({nombre,seed:seed||null})
+  });
+  const e=await r.json();
+  _equiposTorneo.push({id:e.id,nombre:e.nombre,seed:seed||null});
+  renderEquiposTorneo();
+  document.getElementById('eq-inp-nombre').value='';
+  document.getElementById('eq-inp-seed').value='';
+}
+
+async function generarBracket() {
+  if(!_torneoActual) return;
+  if(!confirm('Generar el bracket con '+_equiposTorneo.length+' equipos?')) return;
+  const r=await fetch('/api/torneo/'+_torneoActual.id+'/generar',{method:'POST'});
+  const data=await r.json();
+  _llavesTorneo=data.llaves;
+  renderBracketEncargado();
+}
+
+function showNuevoTorneoForm() {
+  const nombre=prompt('Nombre del torneo:');
+  if(!nombre) return;
+  fetch('/api/torneo',{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({clubCodigo:club.codigo,nombre,formato:'eliminacion',equipos:[]})
+  }).then(r=>r.json()).then(data=>{
+    cargarTorneos();
+    setTimeout(()=>abrirTorneo(data.id),300);
+  });
+}
+
+function getEquipoTorneo(id) {
+  for(let e of _equiposTorneo) if(e.id===id) return e;
+  return null;
+}
+
+function renderBracketEncargado() {
+  const div=document.getElementById('td-bracket');
+  if(!_llavesTorneo||!_llavesTorneo.length){
+    div.innerHTML='<div style="color:rgba(245,245,240,.3);font-size:12px">Bracket no generado. Agregá equipos y presioná Generar bracket.</div>';
+    return;
+  }
+  window._llavesRef=_llavesTorneo;
+
+  const rondas={};
+  _llavesTorneo.forEach(l=>{ if(!rondas[l.ronda]) rondas[l.ronda]=[]; rondas[l.ronda].push(l); });
+  const keys=Object.keys(rondas).map(Number).sort((a,b)=>b-a);
+
+  let html='<div style="display:flex;align-items:flex-start;min-width:max-content">';
+  keys.forEach(ronda=>{
+    const ps=rondas[ronda].sort((a,b)=>a.posicion-b.posicion);
+    const lbl=ronda===1?'FINAL':ronda===2?'SEMIFINAL':ronda===4?'CUARTOS':'RONDA '+ronda;
+    html+='<div class="bracket-ronda"><div class="bracket-ronda-titulo">'+lbl+'</div>';
+    ps.forEach((p,pi)=>{
+      const idx=_llavesTorneo.indexOf(p);
+      const e1=p.equipo1_id?getEquipoTorneo(p.equipo1_id):null;
+      const e2=p.equipo2_id?getEquipoTorneo(p.equipo2_id):null;
+      html+='<div class="bracket-partido">';
+      const c1='bracket-eq'+(p.ganador_id===p.equipo1_id?' ganador':(!e1?' pendiente':''));
+      html+='<div class="'+c1+'" onclick="clickEq('+idx+',1)">';
+      html+='<span style="font-size:10px;color:rgba(245,245,240,.3);width:14px">'+(e1&&e1.seed?e1.seed:'')+'</span>';
+      html+='<span>'+(e1?e1.nombre:'Por definir')+'</span>';
+      if(p.ganador_id===p.equipo1_id) html+='<span style="margin-left:auto;color:#E8D44D">✓</span>';
+      html+='</div>';
+      const c2='bracket-eq'+(p.ganador_id===p.equipo2_id?' ganador':(!e2?' pendiente':''));
+      html+='<div class="'+c2+'" onclick="clickEq('+idx+',2)">';
+      html+='<span style="font-size:10px;color:rgba(245,245,240,.3);width:14px">'+(e2&&e2.seed?e2.seed:'')+'</span>';
+      html+='<span>'+(e2?e2.nombre:'Por definir')+'</span>';
+      if(p.ganador_id===p.equipo2_id) html+='<span style="margin-left:auto;color:#E8D44D">✓</span>';
+      html+='</div></div>';
+    });
+    html+='</div><div style="width:20px;align-self:stretch;display:flex;align-items:center;justify-content:center"><div style="width:2px;height:50%;background:rgba(61,122,74,.2)"></div></div>';
+  });
+  html+='</div>';
+  div.innerHTML=html;
+}
+
+function clickEq(idx,equipo) {
+  const p=window._llavesRef[idx];
+  if(!p) return;
+  const ganadorId=equipo===1?p.equipo1_id:p.equipo2_id;
+  registrarGanador(p.id,ganadorId);
+}
+
+async function registrarGanador(llaveId, ganadorId) {
+  if(!ganadorId||ganadorId==='null') return;
+  const ganador=getEquipoTorneo(ganadorId);
+  if(!ganador) return;
+  if(!confirm('Gano: '+ganador.nombre+'?')) return;
+  await fetch('/api/llave/'+llaveId+'/ganador',{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({ganadorId,torneoId:_torneoActual.id})
+  });
+  abrirTorneo(_torneoActual.id);
 }
 
 // ─── UTILS ───────────────────────────────────────────────────────────────────
 
 function showTab(tab) {
-  ['canchas', 'equipos', 'torneos'].forEach(t => {
-    document.getElementById('tab-' + t).style.display = t === tab ? 'block' : 'none';
+  ['canchas','equipos','torneos'].forEach(t=>{
+    document.getElementById('tab-'+t).style.display=t===tab?'block':'none';
   });
-  document.querySelectorAll('.tab').forEach((el, i) => {
-    el.className = 'tab' + (['canchas','equipos','torneos'][i] === tab ? ' active' : '');
+  document.querySelectorAll('.tab').forEach((el,i)=>{
+    el.className='tab'+(['canchas','equipos','torneos'][i]===tab?' active':'');
   });
+  if(tab==='torneos') cargarTorneos();
 }
 
-function closeModal(id) {
-  document.getElementById(id).className = 'modal-overlay';
-}
-
-function showNuevoTorneo() {
-  alert('Módulo de torneos próximamente');
-}
+function closeModal(id) { document.getElementById(id).className='modal-overlay'; }
 </script>
 </body>
 </html>
