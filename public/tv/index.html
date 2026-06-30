@@ -338,7 +338,7 @@ function makeLbl(s, t) {
 }
 
 function render(s) {
-  if (!s) { empty(); return; }
+  if (!s) { empty(); _prevPts=null; _prevGames=null; _prevSets=null; return; }
   var sc0 = s.displayScore[0];
   var sc1 = s.displayScore[1];
 
@@ -382,9 +382,34 @@ function render(s) {
 
 
 
+var _prevPts = null;
+var _prevGames = null;
+
 function doFlash(s) {
   var el = document.getElementById('flash');
-  var t = s.pts[0] >= s.pts[1] ? 0 : 1;
+  var t = -1;
+
+  if (_prevPts) {
+    // Si alguno sumó un punto en el game actual
+    if (s.pts[0] > _prevPts[0]) t = 0;
+    else if (s.pts[1] > _prevPts[1]) t = 1;
+    // Si se ganó un game (los pts vuelven a 0), comparar games
+    else if (s.pts[0] === 0 && s.pts[1] === 0 && _prevGames) {
+      if (s.games[0] > _prevGames[0]) t = 0;
+      else if (s.games[1] > _prevGames[1]) t = 1;
+      // Si se ganó un set (games vuelven a 0), comparar sets
+      else if (s.sets[0] > (_prevSets ? _prevSets[0] : 0)) t = 0;
+      else if (s.sets[1] > (_prevSets ? _prevSets[1] : 0)) t = 1;
+    }
+  }
+
+  // Guardar estado actual para la próxima comparación
+  _prevPts = [s.pts[0], s.pts[1]];
+  _prevGames = [s.games[0], s.games[1]];
+  _prevSets = [s.sets[0], s.sets[1]];
+
+  if (t < 0) return; // No se pudo determinar, no mostrar flash
+
   el.textContent = '+1  ' + (t===0 ? s.equipo1 : s.equipo2);
   el.className = 'flash f' + t + ' show';
   if (flashT) clearTimeout(flashT);
