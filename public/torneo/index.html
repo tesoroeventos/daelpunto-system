@@ -126,10 +126,17 @@ function cargarTorneos() {
   err.textContent = '';
   if (!cod) { err.textContent = 'Ingresá el código del club'; return; }
 
-  fetch('/api/club/'+cod+'/torneos')
+  // Cargar info del club (canchas) y torneos
+  fetch('/api/club/'+cod)
     .then(function(r){ return r.ok ? r.json() : null; })
+    .then(function(clubData){
+      if (!clubData) { err.textContent = 'Club no encontrado'; return; }
+      window._canchasClub = clubData.canchas || [];
+      return fetch('/api/club/'+cod+'/torneos');
+    })
+    .then(function(r){ return r && r.ok ? r.json() : null; })
     .then(function(data){
-      if (!data) { err.textContent = 'Club no encontrado'; return; }
+      if (!data) return;
       if (!data.length) { err.textContent = 'No hay torneos en este club'; return; }
       var lista = document.getElementById('torneos-lista');
       lista.innerHTML = '';
@@ -228,7 +235,10 @@ function renderBracket() {
       var g = p.ganador_id;
 
       html += '<div class="partido-bracket'+(g?' con-ganador':'')+'">';
-      if (p.cancha_id) html += '<div class="eq-cancha">CANCHA '+p.cancha_num+'</div>';
+      if (p.cancha_id) {
+        var cc = (window._canchasClub||[]).find(function(c){ return c.id===p.cancha_id; });
+        html += '<div class="eq-cancha">' + (cc ? (cc.nombre||'Cancha '+cc.numero) : 'Cancha') + '</div>';
+      }
 
       // Equipo 1
       html += '<div class="equipo-bracket'+(g&&g===p.equipo1_id?' ganador':'')+'">';
@@ -277,7 +287,10 @@ function renderBracket() {
       var e1 = getEquipo(p.equipo1_id);
       var e2 = getEquipo(p.equipo2_id);
       items += '<div class="proximo-item">';
-      if (p.cancha_id) items += '<span class="proximo-cancha">C'+p.cancha_num+'</span>';
+      if (p.cancha_id) {
+        var cc2 = (window._canchasClub||[]).find(function(c){ return c.id===p.cancha_id; });
+        items += '<span class="proximo-cancha">'+(cc2 ? (cc2.nombre||'C'+cc2.numero) : 'Cancha')+'</span>';
+      }
       items += (e1?e1.nombre:'?')+' vs '+(e2?e2.nombre:'?');
       items += '</div>';
     });
