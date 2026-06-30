@@ -112,11 +112,10 @@ db.exec(`
     created_at    TEXT DEFAULT (datetime('now'))
   );
 
-  -- Club demo para desarrollo
+  -- Club demo siempre disponible
   INSERT OR IGNORE INTO clubes (id, nombre, codigo, plan) 
   VALUES ('club-demo', 'Club Demo', 'DEMO', 'pro');
 
-  -- Canchas demo
   INSERT OR IGNORE INTO canchas (id, club_id, numero, nombre, tiene_tv)
   VALUES 
     ('cancha-1', 'club-demo', 1, 'Cancha 1', 1),
@@ -127,6 +126,21 @@ db.exec(`
     ('cancha-6', 'club-demo', 6, 'Cancha 6', 0),
     ('cancha-7', 'club-demo', 7, 'Cancha 7', 0),
     ('cancha-8', 'club-demo', 8, 'Cancha 8', 0);
+
+  -- Club WPC — se recrea automáticamente si se perdió
+  INSERT OR IGNORE INTO clubes (id, nombre, codigo, plan)
+  VALUES ('club-wpc', 'WPC', 'WPC', 'pro');
+
+  INSERT OR IGNORE INTO canchas (id, club_id, numero, nombre, tiene_tv)
+  VALUES
+    ('wpc-c1', 'club-wpc', 1, 'Cancha 1', 1),
+    ('wpc-c2', 'club-wpc', 2, 'Cancha 2', 1),
+    ('wpc-c3', 'club-wpc', 3, 'Cancha 3', 1),
+    ('wpc-c4', 'club-wpc', 4, 'Cancha 4', 1),
+    ('wpc-c5', 'club-wpc', 5, 'Cancha 5', 1),
+    ('wpc-c6', 'club-wpc', 6, 'Cancha 6', 0),
+    ('wpc-c7', 'club-wpc', 7, 'Cancha 7', 0),
+    ('wpc-c8', 'club-wpc', 8, 'Cancha 8', 0);
 `);
 
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
