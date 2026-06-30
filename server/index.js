@@ -257,6 +257,7 @@ wss.on('connection', (ws, req) => {
 
       // Unirse como TV de una cancha
       case 'JOIN_TV': {
+        console.log('JOIN_TV canchaId:', msg.canchaId);
         state.joinRoom(`tv:${msg.canchaId}`, ws);
         ws.canchaId = msg.canchaId;
         ws.role = 'tv';
@@ -269,7 +270,12 @@ wss.on('connection', (ws, req) => {
       case 'POINT': {
         const canchaId = msg.canchaId || ws.canchaId;
         const matchState = state.getState(canchaId);
-        if (!matchState || matchState.estado !== 'en_curso') return;
+        console.log('POINT canchaId:', canchaId, 'team:', msg.team, 'stateExists:', !!matchState);
+        console.log('All states:', Object.keys(state.canchaStates || {}));
+        if (!matchState || matchState.estado !== 'en_curso') {
+          console.log('NO STATE - ignorando punto');
+          return;
+        }
 
         const { matchWinner } = state.addPoint(matchState, msg.team);
         const fullState = state.getFullState(matchState);
