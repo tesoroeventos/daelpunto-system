@@ -197,7 +197,7 @@ let currentState = null;
 // ─── SETUP ───────────────────────────────────────────────────────────────────
 
 async function loadClub() {
-  const codigo = document.getElementById('inp-codigo').value.trim().toUpperCase();
+  const codigo = document.getElementById('inp-codigo').value.trim().toUpperCase().toUpperCase();
   if (!codigo) return;
   try {
     const r = await fetch(`/api/club/${codigo}`);
@@ -218,7 +218,7 @@ function selSrv(t) {
 }
 
 async function startGame() {
-  const codigo = document.getElementById('inp-codigo').value.trim().toUpperCase();
+  const codigo = document.getElementById('inp-codigo').value.trim().toUpperCase().toUpperCase();
   canchaId = document.getElementById('inp-cancha').value;
   const p1 = document.getElementById('p1n').value || 'Pareja 1';
   const p2 = document.getElementById('p2n').value || 'Pareja 2';
@@ -250,7 +250,7 @@ async function startGame() {
 // ─── WEBSOCKET ────────────────────────────────────────────────────────────────
 
 function connectWS() {
-  ws = new WebSocket(`ws://${location.host}`);
+  ws = new WebSocket(`${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}`);
   ws.onopen = () => {
     ws.send(JSON.stringify({ type: 'JOIN_CANCHA', clubCodigo, canchaId }));
     setWS(true, 'Conectado · TV sincronizada');
