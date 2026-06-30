@@ -168,7 +168,7 @@ function generarLlaves(torneoId, equipoIds) {
 
 function checkAdmin(req, res) {
   const key = req.headers['x-admin-key'] || req.query.key;
-  if (!key || key !== process.env.ADMIN_KEY) {
+  if (!key || key !== process.env.DEP_ADMIN_KEY) {
     res.status(401).json({ error: 'No autorizado' });
     return false;
   }
