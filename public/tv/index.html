@@ -120,7 +120,7 @@
 <div class="tv-flash" id="tv-flash"></div>
 
 <script>
-const WS_URL = `ws://${location.host}`;
+const WS_URL = `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}`;
 let ws, canchaId, canchaNombre, codigoCLub;
 let flashTimer;
 
@@ -129,7 +129,7 @@ document.getElementById('inp-codigo').addEventListener('change', loadCanchas);
 document.getElementById('inp-codigo').addEventListener('blur', loadCanchas);
 
 async function loadCanchas() {
-  const codigo = document.getElementById('inp-codigo').value.trim().toUpperCase();
+  const codigo = document.getElementById('inp-codigo').value.trim().toUpperCase().toUpperCase();
   if (!codigo) return;
   try {
     const r = await fetch(`/api/club/${codigo}`);
@@ -144,7 +144,7 @@ async function loadCanchas() {
 loadCanchas();
 
 function connectTV() {
-  const codigo = document.getElementById('inp-codigo').value.trim().toUpperCase();
+  const codigo = document.getElementById('inp-codigo').value.trim().toUpperCase().toUpperCase();
   canchaId = document.getElementById('inp-cancha').value;
   const sel = document.getElementById('inp-cancha');
   canchaNombre = sel.options[sel.selectedIndex]?.text || 'Cancha';
