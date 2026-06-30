@@ -195,4 +195,5 @@ module.exports = {
   broadcast, broadcastToClub,
   createMatchState, getState, setState, clearState,
   addPoint, undoPoint, getFullState, getDisplayScore,
+  canchaStates, rooms,
 };
