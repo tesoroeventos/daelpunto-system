@@ -10,7 +10,6 @@
     html,body{
       width:100%;height:100%;
       overflow:hidden;
-      transform-origin:top left;
       background:#0a1a0d;
       color:#F5F5F0;
       font-family:'Inter',sans-serif;
@@ -65,14 +64,14 @@
       background:#0d2211;border-bottom:3px solid #3D7A4A;
       padding:10px 40px;
       display:flex;align-items:center;justify-content:space-between;
-      height:56px;flex-shrink:0;
+      height:52px;flex-shrink:0;
     }
     .hdr-logo{font-family:'Bebas Neue',sans-serif;font-size:32px;color:#E8D44D;letter-spacing:3px}
     .hdr-cancha{font-family:'Bebas Neue',sans-serif;font-size:28px;color:rgba(245,245,240,.7);letter-spacing:2px}
     .hdr-status{display:flex;align-items:center;gap:8px}
     .hdr-dot{width:12px;height:12px;border-radius:50%;background:#3D7A4A}
     .hdr-dot.off{background:rgba(255,255,255,.2)}
-    .hdr-txt{font-size:15px;color:rgba(245,245,240,.35);letter-spacing:1px}
+    .hdr-txt{font-size:14px;color:rgba(245,245,240,.35);letter-spacing:1px}
 
     /* Área del marcador — flex:1 ocupa todo lo que queda */
     .score-area{
@@ -80,7 +79,7 @@
       display:flex;
       flex-direction:column;
       min-height:0;
-      padding:8px 20px 6px;
+      padding:6px 16px 4px;
       gap:10px;
     }
 
@@ -108,31 +107,31 @@
 
     .t-name{
       font-family:'Bebas Neue',sans-serif;
-      font-size:min(6vw,68px);
+      font-size:64px;
       letter-spacing:2px;color:#F5F5F0;
       text-align:center;line-height:1.1;
     }
     .t-score{
       font-family:'Bebas Neue',sans-serif;
-      font-size:min(28vw,260px);
+      font-size:200px;
       line-height:0.85;color:#F5F5F0;
       letter-spacing:4px;
     }
     .t-score.adv{color:#E8D44D}
-    .t-score.oro{color:#E8D44D;font-size:min(16vw,140px);line-height:1}
+    .t-score.oro{color:#E8D44D;font-size:120px;line-height:1}
     .t-lbl{
-      font-size:min(2.5vw,28px);
+      font-size:26px;
       color:rgba(245,245,240,.4);
       letter-spacing:3px;text-transform:uppercase;
       min-height:28px;
     }
     .t-sets{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
     .t-dot{
-      width:min(7vw,68px);height:min(7vw,68px);
+      width:64px;height:64px;
       border-radius:50%;
       background:rgba(255,255,255,.06);border:2px solid rgba(255,255,255,.1);
       display:flex;align-items:center;justify-content:center;
-      font-family:'Bebas Neue',sans-serif;font-size:min(3.5vw,32px);
+      font-family:'Bebas Neue',sans-serif;font-size:30px;
       color:rgba(245,245,240,.3);transition:.3s;
     }
     .t-dot.won{background:#E8D44D;border-color:#E8D44D;color:#0a1a0d}
@@ -143,24 +142,24 @@
       align-items:center;justify-content:center;
       gap:8px;
     }
-    .c-lbl{font-size:min(1.6vw,16px);color:rgba(245,245,240,.3);letter-spacing:2px;text-transform:uppercase;text-align:center}
+    .c-lbl{font-size:18px;color:rgba(245,245,240,.3);letter-spacing:2px;text-transform:uppercase;text-align:center}
     .c-games{
       font-family:'Bebas Neue',sans-serif;
-      font-size:min(11vw,110px);
+      font-size:100px;
       color:rgba(245,245,240,.5);
       letter-spacing:2px;text-align:center;
       line-height:1;
     }
     .c-sep{font-size:min(4vw,40px);color:rgba(245,245,240,.2);display:block;line-height:1}
-    .c-serve{font-size:min(7vw,72px);color:#E8D44D;margin-top:4px}
+    .c-serve{font-size:60px;color:#E8D44D;margin-top:4px}
 
     /* Footer */
     .ftr{
       background:rgba(0,0,0,.3);border-top:1px solid rgba(255,255,255,.06);
-      padding:6px 40px;height:38px;flex-shrink:0;
+      padding:4px 28px;height:30px;flex-shrink:0;
       display:flex;align-items:center;justify-content:space-between;
     }
-    .ftr-hist{display:flex;gap:20px;font-size:15px;color:rgba(245,245,240,.35)}
+    .ftr-hist{display:flex;gap:20px;font-size:14px;color:rgba(245,245,240,.35)}
     .ftr-time{font-size:15px;color:rgba(245,245,240,.25)}
 
     /* Empty */
@@ -168,7 +167,7 @@
       flex:1;display:flex;flex-direction:column;
       align-items:center;justify-content:center;gap:20px;
     }
-    .empty-big{font-family:'Bebas Neue',sans-serif;font-size:min(18vw,160px);color:#E8D44D;letter-spacing:6px;opacity:.25}
+    .empty-big{font-family:'Bebas Neue',sans-serif;font-size:180px;color:#E8D44D;letter-spacing:6px;opacity:.25}
     .empty-sub{font-size:22px;color:rgba(245,245,240,.2);letter-spacing:3px;text-transform:uppercase}
 
     /* Flash */
@@ -176,7 +175,7 @@
       display:none;position:fixed;
       top:42%;left:50%;transform:translate(-50%,-50%);
       border-radius:24px;padding:20px 64px;
-      font-family:'Bebas Neue',sans-serif;font-size:min(10vw,80px);
+      font-family:'Bebas Neue',sans-serif;font-size:90px;
       letter-spacing:4px;z-index:99;pointer-events:none;
       opacity:0;transition:opacity .12s;
     }
@@ -188,7 +187,7 @@
       transform:translate(-50%,-50%);
       background:rgba(232,212,77,.97);border-radius:24px;
       padding:24px 64px;font-family:'Bebas Neue',sans-serif;
-      font-size:min(9vw,72px);color:#0a1a0d;letter-spacing:4px;
+      font-size:80px;color:#0a1a0d;letter-spacing:4px;
       z-index:100;pointer-events:none;
     }
     .oro-banner.show{display:block}
@@ -240,23 +239,6 @@
 <div class="flash" id="flash"></div>
 
 <script>
-// Auto-escala para TVs con alta resolución
-(function() {
-  function escalar() {
-    var BASE_W = 1280; // ancho base de diseño
-    var w = window.innerWidth;
-    var h = window.innerHeight;
-    var scaleW = w / BASE_W;
-    // Aplicar zoom al body
-    document.body.style.zoom = scaleW;
-    // Compensar altura
-    document.body.style.height = (h / scaleW) + 'px';
-    document.body.style.width = BASE_W + 'px';
-  }
-  window.addEventListener('load', escalar);
-  window.addEventListener('resize', escalar);
-})();
-
 var WSU = (location.protocol==='https:' ? 'wss' : 'ws') + '://' + location.host;
 var ws, canchaId, canchaNombre, flashT;
 
@@ -273,7 +255,6 @@ function cargar() {
     })
     .then(function(data) {
       if (!data) return;
-      // Guardar canchas globalmente para usarlas en botones
       window._canchas = data.canchas;
       var g = document.getElementById('canchas-grid');
       var html = '';
