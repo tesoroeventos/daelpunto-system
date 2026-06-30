@@ -42,12 +42,24 @@ app.get('/api/club/:codigo/estado', (req, res) => {
 
 // POST /api/partido — crear nuevo partido
 app.post('/api/partido', (req, res) => {
-  const { clubCodigo, canchaId, equipo1Nombre, equipo2Nombre, puntoDeOro, equipo1Id, equipo2Id, torneoId, serving } = req.body;
+  const { clubCodigo, canchaId, equipo1Nombre, equipo2Nombre, puntoDeOro, equipo1Id, equipo2Id, torneoId, serving, soloServing } = req.body;
   const club = helpers.getClub.get(clubCodigo?.toUpperCase());
   if (!club) return res.status(404).json({ error: 'Club no encontrado' });
 
   const cancha = helpers.getCancha.get(canchaId);
   if (!cancha) return res.status(404).json({ error: 'Cancha no encontrada' });
+
+  // Si soloServing=true, solo actualizar el serving del partido existente
+  if (soloServing) {
+    const existingState = state.getState(canchaId);
+    if (existingState) {
+      existingState.serving = serving !== undefined ? Number(serving) : 0;
+      const fullState = state.getFullState(existingState);
+      state.broadcast(\`cancha:\${canchaId}\`, { type: 'STATE_UPDATE', state: fullState });
+      state.broadcast(\`tv:\${canchaId}\`, { type: 'STATE_UPDATE', state: fullState });
+      return res.json({ ok: true, state: fullState });
+    }
+  }
 
   const id = uuidv4();
   helpers.insertPartido.run(
