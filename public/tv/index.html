@@ -7,235 +7,190 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600;700&display=swap');
     *{box-sizing:border-box;margin:0;padding:0}
-    html,body{width:100%;height:100%;overflow:hidden;background:#0a1a0d;color:#F5F5F0;font-family:'Inter',sans-serif}
+    html,body{
+      width:100%;height:100%;
+      overflow:hidden;
+      background:#0a1a0d;
+      color:#F5F5F0;
+      font-family:'Inter',sans-serif;
+    }
 
     /* ── SETUP ── */
     #setup{
       display:flex;flex-direction:column;align-items:center;justify-content:center;
-      height:100vh;gap:28px;padding:48px;background:#0a1a0d;
+      width:100%;height:100%;gap:28px;padding:48px;
     }
-    #setup h1{font-family:'Bebas Neue',sans-serif;font-size:80px;color:#E8D44D;letter-spacing:5px}
-    .setup-sub{font-size:18px;color:rgba(245,245,240,.4);letter-spacing:3px;text-transform:uppercase}
-    .setup-label{font-size:15px;color:rgba(245,245,240,.4);letter-spacing:1px;text-transform:uppercase;width:100%;max-width:520px}
-    .setup-input{
+    #setup h1{font-family:'Bebas Neue',sans-serif;font-size:72px;color:#E8D44D;letter-spacing:5px}
+    .s-sub{font-size:18px;color:rgba(245,245,240,.4);letter-spacing:3px;text-transform:uppercase}
+    .s-lbl{font-size:15px;color:rgba(245,245,240,.4);letter-spacing:1px;text-transform:uppercase;width:100%;max-width:500px}
+    .s-inp{
       background:rgba(255,255,255,.07);border:3px solid rgba(255,255,255,.15);
-      border-radius:14px;color:#F5F5F0;font-size:40px;font-weight:700;
-      padding:20px 28px;outline:none;width:100%;max-width:520px;
+      border-radius:14px;color:#F5F5F0;font-size:38px;font-weight:700;
+      padding:18px 24px;outline:none;width:100%;max-width:500px;
       text-align:center;letter-spacing:8px;font-family:'Inter',sans-serif;
     }
-    .setup-input:focus{border-color:rgba(232,212,77,.8)}
-    .setup-btn{
+    .s-inp:focus{border-color:rgba(232,212,77,.8)}
+    .s-btn{
       background:#3D7A4A;border:none;border-radius:14px;color:#F5F5F0;
-      font-size:26px;font-weight:600;padding:22px 0;width:100%;max-width:520px;
-      cursor:pointer;font-family:'Inter',sans-serif;letter-spacing:1px;
+      font-size:24px;font-weight:600;padding:20px 0;width:100%;max-width:500px;
+      cursor:pointer;font-family:'Inter',sans-serif;
     }
-    .setup-btn:hover,.setup-btn:focus{background:#4a9058;outline:4px solid #E8D44D;outline-offset:2px}
-    .setup-error{color:#ff6b6b;font-size:16px;text-align:center;min-height:24px}
-    .setup-hint{font-size:14px;color:rgba(245,245,240,.25);text-align:center}
-
-    /* Botones de cancha */
+    .s-btn:hover,.s-btn:focus{background:#4a9058;outline:4px solid #E8D44D;outline-offset:2px}
+    .s-err{color:#ff6b6b;font-size:15px;text-align:center;min-height:22px}
     #canchas-grid{
-      display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
-      gap:20px;width:100%;max-width:1000px;
+      display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
+      gap:16px;width:100%;max-width:900px;
     }
-    .cancha-btn{
+    .c-btn{
       background:rgba(255,255,255,.05);border:3px solid rgba(255,255,255,.12);
-      border-radius:20px;color:#F5F5F0;font-family:'Bebas Neue',sans-serif;
-      padding:36px 16px;cursor:pointer;text-align:center;transition:all .15s;
+      border-radius:18px;color:#F5F5F0;font-family:'Bebas Neue',sans-serif;
+      padding:32px 16px;cursor:pointer;text-align:center;transition:all .15s;
     }
-    .cancha-btn:hover,.cancha-btn:focus{
-      background:rgba(61,122,74,.4);border-color:#E8D44D;
-      outline:none;transform:scale(1.05);
-    }
-    .cancha-btn .num{font-size:64px;color:#E8D44D;display:block;line-height:1}
-    .cancha-btn .nom{font-size:16px;font-family:'Inter',sans-serif;color:rgba(245,245,240,.5);margin-top:8px;display:block}
-    .btn-volver{
-      background:transparent;border:2px solid rgba(255,255,255,.2);border-radius:10px;
-      color:rgba(245,245,240,.4);font-size:18px;padding:12px 28px;cursor:pointer;
-      font-family:'Inter',sans-serif;
-    }
-    .btn-volver:hover,.btn-volver:focus{border-color:rgba(255,255,255,.5);color:#F5F5F0;outline:none}
+    .c-btn:hover,.c-btn:focus{background:rgba(61,122,74,.4);border-color:#E8D44D;outline:none;transform:scale(1.05)}
+    .c-btn .num{font-size:60px;color:#E8D44D;display:block;line-height:1}
+    .c-btn .nom{font-size:15px;font-family:'Inter',sans-serif;color:rgba(245,245,240,.5);margin-top:6px;display:block}
+    .btn-back{background:transparent;border:2px solid rgba(255,255,255,.2);border-radius:10px;color:rgba(245,245,240,.4);font-size:18px;padding:12px 28px;cursor:pointer;font-family:'Inter',sans-serif}
+    .btn-back:hover,.btn-back:focus{border-color:rgba(255,255,255,.5);color:#F5F5F0;outline:none}
 
     /* ── SCOREBOARD ── */
     #scoreboard{
       display:none;
-      width:100vw;height:100vh;
+      width:100%;height:100%;
       flex-direction:column;
-      background:#0a1a0d;
     }
 
-    /* Header compacto */
-    .tv-header{
-      background:#0d2211;
-      border-bottom:3px solid #3D7A4A;
-      padding:12px 48px;
+    /* Header */
+    .hdr{
+      background:#0d2211;border-bottom:3px solid #3D7A4A;
+      padding:10px 40px;
       display:flex;align-items:center;justify-content:space-between;
-      flex-shrink:0;
-      height:72px;
+      height:64px;flex-shrink:0;
     }
-    .tv-logo{font-family:'Bebas Neue',sans-serif;font-size:36px;color:#E8D44D;letter-spacing:3px}
-    .tv-cancha-lbl{font-family:'Bebas Neue',sans-serif;font-size:30px;color:rgba(245,245,240,.7);letter-spacing:2px}
-    .tv-status{display:flex;align-items:center;gap:10px}
-    .tv-dot{width:12px;height:12px;border-radius:50%;background:#3D7A4A;flex-shrink:0}
-    .tv-dot.off{background:rgba(255,255,255,.2)}
-    .tv-status-txt{font-size:16px;color:rgba(245,245,240,.4);letter-spacing:1px}
+    .hdr-logo{font-family:'Bebas Neue',sans-serif;font-size:32px;color:#E8D44D;letter-spacing:3px}
+    .hdr-cancha{font-family:'Bebas Neue',sans-serif;font-size:28px;color:rgba(245,245,240,.7);letter-spacing:2px}
+    .hdr-status{display:flex;align-items:center;gap:8px}
+    .hdr-dot{width:12px;height:12px;border-radius:50%;background:#3D7A4A}
+    .hdr-dot.off{background:rgba(255,255,255,.2)}
+    .hdr-txt{font-size:15px;color:rgba(245,245,240,.35);letter-spacing:1px}
 
-    /* MAIN — ocupa todo el resto */
-    #tv-content{flex:1;display:flex;flex-direction:column;min-height:0}
-
-    /* Estado vacío */
-    .tv-empty{
-      flex:1;display:flex;flex-direction:column;
-      align-items:center;justify-content:center;gap:24px;
+    /* Área del marcador — flex:1 ocupa todo lo que queda */
+    .score-area{
+      flex:1;
+      display:flex;
+      flex-direction:column;
+      min-height:0;
+      padding:16px 24px 10px;
+      gap:10px;
     }
-    .tv-empty .big{font-family:'Bebas Neue',sans-serif;font-size:120px;color:#E8D44D;letter-spacing:6px;opacity:.3}
-    .tv-empty .sub{font-size:24px;color:rgba(245,245,240,.25);letter-spacing:3px;text-transform:uppercase}
 
-    /* SCORE LAYOUT — ocupa todo el alto disponible */
-    .tv-main{
+    /* PARTIDO */
+    .match-row{
       flex:1;
       display:grid;
-      grid-template-columns:1fr 220px 1fr;
-      grid-template-rows:1fr;
-      align-items:stretch;
-      padding:24px 32px 16px;
-      gap:20px;
+      grid-template-columns:1fr 180px 1fr;
+      gap:16px;
       min-height:0;
     }
 
-    /* Paneles de equipo */
-    .tv-team{
+    /* Panel equipo */
+    .team{
       display:flex;flex-direction:column;
-      align-items:center;justify-content:center;
-      gap:16px;
-      border-radius:24px;
+      align-items:center;justify-content:space-evenly;
+      border-radius:20px;
       background:rgba(255,255,255,.03);
       border:3px solid rgba(255,255,255,.07);
-      padding:24px 20px;
+      padding:16px 12px;
+      min-height:0;
       transition:all .3s;
     }
-    .tv-team.serving{
-      border-color:rgba(232,212,77,.6);
-      background:rgba(232,212,77,.05);
-    }
-    .tv-team.flash-win{
-      background:rgba(61,122,74,.2);
-      border-color:#3D7A4A;
-    }
+    .team.srv{border-color:rgba(232,212,77,.55);background:rgba(232,212,77,.04)}
 
-    .tv-team-name{
+    .t-name{
       font-family:'Bebas Neue',sans-serif;
-      font-size:clamp(32px,4.5vw,64px);
-      letter-spacing:2px;
-      color:#F5F5F0;
-      text-align:center;
-      line-height:1.1;
+      font-size:min(5vw,56px);
+      letter-spacing:2px;color:#F5F5F0;
+      text-align:center;line-height:1.1;
     }
-
-    .tv-score{
+    .t-score{
       font-family:'Bebas Neue',sans-serif;
-      font-size:clamp(140px,22vw,240px);
-      line-height:0.85;
-      color:#F5F5F0;
+      font-size:min(26vw,220px);
+      line-height:0.85;color:#F5F5F0;
       letter-spacing:4px;
     }
-    .tv-score.adv{color:#E8D44D}
-    .tv-score.oro{color:#E8D44D;font-size:clamp(80px,12vw,140px);line-height:1}
-
-    .tv-score-label{
-      font-size:clamp(16px,2vw,26px);
+    .t-score.adv{color:#E8D44D}
+    .t-score.oro{color:#E8D44D;font-size:min(16vw,140px);line-height:1}
+    .t-lbl{
+      font-size:min(2vw,22px);
       color:rgba(245,245,240,.4);
-      letter-spacing:3px;
-      text-transform:uppercase;
-      min-height:30px;
+      letter-spacing:3px;text-transform:uppercase;
+      min-height:28px;
     }
-
-    .tv-sets{
-      display:flex;gap:12px;justify-content:center;flex-wrap:wrap;
-    }
-    .tv-set-dot{
-      width:clamp(40px,5.5vw,60px);
-      height:clamp(40px,5.5vw,60px);
+    .t-sets{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+    .t-dot{
+      width:min(6vw,54px);height:min(6vw,54px);
       border-radius:50%;
-      background:rgba(255,255,255,.06);
-      border:2px solid rgba(255,255,255,.1);
+      background:rgba(255,255,255,.06);border:2px solid rgba(255,255,255,.1);
       display:flex;align-items:center;justify-content:center;
-      font-family:'Bebas Neue',sans-serif;
-      font-size:clamp(16px,2.5vw,28px);
-      color:rgba(245,245,240,.3);
-      transition:.3s;
+      font-family:'Bebas Neue',sans-serif;font-size:min(3vw,26px);
+      color:rgba(245,245,240,.3);transition:.3s;
     }
-    .tv-set-dot.won{background:#E8D44D;border-color:#E8D44D;color:#0a1a0d}
+    .t-dot.won{background:#E8D44D;border-color:#E8D44D;color:#0a1a0d}
 
     /* Centro */
-    .tv-center{
+    .center{
       display:flex;flex-direction:column;
       align-items:center;justify-content:center;
-      gap:12px;
+      gap:8px;
     }
-    .tv-set-lbl{
-      font-size:clamp(14px,1.8vw,20px);
-      color:rgba(245,245,240,.3);
-      letter-spacing:2px;
-      text-transform:uppercase;
-      text-align:center;
-    }
-    .tv-games{
+    .c-lbl{font-size:min(1.6vw,16px);color:rgba(245,245,240,.3);letter-spacing:2px;text-transform:uppercase;text-align:center}
+    .c-games{
       font-family:'Bebas Neue',sans-serif;
-      font-size:clamp(48px,7vw,96px);
+      font-size:min(9vw,88px);
       color:rgba(245,245,240,.5);
-      letter-spacing:2px;
-      text-align:center;
+      letter-spacing:2px;text-align:center;
       line-height:1;
     }
-    .tv-games-sep{
-      font-size:clamp(20px,3vw,40px);
-      color:rgba(245,245,240,.2);
-      display:block;
-      line-height:1;
-    }
-    .tv-serve{
-      font-size:clamp(28px,4vw,52px);
-      color:#E8D44D;
-      margin-top:4px;
-    }
+    .c-sep{font-size:min(4vw,40px);color:rgba(245,245,240,.2);display:block;line-height:1}
+    .c-serve{font-size:min(5vw,52px);color:#E8D44D;margin-top:4px}
 
     /* Footer */
-    .tv-footer{
-      background:rgba(0,0,0,.3);
-      border-top:1px solid rgba(255,255,255,.06);
-      padding:8px 48px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      flex-shrink:0;
-      height:44px;
+    .ftr{
+      background:rgba(0,0,0,.3);border-top:1px solid rgba(255,255,255,.06);
+      padding:6px 40px;height:38px;flex-shrink:0;
+      display:flex;align-items:center;justify-content:space-between;
     }
-    .tv-history{display:flex;gap:24px;font-size:16px;color:rgba(245,245,240,.35)}
-    .tv-time{font-size:16px;color:rgba(245,245,240,.25)}
+    .ftr-hist{display:flex;gap:20px;font-size:15px;color:rgba(245,245,240,.35)}
+    .ftr-time{font-size:15px;color:rgba(245,245,240,.25)}
 
-    /* Overlays */
-    .tv-oro-banner{
-      display:none;position:fixed;top:50%;left:50%;
-      transform:translate(-50%,-50%);
-      background:rgba(232,212,77,.97);
-      border-radius:24px;padding:24px 64px;
-      font-family:'Bebas Neue',sans-serif;font-size:64px;
-      color:#0a1a0d;letter-spacing:4px;z-index:100;pointer-events:none;
+    /* Empty */
+    .empty{
+      flex:1;display:flex;flex-direction:column;
+      align-items:center;justify-content:center;gap:20px;
     }
-    .tv-oro-banner.show{display:block}
+    .empty-big{font-family:'Bebas Neue',sans-serif;font-size:min(18vw,160px);color:#E8D44D;letter-spacing:6px;opacity:.25}
+    .empty-sub{font-size:22px;color:rgba(245,245,240,.2);letter-spacing:3px;text-transform:uppercase}
 
-    .tv-flash{
-      display:none;position:fixed;top:42%;left:50%;
-      transform:translate(-50%,-50%);
+    /* Flash */
+    .flash{
+      display:none;position:fixed;
+      top:42%;left:50%;transform:translate(-50%,-50%);
       border-radius:24px;padding:20px 64px;
-      font-family:'Bebas Neue',sans-serif;font-size:72px;
+      font-family:'Bebas Neue',sans-serif;font-size:min(10vw,80px);
       letter-spacing:4px;z-index:99;pointer-events:none;
       opacity:0;transition:opacity .12s;
     }
-    .tv-flash.show{display:block;opacity:1}
-    .tv-flash.f0{background:rgba(61,122,74,.96);color:#F5F5F0}
-    .tv-flash.f1{background:rgba(232,212,77,.96);color:#0a1a0d}
+    .flash.show{display:block;opacity:1}
+    .flash.f0{background:rgba(61,122,74,.96);color:#F5F5F0}
+    .flash.f1{background:rgba(232,212,77,.96);color:#0a1a0d}
+    .oro-banner{
+      display:none;position:fixed;top:50%;left:50%;
+      transform:translate(-50%,-50%);
+      background:rgba(232,212,77,.97);border-radius:24px;
+      padding:24px 64px;font-family:'Bebas Neue',sans-serif;
+      font-size:min(9vw,72px);color:#0a1a0d;letter-spacing:4px;
+      z-index:100;pointer-events:none;
+    }
+    .oro-banner.show{display:block}
   </style>
 </head>
 <body>
@@ -243,190 +198,181 @@
 <!-- SETUP -->
 <div id="setup">
   <h1>Da El Punto</h1>
-  <div class="setup-sub">Pantalla TV</div>
+  <div class="s-sub">Pantalla TV</div>
 
-  <div id="step-1" style="display:flex;flex-direction:column;align-items:center;gap:20px;width:100%">
-    <div class="setup-label">Código del club</div>
-    <input class="setup-input" id="inp-codigo" type="text" placeholder="DEMO"
+  <div id="step-1" style="display:flex;flex-direction:column;align-items:center;gap:18px;width:100%">
+    <div class="s-lbl">Código del club</div>
+    <input class="s-inp" id="inp-cod" type="text" placeholder="DEMO"
       oninput="this.value=this.value.toUpperCase()"
-      onkeydown="if(event.key==='Enter') cargarCanchas()"/>
-    <div class="setup-error" id="setup-error"></div>
-    <button class="setup-btn" onclick="cargarCanchas()">Cargar canchas →</button>
-    <div class="setup-hint">Presioná Enter o el botón para continuar</div>
+      onkeydown="if(event.key==='Enter') cargar()"/>
+    <div class="s-err" id="s-err"></div>
+    <button class="s-btn" onclick="cargar()">Cargar canchas →</button>
   </div>
 
-  <div id="step-2" style="display:none;flex-direction:column;align-items:center;gap:24px;width:100%">
-    <div class="setup-sub">Seleccioná la cancha</div>
+  <div id="step-2" style="display:none;flex-direction:column;align-items:center;gap:20px;width:100%">
+    <div class="s-sub">Seleccioná la cancha</div>
     <div id="canchas-grid"></div>
-    <button class="btn-volver" onclick="volverPaso1()">← Volver</button>
+    <button class="btn-back" onclick="volver()">← Volver</button>
   </div>
 </div>
 
 <!-- SCOREBOARD -->
 <div id="scoreboard">
-  <div class="tv-header">
-    <div class="tv-logo">Da El Punto</div>
-    <div class="tv-cancha-lbl" id="tv-cancha-lbl">—</div>
-    <div class="tv-status">
-      <div class="tv-dot off" id="tv-dot"></div>
-      <div class="tv-status-txt" id="tv-status-txt">Conectando…</div>
+  <div class="hdr">
+    <div class="hdr-logo">Da El Punto</div>
+    <div class="hdr-cancha" id="hdr-cancha">—</div>
+    <div class="hdr-status">
+      <div class="hdr-dot off" id="hdr-dot"></div>
+      <div class="hdr-txt" id="hdr-txt">Conectando…</div>
     </div>
   </div>
-  <div id="tv-content" style="flex:1;display:flex;flex-direction:column;min-height:0">
-    <div class="tv-empty">
-      <div class="big">READY</div>
-      <div class="sub">Esperando partido…</div>
+
+  <div class="score-area" id="score-area">
+    <div class="empty">
+      <div class="empty-big">READY</div>
+      <div class="empty-sub">Esperando partido…</div>
     </div>
   </div>
 </div>
 
-<div class="tv-oro-banner" id="tv-oro">🥇 PUNTO DE ORO</div>
-<div class="tv-flash" id="tv-flash"></div>
+<div class="oro-banner" id="oro-banner">🥇 PUNTO DE ORO</div>
+<div class="flash" id="flash"></div>
 
 <script>
-const WS_URL = `${location.protocol==='https:'?'wss':'ws'}://${location.host}`;
+const WSU = `${location.protocol==='https:'?'wss':'ws'}://${location.host}`;
 let ws, canchaId, canchaNombre, flashT;
 
-// ── SETUP ──────────────────────────────────────────────────────────────────
-
-async function cargarCanchas() {
-  const codigo = document.getElementById('inp-codigo').value.trim().toUpperCase();
-  const err = document.getElementById('setup-error');
+async function cargar() {
+  const cod = document.getElementById('inp-cod').value.trim().toUpperCase();
+  const err = document.getElementById('s-err');
   err.textContent = '';
-  if (!codigo) { err.textContent = 'Ingresá el código del club'; return; }
+  if (!cod) { err.textContent = 'Ingresá el código del club'; return; }
   try {
-    const r = await fetch(`/api/club/${codigo}`);
+    const r = await fetch(`/api/club/${cod}`);
     if (!r.ok) { err.textContent = 'Club no encontrado'; return; }
     const { canchas } = await r.json();
-    const grid = document.getElementById('canchas-grid');
-    grid.innerHTML = canchas.map(c =>
-      `<button class="cancha-btn" onclick="conectar('${c.id}','${(c.nombre||'Cancha '+c.numero).replace(/'/g,'')}')" >
+    const g = document.getElementById('canchas-grid');
+    g.innerHTML = canchas.map(c =>
+      `<button class="c-btn" onclick="conectar('${c.id}','${(c.nombre||'Cancha '+c.numero).replace(/'/g,'')}')">
         <span class="num">${c.numero}</span>
         <span class="nom">${c.nombre||'Cancha '+c.numero}</span>
       </button>`).join('');
     document.getElementById('step-1').style.display = 'none';
     document.getElementById('step-2').style.display = 'flex';
-    setTimeout(() => { const f=grid.querySelector('.cancha-btn'); if(f) f.focus(); }, 150);
-  } catch(e) { err.textContent = 'Error conectando al servidor'; }
+    setTimeout(()=>{ const f=g.querySelector('.c-btn'); if(f) f.focus(); }, 150);
+  } catch { err.textContent = 'Error conectando'; }
 }
 
-function volverPaso1() {
+function volver() {
   document.getElementById('step-1').style.display = 'flex';
   document.getElementById('step-2').style.display = 'none';
 }
 
 function conectar(id, nombre) {
-  canchaId = id; canchaNombre = nombre;
+  canchaId=id; canchaNombre=nombre;
   document.getElementById('setup').style.display = 'none';
   document.getElementById('scoreboard').style.display = 'flex';
-  document.getElementById('tv-cancha-lbl').textContent = nombre;
+  document.getElementById('hdr-cancha').textContent = nombre;
   connectWS();
 }
 
-// ── WEBSOCKET ──────────────────────────────────────────────────────────────
-
 function connectWS() {
-  ws = new WebSocket(WS_URL);
+  ws = new WebSocket(WSU);
   ws.onopen = () => {
-    ws.send(JSON.stringify({ type:'JOIN_TV', canchaId }));
-    setStatus(true,'En vivo');
+    ws.send(JSON.stringify({type:'JOIN_TV',canchaId}));
+    dot(true,'En vivo');
   };
   ws.onmessage = (e) => {
-    const msg = JSON.parse(e.data);
-    if (msg.type==='INIT') renderState(msg.state);
-    else if (msg.type==='STATE_UPDATE') { doFlash(msg.state); renderState(msg.state); }
-    else if (msg.type==='PARTIDO_INICIADO') renderState(msg.state);
-    else if (msg.type==='PARTIDO_FINALIZADO') renderEmpty();
+    const m = JSON.parse(e.data);
+    if (m.type==='INIT') render(m.state);
+    else if (m.type==='STATE_UPDATE') { flash(m.state); render(m.state); }
+    else if (m.type==='PARTIDO_INICIADO') render(m.state);
+    else if (m.type==='PARTIDO_FINALIZADO') empty();
   };
-  ws.onclose = () => { setStatus(false,'Reconectando…'); setTimeout(connectWS,3000); };
+  ws.onclose = () => { dot(false,'Reconectando…'); setTimeout(connectWS,3000); };
   ws.onerror = () => ws.close();
 }
 
-function setStatus(ok, txt) {
-  document.getElementById('tv-dot').className = 'tv-dot'+(ok?'':' off');
-  document.getElementById('tv-status-txt').textContent = txt;
+function dot(ok,txt) {
+  document.getElementById('hdr-dot').className='hdr-dot'+(ok?'':' off');
+  document.getElementById('hdr-txt').textContent=txt;
 }
 
-// ── RENDER ─────────────────────────────────────────────────────────────────
-
-function renderEmpty() {
-  document.getElementById('tv-content').innerHTML = `
-    <div class="tv-empty">
-      <div class="big">READY</div>
-      <div class="sub">Esperando partido…</div>
+function empty() {
+  document.getElementById('score-area').innerHTML=`
+    <div class="empty">
+      <div class="empty-big">READY</div>
+      <div class="empty-sub">Esperando partido…</div>
     </div>`;
 }
 
-function renderState(s) {
-  if (!s) { renderEmpty(); return; }
-
+function render(s) {
+  if (!s) { empty(); return; }
   const sc0=s.displayScore[0], sc1=s.displayScore[1];
 
-  const dots = (t) => [0,1,2].map(i => {
+  const dots = t => [0,1,2].map(i => {
     const h=s.setHistory[i];
-    const won = h && (t===0 ? h.e1>h.e2 : h.e2>h.e1);
-    return `<div class="tv-set-dot${h?(won?' won':''):''}">${h?(t===0?h.e1:h.e2):'—'}</div>`;
+    const w=h&&(t===0?h.e1>h.e2:h.e2>h.e1);
+    return `<div class="t-dot${h?(w?' won':''):''}">${h?(t===0?h.e1:h.e2):'—'}</div>`;
   }).join('');
 
-  const lbl = (t) => {
-    if (s.puntosOro || s.pts[0]<3 || s.pts[1]<3) return '';
+  const lbl = t => {
+    if (s.puntosOro||s.pts[0]<3||s.pts[1]<3) return '';
     if (s.pts[0]===s.pts[1]) return 'DEUCE';
-    return s.pts[t]>s.pts[1-t] ? 'VENTAJA' : '';
+    return s.pts[t]>s.pts[1-t]?'VENTAJA':'';
   };
 
   const hist = s.setHistory.map((h,i)=>`<span>Set ${i+1}: ${h.e1}–${h.e2}</span>`).join('');
+  document.getElementById('oro-banner').className='oro-banner'+(s.isOro?' show':'');
 
-  document.getElementById('tv-oro').className = 'tv-oro-banner'+(s.isOro?' show':'');
-
-  document.getElementById('tv-content').innerHTML = `
-    <div class="tv-main">
-      <div class="tv-team ${s.serving===0?'serving':''}">
-        <div class="tv-team-name">${s.equipo1}</div>
-        <div class="tv-score ${sc0==='AD'?'adv':''} ${sc0==='ORO'?'oro':''}">${sc0==='ORO'?'🥇':sc0}</div>
-        <div class="tv-score-label">${lbl(0)}</div>
-        <div class="tv-sets">${dots(0)}</div>
+  document.getElementById('score-area').innerHTML = `
+    <div class="match-row">
+      <div class="team ${s.serving===0?'srv':''}">
+        <div class="t-name">${s.equipo1}</div>
+        <div class="t-score ${sc0==='AD'?'adv':''} ${sc0==='ORO'?'oro':''}">${sc0==='ORO'?'🥇':sc0}</div>
+        <div class="t-lbl">${lbl(0)}</div>
+        <div class="t-sets">${dots(0)}</div>
       </div>
 
-      <div class="tv-center">
-        <div class="tv-set-lbl">Set ${s.currentSet}</div>
-        <div class="tv-games">
-          ${s.games[0]}<span class="tv-games-sep">—</span>${s.games[1]}
+      <div class="center">
+        <div class="c-lbl">Set ${s.currentSet}</div>
+        <div class="c-games">
+          ${s.games[0]}<span class="c-sep">—</span>${s.games[1]}
         </div>
-        <div class="tv-serve">${s.serving===0?'◀':'▶'}</div>
-        <div class="tv-set-lbl">Saque</div>
+        <div class="c-serve">${s.serving===0?'◀':'▶'}</div>
+        <div class="c-lbl">Saque</div>
       </div>
 
-      <div class="tv-team ${s.serving===1?'serving':''}">
-        <div class="tv-team-name">${s.equipo2}</div>
-        <div class="tv-score ${sc1==='AD'?'adv':''} ${sc1==='ORO'?'oro':''}">${sc1==='ORO'?'🥇':sc1}</div>
-        <div class="tv-score-label">${lbl(1)}</div>
-        <div class="tv-sets">${dots(1)}</div>
+      <div class="team ${s.serving===1?'srv':''}">
+        <div class="t-name">${s.equipo2}</div>
+        <div class="t-score ${sc1==='AD'?'adv':''} ${sc1==='ORO'?'oro':''}">${sc1==='ORO'?'🥇':sc1}</div>
+        <div class="t-lbl">${lbl(1)}</div>
+        <div class="t-sets">${dots(1)}</div>
       </div>
     </div>
 
-    <div class="tv-footer">
-      <div class="tv-history">${hist}</div>
-      <div class="tv-time" id="tv-time"></div>
+    <div class="ftr">
+      <div class="ftr-hist">${hist}</div>
+      <div class="ftr-time" id="ftr-time"></div>
     </div>`;
 
-  updateTime();
+  tick();
 }
 
-function doFlash(s) {
-  const el = document.getElementById('tv-flash');
-  // Detectar quién sumó comparando con estado previo — usar el que tiene más puntos
-  const t = s.pts[0] >= s.pts[1] ? 0 : 1;
-  el.textContent = '+1  '+(t===0?s.equipo1:s.equipo2);
-  el.className = `tv-flash f${t} show`;
-  if (flashT) clearTimeout(flashT);
-  flashT = setTimeout(()=>el.className='tv-flash', 800);
+function flash(s) {
+  const el=document.getElementById('flash');
+  const t=s.pts[0]>=s.pts[1]?0:1;
+  el.textContent='+1  '+(t===0?s.equipo1:s.equipo2);
+  el.className=`flash f${t} show`;
+  if(flashT) clearTimeout(flashT);
+  flashT=setTimeout(()=>el.className='flash',800);
 }
 
-function updateTime() {
-  const el = document.getElementById('tv-time');
-  if (el) el.textContent = new Date().toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'});
+function tick() {
+  const el=document.getElementById('ftr-time');
+  if(el) el.textContent=new Date().toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'});
 }
-setInterval(updateTime, 30000);
+setInterval(tick,30000);
 </script>
 </body>
 </html>
