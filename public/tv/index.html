@@ -11,15 +11,38 @@
 
     /* SETUP */
     #setup{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;gap:20px;padding:40px}
-    #setup h1{font-family:'Bebas Neue',sans-serif;font-size:48px;color:#E8D44D;letter-spacing:3px}
-    #setup .form-group{display:flex;flex-direction:column;gap:6px;width:100%;max-width:360px}
-    #setup label{font-size:12px;color:rgba(245,245,240,.5);letter-spacing:1px;text-transform:uppercase}
-    #setup input,#setup select{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:8px;color:#F5F5F0;font-size:16px;padding:12px 14px;outline:none;font-family:'Inter',sans-serif}
-    #setup input:focus,#setup select:focus{border-color:rgba(232,212,77,.5)}
-    #setup select option{background:#1a2e1c}
-    #setup .btn{background:#3D7A4A;border:none;border-radius:10px;color:#F5F5F0;font-size:16px;font-weight:600;padding:14px;width:100%;max-width:360px;cursor:pointer;font-family:'Inter',sans-serif}
+    #setup h1{font-family:'Bebas Neue',sans-serif;font-size:64px;color:#E8D44D;letter-spacing:4px}
+    #setup .form-group{display:flex;flex-direction:column;gap:8px;width:100%;max-width:480px}
+    #setup label{font-size:14px;color:rgba(245,245,240,.5);letter-spacing:1px;text-transform:uppercase}
+    #setup input{background:rgba(255,255,255,.06);border:2px solid rgba(255,255,255,.12);border-radius:10px;color:#F5F5F0;font-size:16px;padding:12px 14px;outline:none;font-family:'Inter',sans-serif;width:100%}
+    #setup input:focus{border-color:rgba(232,212,77,.7)}
+    #setup .btn{background:#3D7A4A;border:none;border-radius:12px;color:#F5F5F0;font-size:16px;font-weight:600;padding:14px;width:100%;max-width:480px;cursor:pointer;font-family:'Inter',sans-serif}
+    #setup .btn:focus{outline:3px solid #E8D44D}
     #setup .btn:active{opacity:.85}
-    #setup .error{color:#ff6b6b;font-size:13px;text-align:center}
+    #setup .error{color:#ff6b6b;font-size:14px;text-align:center}
+
+    /* Botones de cancha navegables */
+    .cancha-btn{
+      background:rgba(255,255,255,.05);
+      border:2px solid rgba(255,255,255,.12);
+      border-radius:14px;
+      color:#F5F5F0;
+      font-family:'Bebas Neue',sans-serif;
+      font-size:28px;
+      letter-spacing:1px;
+      padding:24px 12px;
+      cursor:pointer;
+      text-align:center;
+      transition:all .15s;
+    }
+    .cancha-btn:hover, .cancha-btn:focus{
+      background:rgba(61,122,74,.3);
+      border-color:#3D7A4A;
+      outline:3px solid #E8D44D;
+      transform:scale(1.04);
+    }
+    .cancha-btn .cancha-num{font-size:42px;display:block;color:#E8D44D}
+    .cancha-btn .cancha-name{font-size:14px;font-family:'Inter',sans-serif;color:rgba(245,245,240,.5);margin-top:4px;display:block}
 
     /* TV SCOREBOARD */
     #scoreboard{display:none;width:100vw;height:100vh;flex-direction:column}
@@ -85,16 +108,31 @@
   <h1>Da El Punto</h1>
   <p style="color:rgba(245,245,240,.4);font-size:14px;letter-spacing:1px">PANTALLA TV — CANCHA</p>
 
-  <div class="form-group">
-    <label>Código del club</label>
-    <input id="inp-codigo" type="text" placeholder="Ej: DEMO" value="DEMO" style="text-transform:uppercase"/>
+  <!-- PASO 1: código del club -->
+  <div id="step-codigo">
+    <div class="form-group">
+      <label>Código del club</label>
+      <input id="inp-codigo" type="text" placeholder="Ej: DEMO" value="DEMO"
+        style="text-transform:uppercase;font-size:28px;padding:16px 20px;text-align:center;letter-spacing:4px"
+        oninput="this.value=this.value.toUpperCase()"
+        onkeydown="if(event.key==='Enter') cargarCanchas()"/>
+    </div>
+    <div class="error" id="setup-error"></div>
+    <button class="btn" onclick="cargarCanchas()" style="font-size:20px;padding:18px">
+      Cargar canchas →
+    </button>
   </div>
-  <div class="form-group">
-    <label>Número de cancha</label>
-    <select id="inp-cancha"></select>
+
+  <!-- PASO 2: selección de cancha con botones grandes -->
+  <div id="step-canchas" style="display:none;width:100%;max-width:700px">
+    <p style="color:rgba(245,245,240,.5);font-size:14px;letter-spacing:1px;margin-bottom:20px">
+      SELECCIONÁ TU CANCHA
+    </p>
+    <div id="canchas-btns" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;width:100%"></div>
+    <button onclick="volverCodigo()" style="margin-top:24px;background:transparent;border:1px solid rgba(255,255,255,.2);border-radius:8px;color:rgba(245,245,240,.4);font-size:14px;padding:10px 20px;cursor:pointer">
+      ← Volver
+    </button>
   </div>
-  <div class="error" id="setup-error"></div>
-  <button class="btn" onclick="connectTV()">Conectar pantalla</button>
 </div>
 
 <!-- SCOREBOARD -->
