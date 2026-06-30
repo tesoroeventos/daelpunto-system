@@ -157,10 +157,11 @@
 
       <!-- Detalle torneo -->
       <div id="torneo-detalle" style="display:none">
-        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap">
           <button onclick="volverTorneos()" style="background:transparent;border:1px solid rgba(255,255,255,.1);border-radius:7px;color:rgba(245,245,240,.5);font-size:12px;padding:6px 12px;cursor:pointer">← Volver</button>
-          <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:#E8D44D;letter-spacing:1px" id="td-nombre">—</div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:#E8D44D;letter-spacing:1px;flex:1" id="td-nombre">—</div>
           <span id="td-estado-badge" style="font-size:10px;font-weight:600;padding:3px 8px;border-radius:4px;letter-spacing:1px;text-transform:uppercase"></span>
+          <button onclick="eliminarTorneo()" style="background:rgba(220,53,69,.1);border:1px solid rgba(220,53,69,.3);border-radius:7px;color:#ff8a8a;font-size:11px;padding:6px 12px;cursor:pointer;font-family:'Inter',sans-serif">🗑 Eliminar</button>
         </div>
 
         <!-- Equipos -->
@@ -514,6 +515,9 @@ function renderBracketEncargado() {
   }
   window._llavesRef=_llavesTorneo;
 
+  // Opciones de canchas para el select
+  const canchaOpts = canchas.map((c,i)=>'<option value="'+c.id+'">'+(c.nombre||'Cancha '+c.numero)+'</option>').join('');
+
   const rondas={};
   _llavesTorneo.forEach(l=>{ if(!rondas[l.ronda]) rondas[l.ronda]=[]; rondas[l.ronda].push(l); });
   const keys=Object.keys(rondas).map(Number).sort((a,b)=>b-a);
@@ -523,17 +527,30 @@ function renderBracketEncargado() {
     const ps=rondas[ronda].sort((a,b)=>a.posicion-b.posicion);
     const lbl=ronda===1?'FINAL':ronda===2?'SEMIFINAL':ronda===4?'CUARTOS':'RONDA '+ronda;
     html+='<div class="bracket-ronda"><div class="bracket-ronda-titulo">'+lbl+'</div>';
-    ps.forEach((p,pi)=>{
+    ps.forEach((p)=>{
       const idx=_llavesTorneo.indexOf(p);
       const e1=p.equipo1_id?getEquipoTorneo(p.equipo1_id):null;
       const e2=p.equipo2_id?getEquipoTorneo(p.equipo2_id):null;
-      html+='<div class="bracket-partido">';
+      const canchaNom = p.cancha_id ? (canchas.find(c=>c.id===p.cancha_id)||{}).nombre||'Cancha' : null;
+
+      html+='<div class="bracket-partido" style="position:relative">';
+
+      // Selector de cancha arriba del partido
+      html+='<div style="padding:4px 8px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;gap:6px">';
+      html+='<span style="font-size:9px;color:rgba(245,245,240,.3);letter-spacing:1px;text-transform:uppercase">Cancha:</span>';
+      html+='<select onchange="asignarCancha('+idx+',this.value)" style="flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:4px;color:'+(p.cancha_id?'#E8D44D':'rgba(245,245,240,.4)')+';font-size:11px;padding:2px 4px;outline:none;font-family:Inter,sans-serif">';
+      html+='<option value="">— Sin asignar —</option>'+canchaOpts;
+      html+='</select></div>';
+
+      // Equipo 1
       const c1='bracket-eq'+(p.ganador_id===p.equipo1_id?' ganador':(!e1?' pendiente':''));
       html+='<div class="'+c1+'" onclick="clickEq('+idx+',1)">';
       html+='<span style="font-size:10px;color:rgba(245,245,240,.3);width:14px">'+(e1&&e1.seed?e1.seed:'')+'</span>';
       html+='<span>'+(e1?e1.nombre:'Por definir')+'</span>';
       if(p.ganador_id===p.equipo1_id) html+='<span style="margin-left:auto;color:#E8D44D">✓</span>';
       html+='</div>';
+
+      // Equipo 2
       const c2='bracket-eq'+(p.ganador_id===p.equipo2_id?' ganador':(!e2?' pendiente':''));
       html+='<div class="'+c2+'" onclick="clickEq('+idx+',2)">';
       html+='<span style="font-size:10px;color:rgba(245,245,240,.3);width:14px">'+(e2&&e2.seed?e2.seed:'')+'</span>';
@@ -545,6 +562,33 @@ function renderBracketEncargado() {
   });
   html+='</div>';
   div.innerHTML=html;
+
+  // Setear valor actual del select de cancha
+  _llavesTorneo.forEach((p,idx)=>{
+    if(p.cancha_id){
+      const selects=div.querySelectorAll('select');
+      if(selects[idx]) selects[idx].value=p.cancha_id;
+    }
+  });
+}
+
+async function asignarCancha(llaveIdx, canchaId) {
+  const p = window._llavesRef[llaveIdx];
+  if (!p) return;
+  await fetch('/api/llave/'+p.id+'/cancha', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({canchaId: canchaId||null})
+  });
+  // Actualizar localmente
+  _llavesTorneo[llaveIdx].cancha_id = canchaId||null;
+}
+
+async function eliminarTorneo() {
+  if (!_torneoActual) return;
+  if (!confirm('Eliminar el torneo '+_torneoActual.nombre+'? Esta accion no se puede deshacer.')) return;
+  await fetch('/api/torneo/'+_torneoActual.id, {method:'DELETE'});
+  volverTorneos();
+  cargarTorneos();
 }
 
 function clickEq(idx,equipo) {
