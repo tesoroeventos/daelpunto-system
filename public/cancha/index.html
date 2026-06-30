@@ -111,6 +111,7 @@
         <div id="canchas-grid-cel" style="display:grid;grid-template-columns:1fr 1fr;gap:8px"></div>
         <button onclick="volverCodigo()" style="margin-top:8px;width:100%;padding:7px;background:transparent;border:1px solid rgba(255,255,255,.1);border-radius:7px;color:rgba(245,245,240,.35);font-family:'Inter',sans-serif;font-size:11px;cursor:pointer">← Cambiar club</button>
       </div>
+      <div id="err-club" style="color:#ff6b6b;font-size:12px;min-height:16px;margin-bottom:4px"></div>
       <div id="btn-cargar-wrap">
         <button class="btn-start" style="margin-top:8px;background:rgba(61,122,74,.3);border:1px solid rgba(61,122,74,.5);font-size:13px;padding:10px" onclick="loadClub()">Cargar canchas →</button>
       </div>
@@ -201,10 +202,11 @@ let currentState = null;
 
 async function loadClub() {
   const codigo = document.getElementById('inp-codigo').value.trim().toUpperCase();
-  if (!codigo) { alert('Ingresá el código del club'); return; }
+  window._lastCodigo = codigo;
+  if (!codigo) { document.getElementById('err-club').textContent = 'Ingresá el código del club'; return; return; }
   try {
     const r = await fetch(`/api/club/${codigo}`);
-    if (!r.ok) { alert('Club no encontrado. Verificá el código.'); return; }
+    if (!r.ok) { document.getElementById('err-club').textContent = 'Club no encontrado'; return; return; }
     const data = await r.json();
 
     // Mostrar botones de cancha
@@ -219,7 +221,7 @@ async function loadClub() {
     document.getElementById('canchas-btns').style.display = 'block';
     document.getElementById('btn-cargar-wrap').style.display = 'none';
     document.getElementById('inp-codigo').style.display = 'none';
-  } catch(e) { alert('Error conectando al servidor'); }
+  } catch(e) { document.getElementById('err-club').textContent = 'Error conectando al servidor'; }
 }
 
 function volverCodigo() {
@@ -232,7 +234,6 @@ function selCancha(id, nombre) {
   canchaId = id;
   document.getElementById('sct-club').style.background = 'rgba(61,122,74,.1)';
   document.getElementById('sct-club').style.borderColor = 'rgba(61,122,74,.4)';
-  // Mostrar cancha seleccionada
   document.getElementById('canchas-btns').style.display = 'none';
   document.getElementById('btn-cargar-wrap').style.display = 'none';
   document.getElementById('inp-codigo').style.display = 'none';
@@ -240,6 +241,53 @@ function selCancha(id, nombre) {
   div.style.cssText = 'text-align:center;padding:8px;color:#7BC47F;font-size:13px;font-weight:600';
   div.innerHTML = '✓ ' + nombre + ' <button onclick="volverCodigo()" style="background:none;border:none;color:rgba(245,245,240,.3);font-size:11px;cursor:pointer;margin-left:8px">cambiar</button>';
   document.getElementById('sct-club').appendChild(div);
+
+  // Verificar si hay partido activo en esta cancha y precargar nombres
+  var codigo = document.getElementById('inp-codigo').value || window._lastCodigo || '';
+  if (!codigo) codigo = window._lastCodigo || '';
+  fetch('/api/club/' + (window._lastCodigo || ''))
+    .then(function(r){ return r.ok ? r.json() : null; })
+    .catch(function(){ return null; });
+
+  // Precargar desde el estado del servidor
+  fetch('/api/club/' + (window._lastCodigo || '') + '/estado')
+    .then(function(r){ return r.ok ? r.json() : null; })
+    .then(function(data) {
+      if (!data) return;
+      // Buscar la cancha seleccionada
+      for (var i = 0; i < data.length; i++) {
+        if (data[i].cancha.id === id && data[i].partido) {
+          var p = data[i].partido;
+          // Precargar nombres si vienen del encargado
+          if (p.equipo1 && p.equipo1 !== 'Pareja 1') {
+            document.getElementById('p1n').value = p.equipo1;
+          }
+          if (p.equipo2 && p.equipo2 !== 'Pareja 2') {
+            document.getElementById('p2n').value = p.equipo2;
+          }
+          // Si ya hay partido activo, conectar directo
+          if (p.estado === 'en_curso') {
+            document.getElementById('match-setup').style.display = 'none';
+            document.getElementById('btn-empezar').style.display = 'none';
+            var info = document.createElement('div');
+            info.style.cssText = 'text-align:center;padding:10px;background:rgba(61,122,74,.2);border-radius:8px;margin-top:8px';
+            info.innerHTML = '<div style="color:#7BC47F;font-size:13px;font-weight:600">Partido en curso</div>' +
+              '<div style="color:rgba(245,245,240,.5);font-size:11px;margin-top:2px">' + p.equipo1 + ' vs ' + p.equipo2 + '</div>';
+            document.getElementById('sct-club').appendChild(info);
+            // Conectar WS directo
+            var cfg2 = { ctrlEnabled: false };
+            document.getElementById('setup-screen').style.display = 'none';
+            document.getElementById('game-screen').style.display = 'block';
+            document.getElementById('btn-cfg').style.display = 'block';
+            connectWS();
+            return;
+          }
+          break;
+        }
+      }
+    })
+    .catch(function(){});
+
   document.getElementById('match-setup').style.display = 'block';
   document.getElementById('btn-empezar').style.display = 'block';
 }
@@ -253,7 +301,7 @@ function selSrv(t) {
 async function startGame() {
   const codigo = document.getElementById('inp-codigo').value.trim().toUpperCase().toUpperCase();
   // canchaId ya está seteado por selCancha()
-  if (!canchaId) { alert('Seleccioná una cancha primero'); return; }
+  if (!canchaId) { document.getElementById('err-club').textContent = 'Seleccioná una cancha'; return; return; }
   const p1 = document.getElementById('p1n').value || 'Pareja 1';
   const p2 = document.getElementById('p2n').value || 'Pareja 2';
   const oro = document.getElementById('tog-oro').checked;
@@ -268,7 +316,7 @@ async function startGame() {
     })
   });
 
-  if (!r.ok) { alert('Error iniciando partido'); return; }
+  if (!r.ok) { document.getElementById('err-club').textContent = 'Error iniciando partido'; return; }
   const { state } = await r.json();
   clubCodigo = codigo;
 
