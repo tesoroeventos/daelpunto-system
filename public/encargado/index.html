@@ -552,8 +552,8 @@ function renderBracketEncargado() {
       html+='<div class="'+c1+'">';
       html+='<span style="font-size:10px;color:rgba(245,245,240,.3);width:14px">'+(e1&&e1.seed?e1.seed:'')+'</span>';
       if(!p.ganador_id){
-        html+='<select onchange="cambiarEquipo('+idx+',1,this.value)" onclick="event.stopPropagation()" style="flex:1;background:#1a2e1c;border:1px solid rgba(255,255,255,.1);border-radius:4px;color:'+(e1?'#F5F5F0':'rgba(245,245,240,.3)')+';font-size:12px;padding:2px 4px;outline:none;font-family:Inter,sans-serif">';
-        html+='<option value="" style="background:#1a2e1c">— Sin asignar —</option>'+equiposOpts;
+        html+='<select data-llave="'+idx+'" data-slot="1" onchange="cambiarEquipo('+idx+',1,this.value)" onclick="event.stopPropagation()" style="flex:1;background:#1a2e1c;border:1px solid rgba(255,255,255,.1);border-radius:4px;color:'+(e1?'#F5F5F0':'rgba(245,245,240,.3)')+';font-size:12px;padding:2px 4px;outline:none;font-family:Inter,sans-serif">';
+        html+='<option value="" style="background:#1a2e1c">Sin asignar</option>'+equiposOpts;
         html+='</select>';
       } else {
         html+='<span>'+(e1?e1.nombre:'Por definir')+'</span>';
@@ -566,8 +566,8 @@ function renderBracketEncargado() {
       html+='<div class="'+c2+'">';
       html+='<span style="font-size:10px;color:rgba(245,245,240,.3);width:14px">'+(e2&&e2.seed?e2.seed:'')+'</span>';
       if(!p.ganador_id){
-        html+='<select onchange="cambiarEquipo('+idx+',2,this.value)" onclick="event.stopPropagation()" style="flex:1;background:#1a2e1c;border:1px solid rgba(255,255,255,.1);border-radius:4px;color:'+(e2?'#F5F5F0':'rgba(245,245,240,.3)')+';font-size:12px;padding:2px 4px;outline:none;font-family:Inter,sans-serif">';
-        html+='<option value="" style="background:#1a2e1c">— Sin asignar —</option>'+equiposOpts;
+        html+='<select data-llave="'+idx+'" data-slot="2" onchange="cambiarEquipo('+idx+',2,this.value)" onclick="event.stopPropagation()" style="flex:1;background:#1a2e1c;border:1px solid rgba(255,255,255,.1);border-radius:4px;color:'+(e2?'#F5F5F0':'rgba(245,245,240,.3)')+';font-size:12px;padding:2px 4px;outline:none;font-family:Inter,sans-serif">';
+        html+='<option value="" style="background:#1a2e1c">Sin asignar</option>'+equiposOpts;
         html+='</select>';
 
       } else {
@@ -620,17 +620,26 @@ async function eliminarTorneo() {
 async function cambiarEquipo(llaveIdx, slot, equipoId) {
   const p = window._llavesRef[llaveIdx];
   if (!p) return;
-  // Actualizar en el servidor
   const campo = slot === 1 ? 'equipo1_id' : 'equipo2_id';
-  await fetch('/api/llave/'+p.id+'/equipo', {
+
+  // Actualizar localmente primero (sin re-renderizar)
+  if (slot === 1) _llavesTorneo[llaveIdx].equipo1_id = equipoId||null;
+  else _llavesTorneo[llaveIdx].equipo2_id = equipoId||null;
+  window._llavesRef[llaveIdx] = _llavesTorneo[llaveIdx];
+
+  // Mostrar botones de ganador si ambos equipos están asignados
+  const p2 = _llavesTorneo[llaveIdx];
+  if (p2.equipo1_id && p2.equipo2_id && !p2.ganador_id) {
+    // Re-renderizar solo este partido
+    renderBracketEncargado();
+  }
+
+  // Guardar en servidor en background
+  fetch('/api/llave/'+p.id+'/equipo', {
     method: 'POST',
     headers: {'Content-Type':'application/json'},
     body: JSON.stringify({campo, equipoId: equipoId||null})
   });
-  // Actualizar localmente
-  if (slot === 1) _llavesTorneo[llaveIdx].equipo1_id = equipoId||null;
-  else _llavesTorneo[llaveIdx].equipo2_id = equipoId||null;
-  renderBracketEncargado();
 }
 
 function clickEq(idx,equipo) {
