@@ -138,20 +138,68 @@ async function verificarConexion() {
   }
 }
 
+var _clubesList = [];
+
 function renderClubes(clubes) {
+  _clubesList = clubes;
   const list = document.getElementById('clubes-list');
   if (!clubes.length) {
     list.innerHTML = '<div style="color:rgba(245,245,240,.3);font-size:13px">No hay clubes todavía</div>';
     return;
   }
-  list.innerHTML = clubes.map(c => `
-    <div class="club-item">
-      <div>
-        <div class="club-codigo">${c.codigo}</div>
-        <div class="club-nombre">${c.nombre}</div>
-      </div>
-      <div class="club-plan">${c.plan}</div>
-    </div>`).join('');
+  list.innerHTML = clubes.map(function(c, i) {
+    return '<div class="club-item">' +
+      '<div>' +
+        '<div class="club-codigo">'+c.codigo+'</div>' +
+        '<div class="club-nombre">'+c.nombre+'</div>' +
+      '</div>' +
+      '<div style="display:flex;align-items:center;gap:8px">' +
+        '<div class="club-plan">'+c.plan+'</div>' +
+        '<button onclick="editarClub('+i+')" style="background:rgba(232,212,77,.1);border:1px solid rgba(232,212,77,.3);border-radius:6px;color:#E8D44D;font-size:11px;padding:4px 10px;cursor:pointer;font-family:Inter,sans-serif">✏ Editar</button>' +
+        '<button onclick="borrarClub('+i+')" style="background:rgba(220,53,69,.1);border:1px solid rgba(220,53,69,.3);border-radius:6px;color:#ff8a8a;font-size:11px;padding:4px 10px;cursor:pointer;font-family:Inter,sans-serif">🗑 Borrar</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+async function borrarClub(idx) {
+  const c = _clubesList[idx];
+  if (!c) return;
+  const { url, key } = getBase();
+  if (!confirm('Borrar el club ' + c.nombre + ' (' + c.codigo + ')? Esto elimina todos sus datos.')) return;
+  try {
+    const r = await fetch(url + '/api/admin/club/' + c.id, {
+      method: 'DELETE',
+      headers: { 'x-admin-key': key }
+    });
+    const data = await r.json();
+    if (!r.ok) { alert('Error: ' + (data.error||'No se pudo borrar')); return; }
+    alert('Club ' + c.codigo + ' eliminado');
+    const r2 = await fetch(url + '/api/admin/clubes', { headers: { 'x-admin-key': key } });
+    renderClubes(await r2.json());
+  } catch(e) { alert('Error: ' + e.message); }
+}
+
+async function editarClub(idx) {
+  const c = _clubesList[idx];
+  if (!c) return;
+  const { url, key } = getBase();
+  const nuevoNombre = prompt('Nuevo nombre del club:', c.nombre);
+  if (!nuevoNombre || nuevoNombre === c.nombre) return;
+  const nuevoPlan = prompt('Plan (starter / club / pro):', c.plan);
+  if (!nuevoPlan) return;
+  try {
+    const r = await fetch(url + '/api/admin/club/' + c.id, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', 'x-admin-key': key },
+      body: JSON.stringify({ nombre: nuevoNombre, plan: nuevoPlan })
+    });
+    const data = await r.json();
+    if (!r.ok) { alert('Error: ' + (data.error||'No se pudo editar')); return; }
+    alert('Club actualizado');
+    const r2 = await fetch(url + '/api/admin/clubes', { headers: { 'x-admin-key': key } });
+    renderClubes(await r2.json());
+  } catch(e) { alert('Error: ' + e.message); }
 }
 
 function agregarCancha(nombre = '', tieneTv = false) {
