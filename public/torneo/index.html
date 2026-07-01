@@ -72,6 +72,37 @@
     .proximos-lbl{font-size:11px;color:rgba(245,245,240,.3);letter-spacing:2px;text-transform:uppercase;flex-shrink:0}
     .proximo-item{display:flex;align-items:center;gap:8px;font-size:13px;color:rgba(245,245,240,.6);flex-shrink:0;padding:4px 12px;background:rgba(255,255,255,.04);border-radius:6px;border:1px solid rgba(255,255,255,.08)}
     .proximo-cancha{color:#E8D44D;font-weight:600;font-size:11px}
+
+    /* Campeón overlay */
+    .campeon-overlay{
+      display:none;position:fixed;inset:0;
+      background:rgba(10,26,13,.95);
+      z-index:200;
+      flex-direction:column;align-items:center;justify-content:center;
+      text-align:center;padding:40px;
+      animation:fadeIn 1s ease;
+    }
+    .campeon-overlay.show{display:flex}
+    @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+    .campeon-trophy{font-size:clamp(80px,12vw,140px);animation:bounce 1.8s ease infinite}
+    @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-16px)}}
+    .campeon-titulo{
+      font-size:clamp(14px,2vw,20px);
+      color:rgba(245,245,240,.4);
+      letter-spacing:5px;text-transform:uppercase;
+      margin-top:28px;margin-bottom:12px;
+    }
+    .campeon-nombre{
+      font-family:'Bebas Neue',sans-serif;
+      font-size:clamp(56px,10vw,120px);
+      color:#E8D44D;letter-spacing:5px;line-height:1;
+      animation:glow 2s ease-in-out infinite alternate;
+    }
+    @keyframes glow{
+      from{text-shadow:0 0 20px rgba(232,212,77,.3)}
+      to{text-shadow:0 0 50px rgba(232,212,77,.8),0 0 100px rgba(232,212,77,.3)}
+    }
+    .campeon-sub{font-size:clamp(14px,1.8vw,20px);color:rgba(245,245,240,.3);margin-top:16px;letter-spacing:2px}
   </style>
 </head>
 <body>
@@ -236,8 +267,7 @@ function renderBracket() {
 
       html += '<div class="partido-bracket'+(g?' con-ganador':'')+'">';
       if (p.cancha_id) {
-        var cc = (window._canchasClub||[]).find(function(c){ return c.id===p.cancha_id; });
-        html += '<div class="eq-cancha">' + (cc ? (cc.nombre||'Cancha '+cc.numero) : 'Cancha') + '</div>';
+        html += '<div class="eq-cancha">' + (p.cancha_nombre || ('Cancha ' + p.cancha_numero)) + '</div>';
       }
 
       // Equipo 1
@@ -277,6 +307,18 @@ function renderBracket() {
 
   body.innerHTML = html;
 
+  // Mostrar campeón si el torneo finalizó
+  if (_torneo && _torneo.estado === 'finalizado' && _torneo.ganador_id) {
+    var camp = getEquipo(_torneo.ganador_id);
+    if (camp) {
+      document.getElementById('campeon-nombre').textContent = camp.nombre;
+      document.getElementById('campeon-sub').textContent = _torneo.nombre || '';
+      document.getElementById('campeon-overlay').className = 'campeon-overlay show';
+    }
+  } else {
+    document.getElementById('campeon-overlay').className = 'campeon-overlay';
+  }
+
   // Próximos partidos sin ganador pero con ambos equipos
   var proximos = _llaves.filter(function(l){ return !l.ganador_id && l.equipo1_id && l.equipo2_id; });
   var proxBar = document.getElementById('proximos');
@@ -288,8 +330,7 @@ function renderBracket() {
       var e2 = getEquipo(p.equipo2_id);
       items += '<div class="proximo-item">';
       if (p.cancha_id) {
-        var cc2 = (window._canchasClub||[]).find(function(c){ return c.id===p.cancha_id; });
-        items += '<span class="proximo-cancha">'+(cc2 ? (cc2.nombre||'C'+cc2.numero) : 'Cancha')+'</span>';
+        items += '<span class="proximo-cancha">'+(p.cancha_nombre||('C'+p.cancha_numero))+'</span>';
       }
       items += (e1?e1.nombre:'?')+' vs '+(e2?e2.nombre:'?');
       items += '</div>';
@@ -300,5 +341,11 @@ function renderBracket() {
   }
 }
 </script>
+<div class="campeon-overlay" id="campeon-overlay">
+  <div class="campeon-trophy">🏆</div>
+  <div class="campeon-titulo">Campeón del torneo</div>
+  <div class="campeon-nombre" id="campeon-nombre">—</div>
+  <div class="campeon-sub" id="campeon-sub"></div>
+</div>
 </body>
 </html>
