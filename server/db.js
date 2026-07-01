@@ -143,6 +143,25 @@ db.exec(`
     ('wpc-c6', 'club-wpc', 6, 'Cancha 6', 0),
     ('wpc-c7', 'club-wpc', 7, 'Cancha 7', 0),
     ('wpc-c8', 'club-wpc', 8, 'Cancha 8', 0);
+
+  -- 16 equipos de prueba para el club DEMO
+  INSERT OR IGNORE INTO equipos (id, club_id, nombre) VALUES
+    ('demo-e1',  'club-demo', 'Los Pumas'),
+    ('demo-e2',  'club-demo', 'Aguila FC'),
+    ('demo-e3',  'club-demo', 'Trueno y Rayo'),
+    ('demo-e4',  'club-demo', 'Los Cracks'),
+    ('demo-e5',  'club-demo', 'Pareja A'),
+    ('demo-e6',  'club-demo', 'Pareja B'),
+    ('demo-e7',  'club-demo', 'Los Tigres'),
+    ('demo-e8',  'club-demo', 'Pareja C'),
+    ('demo-e9',  'club-demo', 'Los Leones'),
+    ('demo-e10', 'club-demo', 'Pareja D'),
+    ('demo-e11', 'club-demo', 'Los Condores'),
+    ('demo-e12', 'club-demo', 'Pareja E'),
+    ('demo-e13', 'club-demo', 'Los Jaguares'),
+    ('demo-e14', 'club-demo', 'Pareja F'),
+    ('demo-e15', 'club-demo', 'Los Halcones'),
+    ('demo-e16', 'club-demo', 'Pareja G');
 `);
 
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
