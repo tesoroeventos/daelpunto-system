@@ -152,43 +152,45 @@ app.post('/api/torneo', (req, res) => {
 // Generar bracket de eliminación simple
 function generarLlaves(torneoId, equipoIds) {
   const n = equipoIds.length;
-  // Redondear al siguiente número de potencia de 2
+
+  // Siguiente potencia de 2
   let slots = 1;
   while (slots < n) slots *= 2;
 
-  const partidos = Math.floor(slots / 2);
-  const byes = slots - n; // cantidad de equipos que pasan directo
+  const byes = slots - n; // equipos que pasan directo
+  const ronda1 = slots / 2; // número de partidos en ronda 1
 
-  // Emparejamiento estándar de torneo con byes al final
-  // Los primeros 'byes' equipos pasan directo (bye), el resto juega
-  // Ejemplo 10 equipos → slots=16, byes=6
-  // Partidos reales: 10-6=4 partidos en ronda 1 (posiciones 1-4)
-  // Byes: 6 equipos pasan directo a ronda siguiente
+  // Emparejamiento estándar:
+  // Los 'byes' primeros seeds pasan directo (no juegan ronda 1)
+  // El resto juega entre sí en ronda 1
+  //
+  // Ejemplo 10 equipos, slots=16, byes=6:
+  // Seeds 1-6 pasan directo a cuartos
+  // Seeds 7-10 juegan: 7vs10, 8vs9 en "pre-cuartos"
+  //
+  // Posiciones en ronda1 (ronda1=8 para slots=16):
+  // pos 1: seed1 BYE (null vs null → solo seed1 avanza)
+  // pos 2: seed2 BYE
+  // ...
+  // pos 6: seed6 BYE
+  // pos 7: seed7 vs seed10
+  // pos 8: seed8 vs seed9
 
-  for (let i = 0; i < partidos; i++) {
-    const topIdx = i;           // seed i (0-based) desde arriba
-    const botIdx = slots-1-i;   // seed opuesto desde abajo
+  for (let pos = 1; pos <= ronda1; pos++) {
+    const topIdx = pos - 1;        // 0-based desde arriba
+    const botIdx = slots - pos;    // 0-based desde abajo
 
-    const e1 = topIdx < n ? equipoIds[topIdx] : null;
-    const e2 = botIdx < n ? equipoIds[botIdx] : null;
+    let e1 = topIdx < n ? equipoIds[topIdx] : null;
+    let e2 = botIdx < n ? equipoIds[botIdx] : null;
 
-    // Si uno de los dos no existe, es un bye — no crear el partido
-    // El equipo que sí existe avanza automáticamente
-    if (!e1 && !e2) {
-      // Partido fantasma — ambos son null, no crear
-      helpers.insertLlave.run(uuidv4(), torneoId, slots / 2, i + 1, null, null);
-    } else if (!e1 || !e2) {
-      // Bye — solo un equipo, pasa automáticamente
-      // Crear el partido igual para mantener la estructura del bracket
-      helpers.insertLlave.run(uuidv4(), torneoId, slots / 2, i + 1, e1, e2);
-    } else {
-      // Partido real — ambos equipos
-      helpers.insertLlave.run(uuidv4(), torneoId, slots / 2, i + 1, e1, e2);
-    }
+    // Si top y bot son el mismo equipo (número impar), e2 = null
+    if (topIdx >= botIdx) e2 = null;
+
+    helpers.insertLlave.run(uuidv4(), torneoId, ronda1, pos, e1, e2);
   }
 
-  // Rondas siguientes (sin equipos todavía, se llenan al avanzar)
-  let ronda = slots / 4;
+  // Rondas siguientes vacías (se llenan al avanzar ganadores)
+  let ronda = ronda1 / 2;
   while (ronda >= 1) {
     for (let i = 0; i < ronda; i++) {
       helpers.insertLlave.run(uuidv4(), torneoId, ronda, i + 1, null, null);
@@ -196,31 +198,36 @@ function generarLlaves(torneoId, equipoIds) {
     ronda = Math.floor(ronda / 2);
   }
 
-  // Avanzar automáticamente los byes a la siguiente ronda
-  const llaves1 = db.prepare('SELECT * FROM llaves WHERE torneo_id = ? AND ronda = ? ORDER BY posicion')
-    .all(torneoId, slots / 2);
+  // Avanzar byes automáticamente a la siguiente ronda
+  // Solo los partidos donde e1 existe y e2 es null (o viceversa)
+  const llaves1 = db.prepare(
+    'SELECT * FROM llaves WHERE torneo_id = ? AND ronda = ? ORDER BY posicion'
+  ).all(torneoId, ronda1);
+
+  const sigRonda = ronda1 / 2;
 
   llaves1.forEach(l => {
-    if ((l.equipo1_id && !l.equipo2_id) || (!l.equipo1_id && l.equipo2_id)) {
-      // Es un bye — avanzar el equipo que existe
-      const ganadorId = l.equipo1_id || l.equipo2_id;
-      db.prepare('UPDATE llaves SET ganador_id = ? WHERE id = ?').run(ganadorId, l.id);
-      // Colocar en la siguiente ronda
-      const sigRonda = slots / 4;
-      const sigPos = Math.ceil(l.posicion / 2);
-      const sigLlave = db.prepare(
-        'SELECT * FROM llaves WHERE torneo_id = ? AND ronda = ? AND posicion = ?'
-      ).get(torneoId, sigRonda, sigPos);
-      if (sigLlave) {
-        if (l.posicion % 2 === 1) {
-          db.prepare('UPDATE llaves SET equipo1_id = ? WHERE id = ?').run(ganadorId, sigLlave.id);
-        } else {
-          db.prepare('UPDATE llaves SET equipo2_id = ? WHERE id = ?').run(ganadorId, sigLlave.id);
-        }
-      }
+    const tieneSolo = (l.equipo1_id && !l.equipo2_id) || (!l.equipo1_id && l.equipo2_id);
+    if (!tieneSolo) return;
+
+    const ganadorId = l.equipo1_id || l.equipo2_id;
+    // Marcar como ganador en esta llave
+    db.prepare('UPDATE llaves SET ganador_id = ? WHERE id = ?').run(ganadorId, l.id);
+
+    // Colocar en la llave de la siguiente ronda
+    const sigPos = Math.ceil(l.posicion / 2);
+    const sigLlave = db.prepare(
+      'SELECT * FROM llaves WHERE torneo_id = ? AND ronda = ? AND posicion = ?'
+    ).get(torneoId, sigRonda, sigPos);
+
+    if (sigLlave) {
+      const campo = l.posicion % 2 === 1 ? 'equipo1_id' : 'equipo2_id';
+      db.prepare('UPDATE llaves SET '+campo+' = ? WHERE id = ?').run(ganadorId, sigLlave.id);
     }
   });
 }
+
+
 
 
 // ─── ADMIN API (protegida con ADMIN_KEY) ─────────────────────────────────────
