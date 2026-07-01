@@ -32,30 +32,30 @@
 
     /* BRACKET */
     #bracket-screen{display:none;width:100%;height:100%;flex-direction:column}
-    .bkt-header{background:#0d2211;border-bottom:3px solid #3D7A4A;padding:min(1.5vw,16px) 40px;display:flex;align-items:center;justify-content:space-between;height:min(8vw,72px);flex-shrink:0}
-    .bkt-logo{font-family:'Bebas Neue',sans-serif;font-size:min(4vw,44px);color:#E8D44D;letter-spacing:2px}
-    .bkt-nombre{font-family:'Bebas Neue',sans-serif;font-size:min(3.5vw,42px);color:rgba(245,245,240,.8);letter-spacing:2px}
+    .bkt-header{background:#0d2211;border-bottom:3px solid #3D7A4A;padding:10px 40px;display:flex;align-items:center;justify-content:space-between;height:56px;flex-shrink:0}
+    .bkt-logo{font-family:'Bebas Neue',sans-serif;font-size:28px;color:#E8D44D;letter-spacing:2px}
+    .bkt-nombre{font-family:'Bebas Neue',sans-serif;font-size:26px;color:rgba(245,245,240,.8);letter-spacing:2px}
     .bkt-status{display:flex;align-items:center;gap:8px;font-size:13px;color:rgba(245,245,240,.4)}
     .bkt-dot{width:10px;height:10px;border-radius:50%;background:#3D7A4A}
     .bkt-dot.off{background:rgba(255,255,255,.2)}
 
-    .bkt-body{flex:1;overflow:auto;padding:16px 24px;display:flex;align-items:flex-start;justify-content:flex-start;gap:0}
+    .bkt-body{flex:1;overflow:auto;padding:24px 32px;display:flex;align-items:flex-start;justify-content:center;gap:0}
 
     /* Rondas */
-    .ronda{display:flex;flex-direction:column;justify-content:space-around;min-width:min(18vw,220px);position:relative}
-    .ronda-titulo{font-size:min(1.2vw,14px);color:rgba(245,245,240,.3);letter-spacing:2px;text-transform:uppercase;text-align:center;margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.06)}
+    .ronda{display:flex;flex-direction:column;justify-content:space-around;min-width:200px;position:relative}
+    .ronda-titulo{font-size:11px;color:rgba(245,245,240,.3);letter-spacing:2px;text-transform:uppercase;text-align:center;margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.06)}
 
     /* Partido en bracket */
-    .partido-bracket{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;overflow:hidden;margin:6px 10px;transition:.2s;position:relative}
+    .partido-bracket{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;overflow:hidden;margin:8px 12px;transition:.2s;position:relative}
     .partido-bracket.con-ganador{border-color:rgba(61,122,74,.4)}
-    .equipo-bracket{display:flex;align-items:center;justify-content:space-between;padding:min(1vw,12px) min(1.2vw,14px);min-height:min(4vw,48px);gap:6px}
+    .equipo-bracket{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;min-height:44px;gap:8px}
     .equipo-bracket:first-child{border-bottom:1px solid rgba(255,255,255,.06)}
     .equipo-bracket.ganador{background:rgba(61,122,74,.15)}
     .equipo-bracket.ganador .eq-nombre{color:#E8D44D;font-weight:600}
-    .eq-seed{font-size:min(1.1vw,13px);color:rgba(245,245,240,.25);width:min(1.8vw,20px);text-align:center;flex-shrink:0}
-    .eq-nombre{font-family:'Bebas Neue',sans-serif;font-size:min(1.8vw,22px);letter-spacing:1px;color:rgba(245,245,240,.7);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .eq-seed{font-size:10px;color:rgba(245,245,240,.25);width:16px;text-align:center;flex-shrink:0}
+    .eq-nombre{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;color:rgba(245,245,240,.7);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .eq-nombre.vacio{color:rgba(245,245,240,.2);font-size:14px;font-family:'Inter',sans-serif}
-    .eq-cancha{font-size:min(1vw,12px);color:#3D7A4A;position:absolute;top:3px;right:8px;letter-spacing:1px;font-weight:600}
+    .eq-cancha{font-size:10px;color:var(--green,#3D7A4A);position:absolute;top:4px;right:8px;letter-spacing:1px}
 
     /* Conector entre rondas */
     .conector{width:24px;display:flex;align-items:center;justify-content:center;align-self:stretch}
@@ -68,49 +68,20 @@
     .campeon-nombre{font-family:'Bebas Neue',sans-serif;font-size:56px;color:#E8D44D;letter-spacing:4px;line-height:1}
 
     /* Próximos partidos bar */
-    .proximos{background:rgba(0,0,0,.3);border-top:1px solid rgba(255,255,255,.06);padding:8px 24px;display:flex;align-items:center;gap:16px;flex-shrink:0;overflow-x:auto;height:min(5vw,52px)}
-    .proximos-lbl{font-size:min(1.8vw,20px);color:rgba(245,245,240,.3);letter-spacing:2px;text-transform:uppercase;flex-shrink:0}
-    .proximo-item{display:flex;align-items:center;gap:8px;font-size:min(2vw,22px);color:rgba(245,245,240,.6);flex-shrink:0;padding:4px 12px;background:rgba(255,255,255,.04);border-radius:6px;border:1px solid rgba(255,255,255,.08)}
-    .proximo-cancha{color:#E8D44D;font-weight:600;font-size:min(1.6vw,18px)}
-
-    /* Campeón overlay */
-    .campeon-overlay{
-      display:none;
-      position:fixed;
-      top:0;left:0;right:0;bottom:0;
-      width:100%;height:100%;
-      background:rgba(10,26,13,.95);
-      z-index:200;
-      text-align:center;
-    }
+    .proximos{background:rgba(0,0,0,.3);border-top:1px solid rgba(255,255,255,.06);padding:8px 32px;display:flex;align-items:center;gap:24px;flex-shrink:0;overflow-x:auto;height:48px}
+    .proximos-lbl{font-size:11px;color:rgba(245,245,240,.3);letter-spacing:2px;text-transform:uppercase;flex-shrink:0}
+    .proximo-item{display:flex;align-items:center;gap:8px;font-size:13px;color:rgba(245,245,240,.6);flex-shrink:0;padding:4px 12px;background:rgba(255,255,255,.04);border-radius:6px;border:1px solid rgba(255,255,255,.08)}
+    .proximo-cancha{color:#E8D44D;font-weight:600;font-size:11px}
+    .campeon-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;width:100%;height:100%;background:rgba(10,26,13,.95);z-index:200;text-align:center}
     .campeon-overlay.show{display:block}
-    .campeon-inner{
-      width:100%;height:100%;
-      display:flex;flex-direction:column;
-      align-items:center;justify-content:center;
-      padding:40px;
-      animation:fadeIn 1s ease;
-    }
+    .campeon-inner{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px;animation:fadeIn 1s ease}
     @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-    .campeon-trophy{font-size:min(14vw,160px);animation:bounce 1.8s ease infinite;line-height:1}
+    .campeon-trophy{font-size:120px;animation:bounce 1.8s ease infinite;line-height:1}
     @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-16px)}}
-    .campeon-titulo{
-      font-size:min(2.2vw,26px);
-      color:rgba(245,245,240,.4);
-      letter-spacing:5px;text-transform:uppercase;
-      margin-top:28px;margin-bottom:12px;
-    }
-    .campeon-nombre{
-      font-family:'Bebas Neue',sans-serif;
-      font-size:min(12vw,140px);
-      color:#E8D44D;letter-spacing:5px;line-height:1;
-      animation:glow 2s ease-in-out infinite alternate;
-    }
-    @keyframes glow{
-      from{text-shadow:0 0 20px rgba(232,212,77,.3)}
-      to{text-shadow:0 0 50px rgba(232,212,77,.8),0 0 100px rgba(232,212,77,.3)}
-    }
-    .campeon-sub{font-size:min(2.5vw,28px);color:rgba(245,245,240,.3);margin-top:16px;letter-spacing:2px}
+    .campeon-titulo{font-size:20px;color:rgba(245,245,240,.4);letter-spacing:5px;text-transform:uppercase;margin-top:28px;margin-bottom:12px}
+    .campeon-nombre{font-family:'Bebas Neue',sans-serif;font-size:100px;color:#E8D44D;letter-spacing:5px;line-height:1;animation:glow 2s ease-in-out infinite alternate}
+    @keyframes glow{from{text-shadow:0 0 20px rgba(232,212,77,.3)}to{text-shadow:0 0 50px rgba(232,212,77,.8),0 0 100px rgba(232,212,77,.3)}}
+    .campeon-sub{font-size:22px;color:rgba(245,245,240,.3);margin-top:16px;letter-spacing:2px}
   </style>
 </head>
 <body>
@@ -226,7 +197,6 @@ function connectWS() {
     if (m.type==='TORNEO_INIT'||m.type==='TORNEO_UPDATE') {
       _torneo = m.torneo; _llaves = m.llaves; _equipos = m.equipos;
       renderBracket();
-      // Verificar campeón en cada update
       if (_torneo && _torneo.estado==='finalizado' && _torneo.ganador_id) {
         var camp = getEquipo(_torneo.ganador_id);
         if (camp) {
