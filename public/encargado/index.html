@@ -622,23 +622,16 @@ async function cambiarEquipo(llaveIdx, slot, equipoId) {
   if (!p) return;
   const campo = slot === 1 ? 'equipo1_id' : 'equipo2_id';
 
-  // Actualizar localmente primero (sin re-renderizar)
-  if (slot === 1) _llavesTorneo[llaveIdx].equipo1_id = equipoId||null;
-  else _llavesTorneo[llaveIdx].equipo2_id = equipoId||null;
+  // Actualizar solo en el objeto local — sin tocar el DOM
+  if (slot === 1) _llavesTorneo[llaveIdx].equipo1_id = equipoId || null;
+  else _llavesTorneo[llaveIdx].equipo2_id = equipoId || null;
   window._llavesRef[llaveIdx] = _llavesTorneo[llaveIdx];
 
-  // Mostrar botones de ganador si ambos equipos están asignados
-  const p2 = _llavesTorneo[llaveIdx];
-  if (p2.equipo1_id && p2.equipo2_id && !p2.ganador_id) {
-    // Re-renderizar solo este partido
-    renderBracketEncargado();
-  }
-
-  // Guardar en servidor en background
+  // Guardar en servidor
   fetch('/api/llave/'+p.id+'/equipo', {
     method: 'POST',
     headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({campo, equipoId: equipoId||null})
+    body: JSON.stringify({campo: campo, equipoId: equipoId||null})
   });
 }
 
