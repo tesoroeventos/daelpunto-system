@@ -473,11 +473,12 @@ function showAgregarEquipo() {
     // Poblar botones con equipos del club que no están ya inscriptos
     const yaInscritos = _equiposTorneo.map(e => e.nombre.toLowerCase());
     const disponibles = equipos.filter(e => !yaInscritos.includes(e.nombre.toLowerCase()));
+    window._equiposDisponibles = disponibles;
     const container = document.getElementById('club-equipos-btns');
     if (disponibles.length) {
-      container.innerHTML = disponibles.map(e =>
-        '<button onclick="agregarEquipoClub(' + JSON.stringify(e.nombre) + ')" style="background:rgba(61,122,74,.15);border:1px solid rgba(61,122,74,.35);border-radius:6px;color:#F5F5F0;font-size:12px;padding:5px 10px;cursor:pointer;font-family:Inter,sans-serif">' + e.nombre + '</button>'
-      ).join('');
+      container.innerHTML = disponibles.map(function(e, i) {
+        return '<button onclick="agregarEquipoClub(' + i + ')" style="background:rgba(61,122,74,.15);border:1px solid rgba(61,122,74,.35);border-radius:6px;color:#F5F5F0;font-size:12px;padding:5px 10px;cursor:pointer;font-family:Inter,sans-serif">' + e.nombre + '</button>';
+      }).join('');
     } else {
       container.innerHTML = '<span style="font-size:12px;color:rgba(245,245,240,.3)">Todos los equipos ya están inscriptos</span>';
     }
@@ -485,18 +486,20 @@ function showAgregarEquipo() {
   }
 }
 
-async function agregarEquipoClub(nombre) {
+async function agregarEquipoClub(idx) {
   if (!_torneoActual) return;
+  const equipo = window._equiposDisponibles[idx];
+  if (!equipo) return;
   const r = await fetch('/api/torneo/' + _torneoActual.id + '/equipo', {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ nombre, seed: null })
+    body: JSON.stringify({ nombre: equipo.nombre, seed: null })
   });
   const e = await r.json();
   _equiposTorneo.push({ id: e.id, nombre: e.nombre, seed: null });
   renderEquiposTorneo();
-  // Actualizar botones
-  showAgregarEquipo(); // cerrar
-  showAgregarEquipo(); // abrir de nuevo para actualizar lista
+  // Cerrar y reabrir para actualizar la lista
+  document.getElementById('form-equipo').style.display = 'none';
+  showAgregarEquipo();
 }
 
 async function agregarEquipo() {
