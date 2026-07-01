@@ -39,23 +39,23 @@
     .bkt-dot{width:10px;height:10px;border-radius:50%;background:#3D7A4A}
     .bkt-dot.off{background:rgba(255,255,255,.2)}
 
-    .bkt-body{flex:1;overflow:auto;padding:24px 32px;display:flex;align-items:flex-start;justify-content:center;gap:0}
+    .bkt-body{flex:1;overflow:auto;padding:16px 24px;display:flex;align-items:flex-start;justify-content:flex-start;gap:0}
 
     /* Rondas */
-    .ronda{display:flex;flex-direction:column;justify-content:space-around;min-width:min(28vw,320px);position:relative}
-    .ronda-titulo{font-size:min(1.8vw,20px);color:rgba(245,245,240,.3);letter-spacing:2px;text-transform:uppercase;text-align:center;margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.06)}
+    .ronda{display:flex;flex-direction:column;justify-content:space-around;min-width:min(18vw,220px);position:relative}
+    .ronda-titulo{font-size:min(1.2vw,14px);color:rgba(245,245,240,.3);letter-spacing:2px;text-transform:uppercase;text-align:center;margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.06)}
 
     /* Partido en bracket */
-    .partido-bracket{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;overflow:hidden;margin:10px 16px;transition:.2s;position:relative}
+    .partido-bracket{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;overflow:hidden;margin:6px 10px;transition:.2s;position:relative}
     .partido-bracket.con-ganador{border-color:rgba(61,122,74,.4)}
-    .equipo-bracket{display:flex;align-items:center;justify-content:space-between;padding:min(1.5vw,18px) min(2vw,20px);min-height:min(6vw,64px);gap:8px}
+    .equipo-bracket{display:flex;align-items:center;justify-content:space-between;padding:min(1vw,12px) min(1.2vw,14px);min-height:min(4vw,48px);gap:6px}
     .equipo-bracket:first-child{border-bottom:1px solid rgba(255,255,255,.06)}
     .equipo-bracket.ganador{background:rgba(61,122,74,.15)}
     .equipo-bracket.ganador .eq-nombre{color:#E8D44D;font-weight:600}
-    .eq-seed{font-size:min(1.5vw,18px);color:rgba(245,245,240,.25);width:min(2.5vw,28px);text-align:center;flex-shrink:0}
-    .eq-nombre{font-family:'Bebas Neue',sans-serif;font-size:min(3vw,40px);letter-spacing:1px;color:rgba(245,245,240,.7);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .eq-seed{font-size:min(1.1vw,13px);color:rgba(245,245,240,.25);width:min(1.8vw,20px);text-align:center;flex-shrink:0}
+    .eq-nombre{font-family:'Bebas Neue',sans-serif;font-size:min(1.8vw,22px);letter-spacing:1px;color:rgba(245,245,240,.7);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .eq-nombre.vacio{color:rgba(245,245,240,.2);font-size:14px;font-family:'Inter',sans-serif}
-    .eq-cancha{font-size:min(1.4vw,16px);color:#3D7A4A;position:absolute;top:4px;right:10px;letter-spacing:1px;font-weight:600}
+    .eq-cancha{font-size:min(1vw,12px);color:#3D7A4A;position:absolute;top:3px;right:8px;letter-spacing:1px;font-weight:600}
 
     /* Conector entre rondas */
     .conector{width:24px;display:flex;align-items:center;justify-content:center;align-self:stretch}
@@ -68,7 +68,7 @@
     .campeon-nombre{font-family:'Bebas Neue',sans-serif;font-size:56px;color:#E8D44D;letter-spacing:4px;line-height:1}
 
     /* Próximos partidos bar */
-    .proximos{background:rgba(0,0,0,.3);border-top:1px solid rgba(255,255,255,.06);padding:min(1vw,12px) 40px;display:flex;align-items:center;gap:24px;flex-shrink:0;overflow-x:auto;height:min(6vw,64px)}
+    .proximos{background:rgba(0,0,0,.3);border-top:1px solid rgba(255,255,255,.06);padding:8px 24px;display:flex;align-items:center;gap:16px;flex-shrink:0;overflow-x:auto;height:min(5vw,52px)}
     .proximos-lbl{font-size:min(1.8vw,20px);color:rgba(245,245,240,.3);letter-spacing:2px;text-transform:uppercase;flex-shrink:0}
     .proximo-item{display:flex;align-items:center;gap:8px;font-size:min(2vw,22px);color:rgba(245,245,240,.6);flex-shrink:0;padding:4px 12px;background:rgba(255,255,255,.04);border-radius:6px;border:1px solid rgba(255,255,255,.08)}
     .proximo-cancha{color:#E8D44D;font-weight:600;font-size:min(1.6vw,18px)}
