@@ -549,11 +549,11 @@ function renderBracketEncargado() {
 
       // Equipo 1
       const c1='bracket-eq'+(p.ganador_id===p.equipo1_id?' ganador':(!e1?' pendiente':''));
-      html+='<div class="'+c1+'">';
+      html+='<div class="'+c1+'" style="pointer-events:none">';
       html+='<span style="font-size:10px;color:rgba(245,245,240,.3);width:14px">'+(e1&&e1.seed?e1.seed:'')+'</span>';
       if(!p.ganador_id){
-        html+='<select data-llave="'+idx+'" data-slot="1" onchange="cambiarEquipo('+idx+',1,this.value)" onclick="event.stopPropagation()" style="flex:1;background:#1a2e1c;border:1px solid rgba(255,255,255,.1);border-radius:4px;color:'+(e1?'#F5F5F0':'rgba(245,245,240,.3)')+';font-size:12px;padding:2px 4px;outline:none;font-family:Inter,sans-serif">';
-        html+='<option value="" style="background:#1a2e1c">Sin asignar</option>'+equiposOpts;
+        html+='<select id="sel-'+idx+'-1" style="flex:1;background:#1a2e1c;border:1px solid rgba(255,255,255,.1);border-radius:4px;color:'+(e1?'#F5F5F0':'rgba(245,245,240,.3)')+';font-size:12px;padding:2px 4px;outline:none;font-family:Inter,sans-serif;pointer-events:auto">';
+        html+='<option value="">Sin asignar</option>'+equiposOpts;
         html+='</select>';
       } else {
         html+='<span>'+(e1?e1.nombre:'Por definir')+'</span>';
@@ -633,6 +633,19 @@ async function cambiarEquipo(llaveIdx, slot, equipoId) {
     headers: {'Content-Type':'application/json'},
     body: JSON.stringify({campo: campo, equipoId: equipoId||null})
   });
+}
+
+function guardarVs(idx) {
+  var s1 = document.getElementById('sel-'+idx+'-1');
+  var s2 = document.getElementById('sel-'+idx+'-2');
+  var v1 = s1 ? s1.value : '';
+  var v2 = s2 ? s2.value : '';
+  if (v1) cambiarEquipo(idx, 1, v1);
+  if (v2) cambiarEquipo(idx, 2, v2);
+  if (v1 && v2) {
+    // Ambos asignados — mostrar botones de ganador
+    setTimeout(function(){ renderBracketEncargado(); }, 300);
+  }
 }
 
 function clickEq(idx,equipo) {
