@@ -186,11 +186,19 @@
             </div>
           </div>
           <div id="td-equipos" style="display:flex;flex-wrap:wrap;gap:6px"></div>
-          <div id="form-equipo" style="display:none;margin-top:10px;flex-direction:row;gap:6px;align-items:center">
-            <input id="eq-inp-nombre" placeholder="Nombre de la pareja" style="flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:7px;color:#F5F5F0;font-size:13px;padding:7px 10px;outline:none;font-family:'Inter',sans-serif"/>
-            <input id="eq-inp-seed" placeholder="Seed" type="number" style="width:60px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:7px;color:#F5F5F0;font-size:13px;padding:7px 10px;outline:none;font-family:'Inter',sans-serif;text-align:center"/>
-            <button onclick="agregarEquipo()" style="background:#3D7A4A;border:none;border-radius:7px;color:#F5F5F0;font-size:12px;padding:7px 12px;cursor:pointer;font-family:'Inter',sans-serif">Agregar</button>
-            <button onclick="document.getElementById('form-equipo').style.display='none'" style="background:transparent;border:1px solid rgba(255,255,255,.1);border-radius:7px;color:rgba(245,245,240,.4);font-size:12px;padding:7px 10px;cursor:pointer">✕</button>
+          <div id="form-equipo" style="display:none;margin-top:10px;flex-direction:column;gap:8px">
+            <!-- Desde equipos del club -->
+            <div style="font-size:10px;color:rgba(245,245,240,.35);letter-spacing:1px;text-transform:uppercase;margin-bottom:2px">Desde equipos del club</div>
+            <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap" id="club-equipos-btns"></div>
+            <div style="height:1px;background:rgba(255,255,255,.07);margin:4px 0"></div>
+            <!-- O escribir uno nuevo -->
+            <div style="font-size:10px;color:rgba(245,245,240,.35);letter-spacing:1px;text-transform:uppercase;margin-bottom:2px">O escribir uno nuevo</div>
+            <div style="display:flex;gap:6px;align-items:center">
+              <input id="eq-inp-nombre" placeholder="Nombre de la pareja" style="flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:7px;color:#F5F5F0;font-size:13px;padding:7px 10px;outline:none;font-family:'Inter',sans-serif"/>
+              <input id="eq-inp-seed" placeholder="Seed" type="number" style="width:60px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:7px;color:#F5F5F0;font-size:13px;padding:7px 10px;outline:none;font-family:'Inter',sans-serif;text-align:center"/>
+              <button onclick="agregarEquipo()" style="background:#3D7A4A;border:none;border-radius:7px;color:#F5F5F0;font-size:12px;padding:7px 12px;cursor:pointer;font-family:'Inter',sans-serif">Agregar</button>
+              <button onclick="document.getElementById('form-equipo').style.display='none'" style="background:transparent;border:1px solid rgba(255,255,255,.1);border-radius:7px;color:rgba(245,245,240,.4);font-size:12px;padding:7px 10px;cursor:pointer">✕</button>
+            </div>
           </div>
         </div>
 
@@ -459,8 +467,36 @@ function renderEquiposTorneo() {
 
 function showAgregarEquipo() {
   const f = document.getElementById('form-equipo');
-  f.style.display = f.style.display === 'flex' ? 'none' : 'flex';
-  if (f.style.display === 'flex') document.getElementById('eq-inp-nombre').focus();
+  const visible = f.style.display === 'flex' || f.style.display === 'column';
+  f.style.display = visible ? 'none' : 'flex';
+  if (!visible) {
+    // Poblar botones con equipos del club que no están ya inscriptos
+    const yaInscritos = _equiposTorneo.map(e => e.nombre.toLowerCase());
+    const disponibles = equipos.filter(e => !yaInscritos.includes(e.nombre.toLowerCase()));
+    const container = document.getElementById('club-equipos-btns');
+    if (disponibles.length) {
+      container.innerHTML = disponibles.map(e =>
+        '<button onclick="agregarEquipoClub(' + JSON.stringify(e.nombre) + ')" style="background:rgba(61,122,74,.15);border:1px solid rgba(61,122,74,.35);border-radius:6px;color:#F5F5F0;font-size:12px;padding:5px 10px;cursor:pointer;font-family:Inter,sans-serif">' + e.nombre + '</button>'
+      ).join('');
+    } else {
+      container.innerHTML = '<span style="font-size:12px;color:rgba(245,245,240,.3)">Todos los equipos ya están inscriptos</span>';
+    }
+    document.getElementById('eq-inp-nombre').focus();
+  }
+}
+
+async function agregarEquipoClub(nombre) {
+  if (!_torneoActual) return;
+  const r = await fetch('/api/torneo/' + _torneoActual.id + '/equipo', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ nombre, seed: null })
+  });
+  const e = await r.json();
+  _equiposTorneo.push({ id: e.id, nombre: e.nombre, seed: null });
+  renderEquiposTorneo();
+  // Actualizar botones
+  showAgregarEquipo(); // cerrar
+  showAgregarEquipo(); // abrir de nuevo para actualizar lista
 }
 
 async function agregarEquipo() {
