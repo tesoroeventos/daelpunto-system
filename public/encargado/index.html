@@ -9,7 +9,691 @@
     *{box-sizing:border-box;margin:0;padding:0}
     html,body{min-height:100%;background:#0a1a0d;color:#F5F5F0;font-family:'Inter',sans-serif}
 
+    /* LOGIN */<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Da El Punto — Panel Encargado</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap');
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{min-height:100%;background:#0a1a0d;color:#F5F5F0;font-family:'Inter',sans-serif}
+
     /* LOGIN */
+    #login{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;gap:16px;padding:32px}
+    #login h1{font-family:'Bebas Neue',sans-serif;font-size:52px;color:#E8D44D;letter-spacing:3px}
+    #login p{color:rgba(245,245,240,.4);font-size:14px;letter-spacing:1px}
+    .inp{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:10px;color:#F5F5F0;font-size:15px;padding:12px 16px;outline:none;width:100%;max-width:380px;font-family:'Inter',sans-serif}
+    .inp:focus{border-color:rgba(232,212,77,.5)}
+    .btn-primary{background:#3D7A4A;border:none;border-radius:10px;color:#F5F5F0;font-size:15px;font-weight:600;padding:13px 0;width:100%;max-width:380px;cursor:pointer;font-family:'Inter',sans-serif}
+    .btn-primary:active{opacity:.85}
+
+    /* PANEL */
+    #panel{display:none}
+    .panel-header{background:#0d2211;border-bottom:2px solid #3D7A4A;padding:14px 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
+    .panel-logo{font-family:'Bebas Neue',sans-serif;font-size:28px;color:#E8D44D;letter-spacing:2px}
+    .panel-club{font-size:14px;color:rgba(245,245,240,.6)}
+    .panel-ws{display:flex;align-items:center;gap:8px;font-size:12px;color:rgba(245,245,240,.4)}
+    .panel-ws-dot{width:8px;height:8px;border-radius:50%;background:#3D7A4A}
+    .panel-ws-dot.off{background:rgba(255,255,255,.2)}
+
+    .panel-body{padding:24px 28px;max-width:1400px;margin:0 auto}
+
+    /* TABS */
+    .tabs{display:flex;gap:0;border:1px solid rgba(255,255,255,.1);border-radius:10px;overflow:hidden;margin-bottom:24px;width:fit-content}
+    .tab{padding:9px 20px;background:transparent;border:none;color:rgba(245,245,240,.4);font-size:13px;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;transition:.15s;letter-spacing:.3px}
+    .tab.active{background:#3D7A4A;color:#F5F5F0}
+
+    /* CANCHAS GRID */
+    .canchas-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+    .cancha-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:16px;transition:border-color .2s}
+    .cancha-card.active{border-color:rgba(61,122,74,.5)}
+    .cancha-card.empty{border-color:rgba(255,255,255,.06);opacity:.7}
+    .cancha-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+    .cancha-nombre{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px;color:#F5F5F0}
+    .cancha-badge{font-size:10px;font-weight:600;padding:3px 8px;border-radius:5px;letter-spacing:1px;text-transform:uppercase}
+    .cancha-badge.playing{background:rgba(61,122,74,.2);border:1px solid rgba(61,122,74,.5);color:#7BC47F}
+    .cancha-badge.free{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:rgba(245,245,240,.4)}
+
+    /* Score mini */
+    .mini-score{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;margin-bottom:12px}
+    .mini-team{text-align:center}
+    .mini-team-name{font-size:11px;color:rgba(245,245,240,.5);margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .mini-pts{font-family:'Bebas Neue',sans-serif;font-size:36px;color:#F5F5F0;line-height:1}
+    .mini-pts.adv{color:#E8D44D}
+    .mini-center{text-align:center}
+    .mini-games{font-family:'Bebas Neue',sans-serif;font-size:18px;color:rgba(245,245,240,.4);line-height:1.2}
+    .mini-set-lbl{font-size:9px;color:rgba(245,245,240,.3);letter-spacing:1px;text-transform:uppercase}
+    .mini-sets{display:flex;gap:4px;justify-content:center;margin-top:4px}
+    .mini-set-dot{width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;font-size:9px;color:rgba(245,245,240,.3)}
+    .mini-set-dot.won{background:#E8D44D;border-color:#E8D44D;color:#0a1a0d;font-weight:700}
+
+    /* Actions */
+    .cancha-actions{display:flex;gap:6px}
+    .btn-sm{flex:1;padding:7px 0;border:1px solid;border-radius:7px;font-size:11px;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;transition:.15s;letter-spacing:.3px}
+    .btn-verde{background:rgba(61,122,74,.2);border-color:rgba(61,122,74,.5);color:#7BC47F}
+    .btn-rojo{background:rgba(220,53,69,.1);border-color:rgba(220,53,69,.3);color:#ff8a8a}
+    .btn-gris{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.1);color:rgba(245,245,240,.5)}
+    .btn-sm:active{opacity:.7}
+
+    /* Empty cancha */
+    .cancha-empty-msg{text-align:center;padding:16px 0;color:rgba(245,245,240,.3);font-size:12px}
+
+    /* NUEVO PARTIDO MODAL */
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;align-items:center;justify-content:center;padding:20px}
+    .modal-overlay.show{display:flex}
+    .modal{background:#0f2114;border:1px solid rgba(61,122,74,.3);border-radius:16px;padding:24px;width:100%;max-width:440px}
+    .modal h2{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:1px;color:#E8D44D;margin-bottom:16px}
+    .modal .pf{display:flex;flex-direction:column;gap:4px;margin-bottom:12px}
+    .modal .pf label{font-size:10px;color:rgba(245,245,240,.4);letter-spacing:1px;text-transform:uppercase}
+    .modal .pf input,.modal .pf select{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:7px;color:#F5F5F0;font-family:'Inter',sans-serif;font-size:14px;padding:9px 10px;outline:none;width:100%}
+    .modal .pf input:focus,.modal .pf select:focus{border-color:rgba(232,212,77,.5)}
+    .modal .pf select option{background:#1a2e1c}
+    .modal-btns{display:flex;gap:8px;margin-top:16px}
+    .btn-cancel{flex:1;padding:11px 0;background:transparent;border:1px solid rgba(255,255,255,.12);border-radius:9px;color:rgba(245,245,240,.5);font-family:'Inter',sans-serif;font-size:13px;cursor:pointer}
+    .btn-confirm{flex:2;padding:11px 0;background:#3D7A4A;border:none;border-radius:9px;color:#F5F5F0;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer}
+
+    /* TORNEOS */
+    .torneos-section{padding-top:4px}
+    .torneo-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:14px 16px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
+    .torneo-nombre{font-weight:600;font-size:14px}
+    .torneo-info{font-size:11px;color:rgba(245,245,240,.4);margin-top:2px}
+    .btn-nuevo{background:rgba(232,212,77,.1);border:1px solid rgba(232,212,77,.25);color:#E8D44D;border-radius:8px;padding:8px 16px;font-size:12px;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;letter-spacing:.5px;text-transform:uppercase}
+    .bracket-ronda{display:inline-flex;flex-direction:column;vertical-align:top;min-width:180px;margin-right:16px}
+    .bracket-ronda-titulo{font-size:9px;color:rgba(245,245,240,.3);letter-spacing:2px;text-transform:uppercase;text-align:center;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,.06)}
+    .bracket-partido{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;overflow:hidden;margin:4px 0}
+    .bracket-eq{display:flex;align-items:center;gap:6px;padding:7px 10px;font-size:12px;min-height:34px;cursor:pointer;transition:.15s}
+    .bracket-eq:first-child{border-bottom:1px solid rgba(255,255,255,.06)}
+    .bracket-eq:hover{background:rgba(61,122,74,.15)}
+    .bracket-eq.ganador{background:rgba(61,122,74,.2);color:#E8D44D;font-weight:600}
+    .bracket-eq.pendiente{color:rgba(245,245,240,.3)}
+    .club-item{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:14px}
+  </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login">
+  <h1>Da El Punto</h1>
+  <p>PANEL DE ENCARGADO</p>
+  <input class="inp" id="inp-codigo" type="text" placeholder="Código del club (ej: DEMO)" style="text-transform:uppercase" oninput="this.value=this.value.toUpperCase()"/>
+  <button class="btn-primary" onclick="conectar()">Ingresar</button>
+</div>
+
+<!-- PANEL -->
+<div id="panel">
+  <div class="panel-header">
+    <div>
+      <div class="panel-logo">Da El Punto</div>
+      <div class="panel-club" id="panel-club-nombre">—</div>
+    </div>
+    <div class="panel-ws">
+      <div class="panel-ws-dot off" id="panel-ws-dot"></div>
+      <span id="panel-ws-txt">Conectando…</span>
+    </div>
+  </div>
+
+  <div class="panel-body">
+    <div class="tabs">
+      <button class="tab active" onclick="showTab('canchas')">Canchas</button>
+      <button class="tab" onclick="showTab('equipos')">Equipos</button>
+      <button class="tab" onclick="showTab('torneos')">Torneos</button>
+    </div>
+
+    <!-- CANCHAS -->
+    <div id="tab-canchas">
+      <div class="canchas-grid" id="canchas-grid"></div>
+    </div>
+
+    <!-- EQUIPOS -->
+    <div id="tab-equipos" style="display:none">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <div style="font-size:13px;color:rgba(245,245,240,.5)">Equipos registrados</div>
+        <button class="btn-nuevo" onclick="showNuevoEquipo()">+ Nuevo equipo</button>
+      </div>
+      <div id="equipos-list"></div>
+    </div>
+
+    <!-- TORNEOS -->
+    <div id="tab-torneos" style="display:none">
+      <!-- Lista de torneos -->
+      <div id="torneos-panel">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+          <div style="font-size:13px;color:rgba(245,245,240,.5)">Torneos del club</div>
+          <button class="btn-nuevo" onclick="showNuevoTorneoForm()">+ Nuevo torneo</button>
+        </div>
+        <div id="torneos-list"><div style="color:rgba(245,245,240,.3);font-size:13px">Sin torneos todavía</div></div>
+      </div>
+
+      <!-- Detalle torneo -->
+      <div id="torneo-detalle" style="display:none">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap">
+          <button onclick="volverTorneos()" style="background:transparent;border:1px solid rgba(255,255,255,.1);border-radius:7px;color:rgba(245,245,240,.5);font-size:12px;padding:6px 12px;cursor:pointer">← Volver</button>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:#E8D44D;letter-spacing:1px;flex:1" id="td-nombre">—</div>
+          <span id="td-estado-badge" style="font-size:10px;font-weight:600;padding:3px 8px;border-radius:4px;letter-spacing:1px;text-transform:uppercase"></span>
+          <button onclick="eliminarTorneo()" style="background:rgba(220,53,69,.1);border:1px solid rgba(220,53,69,.3);border-radius:7px;color:#ff8a8a;font-size:11px;padding:6px 12px;cursor:pointer;font-family:'Inter',sans-serif">🗑 Eliminar</button>
+        </div>
+
+        <!-- Equipos -->
+        <div class="club-item" style="margin-bottom:10px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+            <div style="font-size:10px;color:rgba(245,245,240,.35);letter-spacing:1.5px;text-transform:uppercase">Equipos inscriptos</div>
+            <div style="display:flex;gap:6px">
+              <button class="btn-nuevo" onclick="showAgregarEquipo()">+ Equipo</button>
+              <button class="btn-nuevo" style="background:rgba(61,122,74,.2);border-color:rgba(61,122,74,.4)" onclick="generarBracket()">⚡ Generar bracket</button>
+            </div>
+          </div>
+          <div id="td-equipos" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+          <div id="form-equipo" style="display:none;margin-top:10px;display:flex;gap:6px;align-items:center">
+            <input id="eq-inp-nombre" placeholder="Nombre de la pareja" style="flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:7px;color:#F5F5F0;font-size:13px;padding:7px 10px;outline:none;font-family:'Inter',sans-serif"/>
+            <input id="eq-inp-seed" placeholder="Seed" style="width:60px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:7px;color:#F5F5F0;font-size:13px;padding:7px 10px;outline:none;font-family:'Inter',sans-serif;text-align:center" type="number"/>
+            <button onclick="agregarEquipo()" style="background:#3D7A4A;border:none;border-radius:7px;color:#F5F5F0;font-size:12px;padding:7px 12px;cursor:pointer;font-family:'Inter',sans-serif">Agregar</button>
+            <button onclick="document.getElementById('form-equipo').style.display='none'" style="background:transparent;border:1px solid rgba(255,255,255,.1);border-radius:7px;color:rgba(245,245,240,.4);font-size:12px;padding:7px 10px;cursor:pointer">✕</button>
+          </div>
+        </div>
+
+        <!-- Bracket -->
+        <div class="club-item">
+          <div style="font-size:10px;color:rgba(245,245,240,.35);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px">Bracket</div>
+          <div id="td-bracket" style="overflow-x:auto"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL NUEVO PARTIDO -->
+<div class="modal-overlay" id="modal-partido">
+  <div class="modal">
+    <h2>Nuevo partido</h2>
+    <input type="hidden" id="modal-cancha-id"/>
+    <div class="pf"><label>Pareja 1</label><input id="modal-p1" placeholder="Nombre pareja 1"/></div>
+    <div class="pf"><label>Pareja 2</label><input id="modal-p2" placeholder="Nombre pareja 2"/></div>
+    <div class="pf">
+      <label>Punto de oro</label>
+      <select id="modal-oro">
+        <option value="0">No — sistema tradicional (Deuce/Ventaja)</option>
+        <option value="1">Sí — un punto decide en 40-40</option>
+      </select>
+    </div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal('modal-partido')">Cancelar</button>
+      <button class="btn-confirm" onclick="crearPartido()">Empezar partido</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL NUEVO EQUIPO -->
+<div class="modal-overlay" id="modal-equipo">
+  <div class="modal">
+    <h2>Nuevo equipo</h2>
+    <div class="pf"><label>Nombre del equipo</label><input id="eq-nombre" placeholder="Los Cracks"/></div>
+    <div class="pf"><label>Jugador 1</label><input id="eq-j1" placeholder="Nombre jugador 1"/></div>
+    <div class="pf"><label>Jugador 2</label><input id="eq-j2" placeholder="Nombre jugador 2"/></div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal('modal-equipo')">Cancelar</button>
+      <button class="btn-confirm" onclick="guardarEquipo()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let ws, club, canchas = [], equipos = [], estadoCanchas = {};
+const WS_URL = `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}`;
+
+// ─── LOGIN ────────────────────────────────────────────────────────────────────
+
+async function conectar() {
+  const codigo = document.getElementById('inp-codigo').value.trim().toUpperCase();
+  if (!codigo) return;
+  try {
+    const r = await fetch('/api/club/'+codigo);
+    if (!r.ok) { alert('Club no encontrado'); return; }
+    const data = await r.json();
+    club = data.club; canchas = data.canchas; equipos = data.equipos;
+    document.getElementById('login').style.display = 'none';
+    document.getElementById('panel').style.display = 'block';
+    document.getElementById('panel-club-nombre').textContent = club.nombre;
+    connectWS(codigo);
+    renderCanchas();
+    renderEquipos();
+    cargarTorneos();
+  } catch(e) { alert('Error conectando'); }
+}
+
+// ─── WEBSOCKET ────────────────────────────────────────────────────────────────
+
+function connectWS(codigo) {
+  ws = new WebSocket(WS_URL);
+  ws.onopen = () => {
+    ws.send(JSON.stringify({ type: 'JOIN_ENCARGADO', clubCodigo: codigo }));
+    setWS(true, 'Conectado');
+  };
+  ws.onmessage = (e) => {
+    const msg = JSON.parse(e.data);
+    switch (msg.type) {
+      case 'INIT':
+        msg.estadoCanchas.forEach(({ cancha, partido }) => { estadoCanchas[cancha.id] = partido; });
+        renderCanchas(); break;
+      case 'CANCHA_UPDATE':
+        estadoCanchas[msg.canchaId] = msg.state;
+        renderCanchaCard(msg.canchaId); break;
+    }
+  };
+  ws.onclose = () => { setWS(false, 'Reconectando…'); setTimeout(() => connectWS(club.codigo), 3000); };
+  ws.onerror = () => ws.close();
+}
+
+function setWS(ok, txt) {
+  document.getElementById('panel-ws-dot').className = 'panel-ws-dot' + (ok ? '' : ' off');
+  document.getElementById('panel-ws-txt').textContent = txt;
+}
+
+// ─── CANCHAS ─────────────────────────────────────────────────────────────────
+
+function renderCanchas() {
+  const grid = document.getElementById('canchas-grid');
+  grid.innerHTML = canchas.map(c => canchaCardHTML(c)).join('');
+}
+
+function renderCanchaCard(canchaId) {
+  const c = canchas.find(x => x.id === canchaId);
+  if (!c) return;
+  const existing = document.getElementById('card-' + canchaId);
+  if (existing) existing.outerHTML = canchaCardHTML(c);
+  else renderCanchas();
+}
+
+function canchaCardHTML(c) {
+  const s = estadoCanchas[c.id];
+  const playing = s && s.estado === 'en_curso';
+  const nombre = c.nombre || 'Cancha ' + c.numero;
+
+  if (!playing) {
+    return '<div class="cancha-card empty" id="card-'+c.id+'" data-cid="'+c.id+'">' +
+      '<div class="cancha-hdr"><div class="cancha-nombre">'+nombre+'</div><div class="cancha-badge free">Libre</div></div>' +
+      '<div class="cancha-empty-msg">Sin partido en curso</div>' +
+      '<div class="cancha-actions"><button class="btn-sm btn-verde" onclick="showNuevoPartidoEl(this)">+ Nuevo partido</button></div>' +
+      '</div>';
+  }
+
+  const sc0 = s.displayScore[0], sc1 = s.displayScore[1];
+  const sets0 = [0,1,2].map(i => {
+    const h = s.setHistory[i];
+    return '<div class="mini-set-dot'+(h && h.e1>h.e2?' won':'')+'">'+( h ? h.e1 : '—')+'</div>';
+  }).join('');
+  const sets1 = [0,1,2].map(i => {
+    const h = s.setHistory[i];
+    return '<div class="mini-set-dot'+(h && h.e2>h.e1?' won':'')+'">'+( h ? h.e2 : '—')+'</div>';
+  }).join('');
+
+  return '<div class="cancha-card active" id="card-'+c.id+'">' +
+    '<div class="cancha-hdr"><div class="cancha-nombre">'+nombre+'</div><div class="cancha-badge playing">● En juego</div></div>' +
+    '<div class="mini-score">' +
+      '<div class="mini-team"><div class="mini-team-name">'+s.equipo1+'</div><div class="mini-pts'+(sc0==='AD'?' adv':'')+'">'+sc0+'</div><div class="mini-sets">'+sets0+'</div></div>' +
+      '<div class="mini-center"><div class="mini-set-lbl">Set '+s.currentSet+'</div><div class="mini-games">'+s.games[0]+'<br>'+s.games[1]+'</div></div>' +
+      '<div class="mini-team"><div class="mini-team-name">'+s.equipo2+'</div><div class="mini-pts'+(sc1==='AD'?' adv':'')+'">'+sc1+'</div><div class="mini-sets">'+sets1+'</div></div>' +
+    '</div>' +
+    '<div class="cancha-actions"><button class="btn-sm btn-rojo" data-cid="'+c.id+'" data-pid="'+s.partidoId+'" onclick="finalizarPartidoEl(this)">Finalizar</button></div>' +
+    '</div>';
+}
+
+function showNuevoPartidoEl(btn) {
+  const cid = btn.closest('[data-cid]').dataset.cid;
+  showNuevoPartido(cid);
+}
+function finalizarPartidoEl(btn) {
+  finalizarPartido(btn.dataset.cid, btn.dataset.pid);
+}
+function showNuevoPartido(canchaId) {
+  document.getElementById('modal-cancha-id').value = canchaId;
+  document.getElementById('modal-p1').value = '';
+  document.getElementById('modal-p2').value = '';
+  document.getElementById('modal-partido').className = 'modal-overlay show';
+}
+
+async function crearPartido() {
+  const canchaId = document.getElementById('modal-cancha-id').value;
+  const p1 = document.getElementById('modal-p1').value || 'Pareja 1';
+  const p2 = document.getElementById('modal-p2').value || 'Pareja 2';
+  const oro = document.getElementById('modal-oro').value === '1';
+  const r = await fetch('/api/partido', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ clubCodigo: club.codigo, canchaId, equipo1Nombre: p1, equipo2Nombre: p2, puntoDeOro: oro })
+  });
+  if (!r.ok) { alert('Error creando partido'); return; }
+  closeModal('modal-partido');
+}
+
+async function finalizarPartido(canchaId, partidoId) {
+  if (!confirm('Finalizar este partido?')) return;
+  await fetch('/api/partido/'+partidoId+'/finalizar', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ canchaId })
+  });
+}
+
+// ─── EQUIPOS ─────────────────────────────────────────────────────────────────
+
+function renderEquipos() {
+  const list = document.getElementById('equipos-list');
+  if (!equipos.length) {
+    list.innerHTML = '<div style="color:rgba(245,245,240,.3);font-size:13px">No hay equipos registrados</div>';
+    return;
+  }
+  list.innerHTML = equipos.map(e =>
+    '<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between">' +
+    '<div><div style="font-weight:600;font-size:14px">'+e.nombre+'</div>' +
+    '<div style="font-size:11px;color:rgba(245,245,240,.4);margin-top:2px">'+ ([e.jugador1,e.jugador2].filter(Boolean).join(' · ')||'Sin jugadores') +'</div></div>' +
+    '</div>'
+  ).join('');
+}
+
+function showNuevoEquipo() {
+  document.getElementById('eq-nombre').value='';
+  document.getElementById('eq-j1').value='';
+  document.getElementById('eq-j2').value='';
+  document.getElementById('modal-equipo').className='modal-overlay show';
+}
+
+async function guardarEquipo() {
+  const nombre = document.getElementById('eq-nombre').value.trim();
+  if (!nombre) return;
+  const r = await fetch('/api/equipo',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({clubCodigo:club.codigo,nombre,jugador1:document.getElementById('eq-j1').value,jugador2:document.getElementById('eq-j2').value})});
+  if(!r.ok){alert('Error');return;}
+  const eq=await r.json();
+  equipos.push({...eq});
+  renderEquipos();
+  closeModal('modal-equipo');
+}
+
+// ─── TORNEOS ─────────────────────────────────────────────────────────────────
+
+var _torneoActual = null;
+var _equiposTorneo = [];
+var _llavesTorneo = [];
+
+async function cargarTorneos() {
+  if (!club) return;
+  const r = await fetch('/api/club/'+club.codigo+'/torneos');
+  const data = await r.json();
+  const list = document.getElementById('torneos-list');
+  if (!data.length) { list.innerHTML='<div style="color:rgba(245,245,240,.3);font-size:13px">Sin torneos todavía</div>'; return; }
+  window._torneosList = data;
+  list.innerHTML = data.map(function(t, i){
+    var color = t.estado==='en_curso'?'#7BC47F':t.estado==='finalizado'?'#E8D44D':'rgba(245,245,240,.4)';
+    var estado = t.estado==='en_curso'?'En curso':t.estado==='finalizado'?'Finalizado':'Pendiente';
+    return '<div onclick="abrirTorneoIdx('+i+')" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:12px 14px;margin-bottom:8px;cursor:pointer;display:flex;align-items:center;justify-content:space-between">' +
+      '<div><div style="font-weight:600;font-size:14px">'+t.nombre+'</div><div style="font-size:11px;color:rgba(245,245,240,.4);margin-top:2px">'+t.formato+'</div></div>' +
+      '<span style="font-size:10px;font-weight:600;color:'+color+';letter-spacing:1px;text-transform:uppercase">'+estado+'</span>' +
+      '</div>';
+  }).join('');
+}
+
+function abrirTorneoIdx(i) { abrirTorneo(window._torneosList[i].id); }
+
+async function abrirTorneo(id) {
+  const r = await fetch('/api/torneo/'+id);
+  const data = await r.json();
+  _torneoActual = data.torneo;
+  _equiposTorneo = data.equipos;
+  _llavesTorneo = data.llaves;
+  document.getElementById('torneos-panel').style.display='none';
+  document.getElementById('torneo-detalle').style.display='block';
+  document.getElementById('td-nombre').textContent = data.torneo.nombre;
+  const badge = document.getElementById('td-estado-badge');
+  badge.textContent = data.torneo.estado==='en_curso'?'En curso':data.torneo.estado==='finalizado'?'Finalizado':'Pendiente';
+  badge.style.cssText = data.torneo.estado==='en_curso'
+    ? 'background:rgba(61,122,74,.2);color:#7BC47F;border:1px solid rgba(61,122,74,.4);font-size:10px;font-weight:600;padding:3px 8px;border-radius:4px;letter-spacing:1px;text-transform:uppercase'
+    : 'background:rgba(255,255,255,.06);color:rgba(245,245,240,.4);border:1px solid rgba(255,255,255,.08);font-size:10px;font-weight:600;padding:3px 8px;border-radius:4px;letter-spacing:1px;text-transform:uppercase';
+  renderEquiposTorneo();
+  renderBracketEncargado();
+}
+
+function volverTorneos() {
+  _torneoActual=null;
+  document.getElementById('torneos-panel').style.display='block';
+  document.getElementById('torneo-detalle').style.display='none';
+}
+
+function renderEquiposTorneo() {
+  const div = document.getElementById('td-equipos');
+  if (!_equiposTorneo.length) {
+    div.innerHTML='<div style="color:rgba(245,245,240,.3);font-size:12px">Sin equipos. Agregá parejas para comenzar.</div>';
+    return;
+  }
+  div.innerHTML = _equiposTorneo.map(e =>
+    '<div style="background:rgba(61,122,74,.1);border:1px solid rgba(61,122,74,.3);border-radius:6px;padding:4px 10px;font-size:12px;display:flex;align-items:center;gap:6px">' +
+    (e.seed?'<span style="color:#E8D44D;font-size:10px">#'+e.seed+'</span>':'')+
+    '<span>'+e.nombre+'</span></div>'
+  ).join('');
+}
+
+function showAgregarEquipo() {
+  const f=document.getElementById('form-equipo');
+  f.style.display=(f.style.display==='flex'?'none':'flex');
+  if(f.style.display==='flex') document.getElementById('eq-inp-nombre').focus();
+}
+
+async function agregarEquipo() {
+  const nombre=document.getElementById('eq-inp-nombre').value.trim();
+  const seed=document.getElementById('eq-inp-seed').value;
+  if(!nombre||!_torneoActual) return;
+  const r=await fetch('/api/torneo/'+_torneoActual.id+'/equipo',{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({nombre,seed:seed||null})
+  });
+  const e=await r.json();
+  _equiposTorneo.push({id:e.id,nombre:e.nombre,seed:seed||null});
+  renderEquiposTorneo();
+  document.getElementById('eq-inp-nombre').value='';
+  document.getElementById('eq-inp-seed').value='';
+}
+
+async function generarBracket() {
+  if(!_torneoActual) return;
+  if(!confirm('Generar el bracket con '+_equiposTorneo.length+' equipos?')) return;
+  const r=await fetch('/api/torneo/'+_torneoActual.id+'/generar',{method:'POST'});
+  const data=await r.json();
+  _llavesTorneo=data.llaves;
+  renderBracketEncargado();
+}
+
+function showNuevoTorneoForm() {
+  const nombre=prompt('Nombre del torneo:');
+  if(!nombre) return;
+  fetch('/api/torneo',{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({clubCodigo:club.codigo,nombre,formato:'eliminacion',equipos:[]})
+  }).then(r=>r.json()).then(data=>{
+    cargarTorneos();
+    setTimeout(()=>abrirTorneo(data.id),300);
+  });
+}
+
+function getEquipoTorneo(id) {
+  for(let e of _equiposTorneo) if(e.id===id) return e;
+  return null;
+}
+
+function renderBracketEncargado() {
+  const div=document.getElementById('td-bracket');
+  if(!_llavesTorneo||!_llavesTorneo.length){
+    div.innerHTML='<div style="color:rgba(245,245,240,.3);font-size:12px">Bracket no generado. Agregá equipos y presioná Generar bracket.</div>';
+    return;
+  }
+  window._llavesRef=_llavesTorneo;
+
+  // Opciones de canchas para el select
+  const canchaOpts = canchas.map((c,i)=>'<option value="'+c.id+'" style="background:#1a2e1c;color:#F5F5F0">'+(c.nombre||'Cancha '+c.numero)+'</option>').join('');
+
+  const rondas={};
+  _llavesTorneo.forEach(l=>{ if(!rondas[l.ronda]) rondas[l.ronda]=[]; rondas[l.ronda].push(l); });
+  const keys=Object.keys(rondas).map(Number).sort((a,b)=>b-a);
+
+  // Opciones de equipos para los selects
+  const equiposOpts = _equiposTorneo.map(function(e){
+    return '<option value="'+e.id+'" style="background:#1a2e1c;color:#F5F5F0">'+(e.seed?'#'+e.seed+' ':'')+e.nombre+'</option>';
+  }).join('');
+
+  let html='<div style="display:flex;align-items:flex-start;min-width:max-content">';
+  keys.forEach(ronda=>{
+    const ps=rondas[ronda].sort((a,b)=>a.posicion-b.posicion);
+    const lbl=ronda===1?'FINAL':ronda===2?'SEMIFINAL':ronda===4?'CUARTOS':'RONDA '+ronda;
+    html+='<div class="bracket-ronda"><div class="bracket-ronda-titulo">'+lbl+'</div>';
+    ps.forEach((p)=>{
+      const idx=_llavesTorneo.indexOf(p);
+      const e1=p.equipo1_id?getEquipoTorneo(p.equipo1_id):null;
+      const e2=p.equipo2_id?getEquipoTorneo(p.equipo2_id):null;
+      const canchaNom = p.cancha_id ? (canchas.find(c=>c.id===p.cancha_id)||{}).nombre||'Cancha' : null;
+
+      html+='<div class="bracket-partido" style="position:relative">';
+
+      // Selector de cancha arriba del partido
+      html+='<div style="padding:4px 8px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;gap:6px">';
+      html+='<span style="font-size:9px;color:rgba(245,245,240,.3);letter-spacing:1px;text-transform:uppercase">Cancha:</span>';
+      html+='<select onchange="asignarCancha('+idx+',this.value)" style="flex:1;background:#1a2e1c;border:1px solid rgba(255,255,255,.12);border-radius:4px;color:#E8D44D;font-size:11px;padding:2px 4px;outline:none;font-family:Inter,sans-serif">';
+      html+='<option value="" style="background:#1a2e1c;color:rgba(245,245,240,.5)">Sin asignar</option>'+canchaOpts;
+      html+='</select></div>';
+
+      // Equipo 1
+      const c1='bracket-eq'+(p.ganador_id===p.equipo1_id?' ganador':(!e1?' pendiente':''));
+      html+='<div class="'+c1+'" style="pointer-events:none">';
+      html+='<span style="font-size:10px;color:rgba(245,245,240,.3);width:14px">'+(e1&&e1.seed?e1.seed:'')+'</span>';
+      if(!p.ganador_id){
+        html+='<select id="sel-'+idx+'-1" style="flex:1;background:#1a2e1c;border:1px solid rgba(255,255,255,.1);border-radius:4px;color:'+(e1?'#F5F5F0':'rgba(245,245,240,.3)')+';font-size:12px;padding:2px 4px;outline:none;font-family:Inter,sans-serif;pointer-events:auto">';
+        html+='<option value="">Sin asignar</option>'+equiposOpts;
+        html+='</select>';
+      } else {
+        html+='<span>'+(e1?e1.nombre:'Por definir')+'</span>';
+        if(p.ganador_id===p.equipo1_id) html+='<span style="margin-left:auto;color:#E8D44D">✓</span>';
+      }
+      html+='</div>';
+
+      // Equipo 2
+      const c2='bracket-eq'+(p.ganador_id===p.equipo2_id?' ganador':(!e2?' pendiente':''));
+      html+='<div class="'+c2+'">';
+      html+='<span style="font-size:10px;color:rgba(245,245,240,.3);width:14px">'+(e2&&e2.seed?e2.seed:'')+'</span>';
+      if(!p.ganador_id){
+        html+='<select data-llave="'+idx+'" data-slot="2" onchange="cambiarEquipo('+idx+',2,this.value)" onclick="event.stopPropagation()" style="flex:1;background:#1a2e1c;border:1px solid rgba(255,255,255,.1);border-radius:4px;color:'+(e2?'#F5F5F0':'rgba(245,245,240,.3)')+';font-size:12px;padding:2px 4px;outline:none;font-family:Inter,sans-serif">';
+        html+='<option value="" style="background:#1a2e1c">Sin asignar</option>'+equiposOpts;
+        html+='</select>';
+
+      } else {
+        html+='<span>'+(e2?e2.nombre:'Por definir')+'</span>';
+        if(p.ganador_id===p.equipo2_id) html+='<span style="margin-left:auto;color:#E8D44D">✓</span>';
+      }
+      html+='</div>';
+      // Botones de ganador cuando hay dos equipos y no hay ganador
+      if(!p.ganador_id && e1 && e2){
+        html+='<div style="display:flex;gap:4px;padding:4px 8px;border-top:1px solid rgba(255,255,255,.06)">';
+        html+='<button onclick="clickEq('+idx+',1)" style="flex:1;background:rgba(61,122,74,.2);border:1px solid rgba(61,122,74,.4);border-radius:4px;color:#7BC47F;font-size:10px;padding:3px 0;cursor:pointer;font-family:Inter,sans-serif">✓ Ganó E1</button>';
+        html+='<button onclick="clickEq('+idx+',2)" style="flex:1;background:rgba(61,122,74,.2);border:1px solid rgba(61,122,74,.4);border-radius:4px;color:#7BC47F;font-size:10px;padding:3px 0;cursor:pointer;font-family:Inter,sans-serif">✓ Ganó E2</button>';
+        html+='</div>';
+      }
+      html+='</div>';
+    });
+    html+='</div><div style="width:20px;align-self:stretch;display:flex;align-items:center;justify-content:center"><div style="width:2px;height:50%;background:rgba(61,122,74,.2)"></div></div>';
+  });
+  html+='</div>';
+  div.innerHTML=html;
+
+  // Setear valor actual del select de cancha
+  _llavesTorneo.forEach((p,idx)=>{
+    if(p.cancha_id){
+      const selects=div.querySelectorAll('select');
+      if(selects[idx]) selects[idx].value=p.cancha_id;
+    }
+  });
+}
+
+async function asignarCancha(llaveIdx, canchaId) {
+  const p = window._llavesRef[llaveIdx];
+  if (!p) return;
+  await fetch('/api/llave/'+p.id+'/cancha', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({canchaId: canchaId||null})
+  });
+  // Actualizar localmente
+  _llavesTorneo[llaveIdx].cancha_id = canchaId||null;
+}
+
+async function eliminarTorneo() {
+  if (!_torneoActual) return;
+  if (!confirm('Eliminar el torneo '+_torneoActual.nombre+'? Esta accion no se puede deshacer.')) return;
+  await fetch('/api/torneo/'+_torneoActual.id, {method:'DELETE'});
+  volverTorneos();
+  cargarTorneos();
+}
+
+async function cambiarEquipo(llaveIdx, slot, equipoId) {
+  const p = window._llavesRef[llaveIdx];
+  if (!p) return;
+  const campo = slot === 1 ? 'equipo1_id' : 'equipo2_id';
+
+  // Actualizar solo en el objeto local — sin tocar el DOM
+  if (slot === 1) _llavesTorneo[llaveIdx].equipo1_id = equipoId || null;
+  else _llavesTorneo[llaveIdx].equipo2_id = equipoId || null;
+  window._llavesRef[llaveIdx] = _llavesTorneo[llaveIdx];
+
+  // Guardar en servidor
+  fetch('/api/llave/'+p.id+'/equipo', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({campo: campo, equipoId: equipoId||null})
+  });
+}
+
+function guardarVs(idx) {
+  var s1 = document.getElementById('sel-'+idx+'-1');
+  var s2 = document.getElementById('sel-'+idx+'-2');
+  var v1 = s1 ? s1.value : '';
+  var v2 = s2 ? s2.value : '';
+  if (v1) cambiarEquipo(idx, 1, v1);
+  if (v2) cambiarEquipo(idx, 2, v2);
+  if (v1 && v2) {
+    // Ambos asignados — mostrar botones de ganador
+    setTimeout(function(){ renderBracketEncargado(); }, 300);
+  }
+}
+
+function clickEq(idx,equipo) {
+  const p=window._llavesRef[idx];
+  if(!p) return;
+  const ganadorId=equipo===1?p.equipo1_id:p.equipo2_id;
+  registrarGanador(p.id,ganadorId);
+}
+
+async function registrarGanador(llaveId, ganadorId) {
+  if(!ganadorId||ganadorId==='null') return;
+  const ganador=getEquipoTorneo(ganadorId);
+  if(!ganador) return;
+  if(!confirm('Gano: '+ganador.nombre+'?')) return;
+  await fetch('/api/llave/'+llaveId+'/ganador',{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({ganadorId,torneoId:_torneoActual.id})
+  });
+  abrirTorneo(_torneoActual.id);
+}
+
+// ─── UTILS ───────────────────────────────────────────────────────────────────
+
+function showTab(tab) {
+  ['canchas','equipos','torneos'].forEach(t=>{
+    document.getElementById('tab-'+t).style.display=t===tab?'block':'none';
+  });
+  document.querySelectorAll('.tab').forEach((el,i)=>{
+    el.className='tab'+(['canchas','equipos','torneos'][i]===tab?' active':'');
+  });
+  if(tab==='torneos') cargarTorneos();
+}
+
+function closeModal(id) { document.getElementById(id).className='modal-overlay'; }
+</script>
+</body>
+</html>
     #login{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;gap:16px;padding:32px}
     #login h1{font-family:'Bebas Neue',sans-serif;font-size:52px;color:#E8D44D;letter-spacing:3px}
     #login p{color:rgba(245,245,240,.4);font-size:14px;letter-spacing:1px}
