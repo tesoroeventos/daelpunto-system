@@ -370,6 +370,18 @@ app.post('/api/llave/:id/ganador', (req, res) => {
   res.json({ ok: true });
 });
 
+// POST /api/llave/:id/equipo — cambiar equipo en una llave
+app.post('/api/llave/:id/equipo', (req, res) => {
+  const { campo, equipoId } = req.body;
+  if (campo !== 'equipo1_id' && campo !== 'equipo2_id') return res.status(400).json({ error: 'Campo inválido' });
+  db.prepare('UPDATE llaves SET '+campo+' = ? WHERE id = ?').run(equipoId||null, req.params.id);
+  const llave = db.prepare('SELECT * FROM llaves WHERE id = ?').get(req.params.id);
+  const llaves = helpers.getLlaves.all(llave.torneo_id);
+  const equipos = helpers.getTorneoEquipos.all(llave.torneo_id);
+  state.broadcast('torneo:'+llave.torneo_id, { type: 'TORNEO_UPDATE', llaves, equipos });
+  res.json({ ok: true });
+});
+
 // POST /api/llave/:id/cancha — asignar cancha a un partido
 app.post('/api/llave/:id/cancha', (req, res) => {
   const { canchaId } = req.body;
