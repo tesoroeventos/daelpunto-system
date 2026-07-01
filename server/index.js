@@ -274,10 +274,27 @@ app.get('/api/admin/clubes', (req, res) => {
   res.json(clubes);
 });
 
-// DELETE /api/admin/club/:id — desactivar club
+// DELETE /api/admin/club/:id — eliminar club y todos sus datos
 app.delete('/api/admin/club/:id', (req, res) => {
   if (!checkAdmin(req, res)) return;
-  db.prepare('UPDATE clubes SET activo = 0 WHERE id = ?').run(req.params.id);
+  const id = req.params.id;
+  // Eliminar en orden para respetar foreign keys
+  db.prepare('DELETE FROM llaves WHERE torneo_id IN (SELECT id FROM torneos WHERE club_id = ?)').run(id);
+  db.prepare('DELETE FROM torneo_equipos WHERE torneo_id IN (SELECT id FROM torneos WHERE club_id = ?)').run(id);
+  db.prepare('DELETE FROM torneos WHERE club_id = ?').run(id);
+  db.prepare('DELETE FROM sets WHERE partido_id IN (SELECT id FROM partidos WHERE club_id = ?)').run(id);
+  db.prepare('DELETE FROM partidos WHERE club_id = ?').run(id);
+  db.prepare('DELETE FROM equipos WHERE club_id = ?').run(id);
+  db.prepare('DELETE FROM canchas WHERE club_id = ?').run(id);
+  db.prepare('DELETE FROM clubes WHERE id = ?').run(id);
+  res.json({ ok: true });
+});
+
+// PATCH /api/admin/club/:id — editar nombre y plan
+app.patch('/api/admin/club/:id', (req, res) => {
+  if (!checkAdmin(req, res)) return;
+  const { nombre, plan } = req.body;
+  db.prepare('UPDATE clubes SET nombre = ?, plan = ? WHERE id = ?').run(nombre, plan, req.params.id);
   res.json({ ok: true });
 });
 
