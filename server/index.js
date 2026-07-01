@@ -362,10 +362,11 @@ app.post('/api/llave/:id/ganador', (req, res) => {
     db.prepare('UPDATE llaves SET cancha_id = ? WHERE id = ?').run(canchaId, req.params.id);
   }
 
-  // Broadcast a todos los conectados al torneo
+  // Broadcast a todos los conectados al torneo — incluir torneo actualizado
   const llaves = helpers.getLlaves.all(llave.torneo_id);
   const equipos = helpers.getTorneoEquipos.all(llave.torneo_id);
-  state.broadcast(`torneo:${llave.torneo_id}`, { type: 'TORNEO_UPDATE', llaves, equipos });
+  const torneoActualizado = helpers.getTorneo.get(llave.torneo_id);
+  state.broadcast(`torneo:${llave.torneo_id}`, { type: 'TORNEO_UPDATE', llaves, equipos, torneo: torneoActualizado });
 
   res.json({ ok: true });
 });
@@ -387,7 +388,10 @@ app.post('/api/llave/:id/cancha', (req, res) => {
   const { canchaId } = req.body;
   db.prepare('UPDATE llaves SET cancha_id = ? WHERE id = ?').run(canchaId, req.params.id);
   const llave = db.prepare('SELECT * FROM llaves WHERE id = ?').get(req.params.id);
-  state.broadcast(`torneo:${llave.torneo_id}`, { type: 'TORNEO_UPDATE_CANCHA', llaveId: req.params.id, canchaId });
+  const llavesC = helpers.getLlaves.all(llave.torneo_id);
+  const equiposC = helpers.getTorneoEquipos.all(llave.torneo_id);
+  const torneoC = helpers.getTorneo.get(llave.torneo_id);
+  state.broadcast(`torneo:${llave.torneo_id}`, { type: 'TORNEO_UPDATE', llaves: llavesC, equipos: equiposC, torneo: torneoC });
   res.json({ ok: true });
 });
 
