@@ -199,11 +199,13 @@ function generarLlaves(torneoId, equipoIds) {
   }
 
   // Avanzar byes automáticamente a la siguiente ronda
-  // Solo los partidos donde e1 existe y e2 es null (o viceversa)
-  const llaves1 = db.prepare(
-    'SELECT * FROM llaves WHERE torneo_id = ? AND ronda = ? ORDER BY posicion'
-  ).all(torneoId, ronda1);
+  const stmtGetLlaves = db.prepare('SELECT * FROM llaves WHERE torneo_id = ? AND ronda = ? ORDER BY posicion');
+  const stmtSetGanador = db.prepare('UPDATE llaves SET ganador_id = ? WHERE id = ?');
+  const stmtGetSigLlave = db.prepare('SELECT * FROM llaves WHERE torneo_id = ? AND ronda = ? AND posicion = ?');
+  const stmtSetE1 = db.prepare('UPDATE llaves SET equipo1_id = ? WHERE id = ?');
+  const stmtSetE2 = db.prepare('UPDATE llaves SET equipo2_id = ? WHERE id = ?');
 
+  const llaves1 = stmtGetLlaves.all(torneoId, ronda1);
   const sigRonda = ronda1 / 2;
 
   llaves1.forEach(l => {
@@ -211,18 +213,17 @@ function generarLlaves(torneoId, equipoIds) {
     if (!tieneSolo) return;
 
     const ganadorId = l.equipo1_id || l.equipo2_id;
-    // Marcar como ganador en esta llave
-    db.prepare('UPDATE llaves SET ganador_id = ? WHERE id = ?').run(ganadorId, l.id);
+    stmtSetGanador.run(ganadorId, l.id);
 
-    // Colocar en la llave de la siguiente ronda
     const sigPos = Math.ceil(l.posicion / 2);
-    const sigLlave = db.prepare(
-      'SELECT * FROM llaves WHERE torneo_id = ? AND ronda = ? AND posicion = ?'
-    ).get(torneoId, sigRonda, sigPos);
+    const sigLlave = stmtGetSigLlave.get(torneoId, sigRonda, sigPos);
 
     if (sigLlave) {
-      const campo = l.posicion % 2 === 1 ? 'equipo1_id' : 'equipo2_id';
-      db.prepare('UPDATE llaves SET '+campo+' = ? WHERE id = ?').run(ganadorId, sigLlave.id);
+      if (l.posicion % 2 === 1) {
+        stmtSetE1.run(ganadorId, sigLlave.id);
+      } else {
+        stmtSetE2.run(ganadorId, sigLlave.id);
+      }
     }
   });
 }
